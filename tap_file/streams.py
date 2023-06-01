@@ -1,13 +1,11 @@
 """Stream type classes for tap-file."""
 
 from __future__ import annotations
+
 import csv
+from typing import Any, Generator
 
-from pathlib import Path
-from typing import Any, Iterable
 import fsspec
-
-from singer_sdk import typing as th  # JSON Schema typing helpers
 
 from tap_file.client import FileStream
 
@@ -16,12 +14,15 @@ class CSVStream(FileStream):
     """Stream for reading CSVs."""
 
     name = "CSV"
-    
-    def get_rows(self) -> Iterable[dict[str | Any, str | Any]]:
+
+    def get_rows(self) -> Generator[dict[str | Any, str | Any], None, None]:
+        """Retrive all rows from all CSVs.
+
+        Yields:
+            A dictionary containing information about a row in a CSV.
+        """
         for file in self.get_files():
             with fsspec.open(file, "rt") as f:
                 reader = csv.DictReader(f)
                 for row in reader:
                     yield row
-
-    

@@ -12,7 +12,7 @@ class TapFile(Tap):
     """File tap class."""
 
     name = "tap-file"
-    
+
     config_jsonschema = th.PropertiesList(
         th.Property(
             "protocol",
@@ -29,18 +29,26 @@ class TapFile(Tap):
         th.Property(
             "format",
             th.StringType,
-            description="The file format to return data on. One of `csv`, `tsv`, `json`, `avro`, or `detect`.",
+            description=(
+                "The file format to return data on. One of `csv`, `tsv`, `json`, ",
+                "`avro`, or `detect`.",
+            ),
         ),
         th.Property(
             "delimiter",
             th.StringType,
             default=",",
-            description="The delimiter used between records in a file. Any singular character or the special value `detect`.",
+            description=(
+                "The delimiter used between records in a file. Any singular charater ",
+                "or the special value `detect`.",
+            ),
         ),
         th.Property(
             "file_regex",
             th.StringType,
-            description="A regex pattern to only include certain files. Example: `*\.csv`",
+            description=(
+                "A regex pattern to only include certain files. Example: `*\\.csv`",
+            ),
         ),
     ).to_dict()
 

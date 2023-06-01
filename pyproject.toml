@@ -3,7 +3,7 @@ name = "tap-file"
 version = "0.0.1"
 description = "`tap-file` is a Singer tap for File, built with the Meltano Singer SDK."
 readme = "README.md"
-authors = ["Meltano"]
+authors = ["AutoIDM"]
 keywords = [
     "ELT",
     "File",
@@ -11,16 +11,16 @@ keywords = [
 license = "Apache-2.0"
 
 [tool.poetry.dependencies]
-python = "<3.12,>=3.7.1"
+python = "<3.12,>=3.8"
 singer-sdk = { version="^0.27.0" }
-fs-s3fs = { version = "^1.1.1", optional = true }
+s3fs = ">=2023.5.0"
+fsspec = ">=2023.5.0"
+ruff = "^0.0.270"
+black = "^23.3.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.2.1"
 singer-sdk = { version="^0.27.0", extras = ["testing"] }
-
-[tool.poetry.extras]
-s3 = ["fs-s3fs"]
 
 [tool.mypy]
 python_version = "3.9"

@@ -5,7 +5,6 @@ from __future__ import annotations
 from singer_sdk import Tap
 from singer_sdk import typing as th  # JSON schema typing helpers
 
-# TODO: Import your custom stream types here:
 from tap_file import streams
 
 
@@ -13,32 +12,35 @@ class TapFile(Tap):
     """File tap class."""
 
     name = "tap-file"
-
-    # TODO: Update this section with the actual config values you expect:
+    
     config_jsonschema = th.PropertiesList(
         th.Property(
-            "auth_token",
+            "protocol",
             th.StringType,
             required=True,
-            secret=True,  # Flag config as protected.
-            description="The token to authenticate against the API service",
+            description="The protocol to use to retrieve data. One of `file` or `s3`.",
         ),
         th.Property(
-            "project_ids",
-            th.ArrayType(th.StringType),
-            required=True,
-            description="Project IDs to replicate",
-        ),
-        th.Property(
-            "start_date",
-            th.DateTimeType,
-            description="The earliest record date to sync",
-        ),
-        th.Property(
-            "api_url",
+            "filepath",
             th.StringType,
-            default="https://api.mysample.com",
-            description="The url for the API service",
+            required=True,
+            description="The path to obtain files from. Example: `/foo/bar`",
+        ),
+        th.Property(
+            "format",
+            th.StringType,
+            description="The file format to return data on. One of `csv`, `tsv`, `json`, `avro`, or `detect`.",
+        ),
+        th.Property(
+            "delimiter",
+            th.StringType,
+            default=",",
+            description="The delimiter used between records in a file. Any singular character or the special value `detect`.",
+        ),
+        th.Property(
+            "file_regex",
+            th.StringType,
+            description="A regex pattern to only include certain files. Example: `*\.csv`",
         ),
     ).to_dict()
 
@@ -49,8 +51,7 @@ class TapFile(Tap):
             A list of discovered streams.
         """
         return [
-            streams.GroupsStream(self),
-            streams.UsersStream(self),
+            streams.CSVStream(self),
         ]
 
 

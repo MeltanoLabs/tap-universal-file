@@ -1,42 +1,34 @@
 # tap-file
 
+**IMPORTANT**: This tap is still under development and should not be used in its current form. <!-- TODO: remove disclaimer when feature-complete. -->
+
 `tap-file` is a Singer tap for File.
 
 Built with the [Meltano Tap SDK](https://sdk.meltano.com) for Singer Taps.
 
-<!--
-
-Developer TODO: Update the below as needed to correctly describe the install procedure. For instance, if you do not have a PyPi repo, or if you want users to directly install from your git repo, you can modify this step as appropriate.
-
 ## Installation
 
-Install from PyPi:
+An example GitHub installation command:
 
 ```bash
-pipx install tap-file
+pipx install git+https://github.com/MeltanoLabs/tap-file.git
 ```
-
-Install from GitHub:
-
-```bash
-pipx install git+https://github.com/ORG_NAME/tap-file.git@main
-```
-
--->
 
 ## Configuration
 
 ### Accepted Config Options
 
-<!--
-Developer TODO: Provide a list of config options accepted by the tap.
+Unsupported: <!-- TODO: Remvove disclaimer when feature-complete.>
+- `protocol` must be `file`.
+- `format` and  `delimiter` are both ignored.
 
-This section can be created by copy-pasting the CLI output from:
-
-```
-tap-file --about --format=markdown
-```
--->
+| Setting             | Required | Default | Description |
+|:--------------------|:--------:|:-------:|:------------|
+| protocol            | True     | None    | The protocol to use to retrieve data. One of `file` or `s3`. |
+| filepath            | True     | None    | The path to obtain files from. Example: `/foo/bar` |
+| format              | False    | None    | The file format to return data on. One of `csv`, `tsv`, `json`, `avro`, or `detect`. |
+| delimiter           | False    | ,       | The delimiter used between records in a file. Any singular character or the special value `detect`. |
+| file_regex          | False    | None    | A regex pattern to only include certain files. Example: `*\.csv` |
 
 A full list of supported settings and capabilities for this
 tap is available by running:
@@ -99,12 +91,6 @@ poetry run tap-file --help
 
 _**Note:** This tap will work in any Singer environment and does not require Meltano.
 Examples here are for convenience and to streamline end-to-end orchestration scenarios._
-
-<!--
-Developer TODO:
-Your project comes with a custom `meltano.yml` project file already created. Open the `meltano.yml` and follow any "TODO" items listed in
-the file.
--->
 
 Next, install Meltano (if you haven't already) and any needed plugins:
 

@@ -18,17 +18,14 @@ pipx install git+https://github.com/MeltanoLabs/tap-file.git
 
 ### Accepted Config Options
 
-Unsupported: <!-- TODO: Remvove disclaimer when feature-complete.>
-- `protocol` must be `file`.
-- `format` and  `delimiter` are both ignored.
-
-| Setting             | Required | Default | Description |
-|:--------------------|:--------:|:-------:|:------------|
-| protocol            | True     | None    | The protocol to use to retrieve data. One of `file` or `s3`. |
-| filepath            | True     | None    | The path to obtain files from. Example: `/foo/bar` |
-| format              | False    | None    | The file format to return data on. One of `csv`, `tsv`, `json`, `avro`, or `detect`. |
-| delimiter           | False    | ,       | The delimiter used between records in a file. Any singular character or the special value `detect`. |
-| file_regex          | False    | None    | A regex pattern to only include certain files. Example: `*\.csv` |
+| Setting                | Required | Default | Description |
+|:-----------------------|:--------:|:-------:|:------------|
+| protocol               | True     | None    | The protocol to use to retrieve data. One of `file` or `s3`. |
+| filepath               | True     | None    | The path to obtain files from. Example: `/foo/bar`. |
+| file_regex             | False    | None    | A regex pattern to only include certain files. Example: `.*\.csv$`. |
+| s3_anonymous_connection| False    |       0 | Whether to use an anonymous S3 connection, without the use of any credentials. Ignored if `protocol!=s3`. |
+| s3_access_key          | False    | None    | The access key to use when authenticating to S3. Ignored if `protocol!=s3` or `s3_anonymous_connection=True`. |
+| s3_access_key_secret   | False    |       1 | The access key secret to use when authenticating to S3. Ignored if `protocol!=s3`or `s3_anonymous_connection=True`. |
 
 A full list of supported settings and capabilities for this
 tap is available by running:

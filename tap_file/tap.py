@@ -31,7 +31,7 @@ class TapFile(Tap):
             "file_regex",
             th.RegexType,
             description=(
-                "A regex pattern to only include certain files. Example: `.*\\.csv$`."
+                "A regex pattern to only include certain files. Example: `.*\\.csv`."
             ),
         ),
         th.Property(

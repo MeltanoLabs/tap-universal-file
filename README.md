@@ -22,7 +22,7 @@ pipx install git+https://github.com/MeltanoLabs/tap-file.git
 |:-----------------------|:--------:|:-------:|:------------|
 | protocol               | True     | None    | The protocol to use to retrieve data. One of `file` or `s3`. |
 | filepath               | True     | None    | The path to obtain files from. Example: `/foo/bar`. |
-| file_regex             | False    | None    | A regex pattern to only include certain files. Example: `.*\.csv$`. |
+| file_regex             | False    | None    | A regex pattern to only include certain files. Example: `.*\.csv`. |
 | s3_anonymous_connection| False    |       0 | Whether to use an anonymous S3 connection, without the use of any credentials. Ignored if `protocol!=s3`. |
 | s3_access_key          | False    | None    | The access key to use when authenticating to S3. Ignored if `protocol!=s3` or `s3_anonymous_connection=True`. |
 | s3_access_key_secret   | False    |       1 | The access key secret to use when authenticating to S3. Ignored if `protocol!=s3`or `s3_anonymous_connection=True`. |

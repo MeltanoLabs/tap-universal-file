@@ -3,7 +3,7 @@ name = "tap-file"
 version = "0.0.1"
 description = "`tap-file` is a Singer tap for File, built with the Meltano Singer SDK."
 readme = "README.md"
-authors = ["AutoIDM"]
+authors = ["Meltano"]
 keywords = [
     "ELT",
     "File",

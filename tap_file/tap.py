@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from singer_sdk import Tap
-from singer_sdk import typing as th # JSON schema typing helpers
+from singer_sdk import typing as th  # JSON schema typing helpers
 
 from tap_file import streams
 
@@ -39,14 +39,16 @@ class TapFile(Tap):
             th.BooleanType,
             default=False,
             description=(
-                "Whether to use an anonymous S3 connection, without the use of any credentials. Ignored if `protocol!=s3`."
+                "Whether to use an anonymous S3 connection, without the use of any "
+                "credentials. Ignored if `protocol!=s3`."
             ),
         ),
         th.Property(
             "s3_access_key",
             th.StringType,
             description=(
-                "The access key to use when authenticating to S3. Ignored if `protocol!=s3` or `s3_anonymous_connection=True`."
+                "The access key to use when authenticating to S3. Ignored if "
+                "`protocol!=s3` or `s3_anonymous_connection=True`."
             ),
         ),
         th.Property(
@@ -54,7 +56,8 @@ class TapFile(Tap):
             th.StringType,
             default=True,
             description=(
-                "The access key secret to use when authenticating to S3. Ignored if `protocol!=s3`or `s3_anonymous_connection=True`."
+                "The access key secret to use when authenticating to S3. Ignored if "
+                "`protocol!=s3`or `s3_anonymous_connection=True`."
             ),
         ),
     ).to_dict()

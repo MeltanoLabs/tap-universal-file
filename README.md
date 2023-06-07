@@ -23,9 +23,57 @@ pipx install git+https://github.com/MeltanoLabs/tap-file.git
 | protocol               | True     | None    | The protocol to use to retrieve data. One of `file` or `s3`. |
 | filepath               | True     | None    | The path to obtain files from. Example: `/foo/bar`. |
 | file_regex             | False    | None    | A regex pattern to only include certain files. Example: `.*\.csv`. |
+| cache_filepath         | False    | None    | The location to store cached files when `protocol!=file`. If left blank, caching will not be used and the entire contents of each resource will be fetched for each read operation. |
 | s3_anonymous_connection| False    |       0 | Whether to use an anonymous S3 connection, without the use of any credentials. Ignored if `protocol!=s3`. |
-| s3_access_key          | False    | None    | The access key to use when authenticating to S3. Ignored if `protocol!=s3` or `s3_anonymous_connection=True`. |
-| s3_access_key_secret   | False    |       1 | The access key secret to use when authenticating to S3. Ignored if `protocol!=s3`or `s3_anonymous_connection=True`. |
+| AWS_ACCESS_KEY_ID      | False    | $AWS_ACCESS_KEY_ID | The access key to use when authenticating to S3. Ignored if `protocol!=s3` or `s3_anonymous_connection=True`. Defaults to the value of the environment variable of the same name. |
+| AWS_SECRET_ACCESS_KEY  | False    | $AWS_SECRET_ACCESS_KEY | The access key secret to use when authenticating to S3. Ignored if `protocol!=s3`or `s3_anonymous_connection=True`. Defaults to the value of the environment variable of the same name. |
+| stream_maps            | False    | None    | Config object for stream maps capability. For more information check out [Stream Maps](https://sdk.meltano.com/en/latest/stream_maps.html). |
+| stream_map_config      | False    | None    | User-defined config values to be used within map expressions. |
+| flattening_enabled     | False    | None    | 'True' to enable schema flattening and automatically expand nested properties. |
+| flattening_max_depth   | False    | None    | The max depth to flatten schemas. | <!-- Manually added entries begin below. -->
+| batch_config           | False    | None    | Object containing batch configuration information. Has two child objects: `encoding` and `storage`. |
+| batch_config.encoding  | False    | None    | Object containing information about how to encode batch information. Has two child entries: `format` and `compression`. |
+| batch_config.storage   | False    | None    | Object containing information about how batch files should be stored. Has two child entries: `root` and `prefix`. |
+| batch_config.encoding.format       | False    | None    | Format to store batch files in. Example: `jsonl`. |
+| batch_config.encoding.compression  | False    | None    | Method with which to compress batch files. Example: `gzip`. |
+| batch_config.storage.root          | False    | None    | Location to store batch files. Examples: `file:///foo/bar`, `file://output`, `s3://bar/foo`. Note that the triple-slash is not a typo: it indicates an absolute filepath. |
+| batch_config.storage.prefix        | False    | None    | Prepended to the names of all batch files. Example: `batch-`.  |
+
+### Additional S3 Dependencies
+
+If you use `protocol=s3`, you will need to add the additional dependency `s3`. For example, you could update `meltano.yml` to have `pip_url: -e .[s3]`.
+
+If you use batching and send data to S3, you will need to add the additional dependency `s3-batch`. For example, you could update `meltano.yml` to have `pip_url: -e .[s3-batch]`.
+
+### Sample Batching Config
+
+Here is an example `meltano.yml` entry to configure batch files, and then the same sample configuration in JSON.
+```yml
+config:
+  # ... other config options ...
+  batch_config:
+    encoding:
+      format: jsonl
+      compression: gzip
+    storage:
+      root: file:///foo/bar
+      prefix: batch-
+```
+```json
+{
+  // ... other config options ...
+  "batch_config": {
+    "encoding": {
+      "format": "jsonl",
+      "compression": "gzip",
+    },
+    "storage": {
+      "root": "file:///foo/bar",
+      "prefix": "batch-",
+    }
+  }
+}
+```
 
 A full list of supported settings and capabilities for this
 tap is available by running:
@@ -42,9 +90,9 @@ environment variable is set either in the terminal context or in the `.env` file
 
 ### Source Authentication and Authorization
 
-<!--
-Developer TODO: If your tap requires special access on the source system, or any special authentication requirements, provide those here.
--->
+#### S3
+
+If you use S3, either for fetching files or for batching, you will need to obtain an access key and secret from AWS IAM. Specifically, `protocol=s3` requires the ListBucket and GetObject permissions, and batching requires the PutObject permission. <!-- TODO: Expand this section with more detailed instructions -->
 
 ## Usage
 

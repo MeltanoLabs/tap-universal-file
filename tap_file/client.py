@@ -15,21 +15,11 @@ class FileStream(Stream):
     """Stream class for File streams."""
 
     @cached_property
-    def schema(self) -> dict[str, dict]:
-        """Gets a schema for the current stream.
-
-        Raises:
-            NotImplementedError: This must be implemented by a subclass.
-
-        Returns:
-            A dictionary in the format of a Singer schema.
-        """
-        msg = "schema must be implemented by subclass."
-        raise NotImplementedError(msg)
-
-    @cached_property
-    def filesystem(self) -> fsspec.AbstractFileSystem:
+    def filesystem(self) -> fsspec.AbstractFileSystem:  # noqa: PLR0911
         """A fsspec filesytem.
+
+        TODO: Move this logic to an external class if support for further protocols is
+        added.
 
         Raises:
             ValueError: If the supplied protocol is not supported.
@@ -42,14 +32,72 @@ class FileStream(Stream):
         if protocol == "file":
             return fsspec.filesystem("file")
         if protocol == "s3":
+            cache_filepath = self.config.get("cache_filepath", None)
+
+            # A user specified anonymous connection overrides all else, allowing for a
+            # uncredentialed requests even when credentials are available.
             if self.config["s3_anonymous_connection"]:
+                if cache_filepath:
+                    return fsspec.filesystem(
+                        "filecache",
+                        target_protocol="s3",
+                        target_options={"anon": True},
+                        cache_storage=cache_filepath,
+                    )
+                self.logger.warning(
+                    "Caching is not being used. The entire contents of each resource "
+                    "will be fetched during each read operation, which could be "
+                    "expensive.",
+                )
                 return fsspec.filesystem("s3", anon=True)
-            return fsspec.filesystem(
-                "s3",
-                anon=False,
-                key=self.config["s3_access_key"],
-                secret=self.config["s3_access_key_secret"],
+
+            # If values are present in config, use them. If not, attempt to resolve
+            # through boto3.
+            if (
+                "AWS_ACCESS_KEY_ID" in self.config
+                and "AWS_SECRET_ACCESS_KEY" in self.config
+            ):
+                if cache_filepath:
+                    return fsspec.filesystem(
+                        "filecache",
+                        target_protocol="s3",
+                        target_options={
+                            "anon": False,
+                            "key": self.config["AWS_ACCESS_KEY_ID"],
+                            "secret": self.config["AWS_SECRET_ACCESS_KEY"],
+                        },
+                        cache_storage=cache_filepath,
+                    )
+                self.logger.warning(
+                    "Caching is not being used. The entire contents of each resource "
+                    "will be fetched during each read operation, which could be "
+                    "expensive.",
+                )
+                return fsspec.filesystem(
+                    "s3",
+                    anon=False,
+                    key=self.config["AWS_ACCESS_KEY_ID"],
+                    secret=self.config["AWS_SECRET_ACCESS_KEY"],
+                )
+
+            # Using boto3 credential resolution.
+            self.logger.warning(
+                "Defaulting to boto3 credential resolution. To force an anonymous "
+                "connection, set 's3_anonymous_connection' to True."
+                "Docs: https://boto3.amazonaws.com/v1/documentation/api/latest/guide/credentials.html#environment-variables",
             )
+            if cache_filepath:
+                return fsspec.filesystem(
+                    "filecache",
+                    target_protocol="s3",
+                    target_options={"anon": False},
+                    cache_storage=cache_filepath,
+                )
+            self.logger.warning(
+                "Caching is not being used. The entire contents of each resource will "
+                "be fetched during each read operation, which could be expensive.",
+            )
+            return fsspec.filesystem("s3", anon=False)
 
         msg = f"Protocol '{protocol}' is not valid."
         raise ValueError(msg)
@@ -62,14 +110,15 @@ class FileStream(Stream):
                 configured.
         """
         for file in self.filesystem.ls(self.config["filepath"], detail=False):
-            if "file_regex" in self.config:
-                # RegEx is currently checked against basename rather than full path.
-                # Fullpath matching could be added if recursive subdirectory syncing is
-                # implemented.
-                if re.match(self.config["file_regex"], Path(file).name):
-                    yield file
-            else:
-                yield file
+            # RegEx is currently checked against basename rather than full path.
+            # Fullpath matching could be added if recursive subdirectory syncing is
+            # implemented.
+            if "file_regex" in self.config and not re.match(
+                self.config["file_regex"],
+                Path(file).name,
+            ):
+                continue
+            yield file
 
     def get_rows(self) -> Generator[dict[str | Any, str | Any], None, None]:
         """Gets rows of all files that should be synced.

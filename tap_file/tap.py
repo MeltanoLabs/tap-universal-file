@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import os
+
 from singer_sdk import Tap
 from singer_sdk import typing as th  # JSON schema typing helpers
 
@@ -35,29 +37,44 @@ class TapFile(Tap):
             ),
         ),
         th.Property(
+            "cache_filepath",
+            th.StringType,
+            description=(
+                "The location to store cached files when `protocol!=file`. If left "
+                "blank, caching will not be used and the entire contents of each file "
+                "will be fetched for each read operation."
+            ),
+        ),
+        th.Property(
             "s3_anonymous_connection",
             th.BooleanType,
             default=False,
             description=(
-                "Whether to use an anonymous S3 connection, without the use of any "
-                "credentials. Ignored if `protocol!=s3`."
+                "Whether to use an anonymous S3 connection, without any credentials. "
+                "Ignored if `protocol!=s3`."
             ),
         ),
+        # Might want aliasing? Though aliases are also prepended with the name of the
+        # tap, so I think referencing AWS_ACCESS_KEY_ID requires use of os.getenv().
+        # Docs: https://docs.meltano.com/guide/configuration#settings-aliases
         th.Property(
-            "s3_access_key",
+            "AWS_ACCESS_KEY_ID",
             th.StringType,
+            default=os.getenv("AWS_ACCESS_KEY_ID"),
             description=(
                 "The access key to use when authenticating to S3. Ignored if "
-                "`protocol!=s3` or `s3_anonymous_connection=True`."
+                "`protocol!=s3` or `s3_anonymous_connection=True`. Defaults to the "
+                "value of the environment variable of the same name."
             ),
         ),
         th.Property(
-            "s3_access_key_secret",
+            "AWS_SECRET_ACCESS_KEY",
             th.StringType,
-            default=True,
+            default=os.getenv("AWS_SECRET_ACCESS_KEY"),
             description=(
                 "The access key secret to use when authenticating to S3. Ignored if "
-                "`protocol!=s3`or `s3_anonymous_connection=True`."
+                "`protocol!=s3` or `s3_anonymous_connection=True`. Defaults to the "
+                "value of the environment variable of the same name."
             ),
         ),
     ).to_dict()

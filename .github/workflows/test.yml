@@ -27,7 +27,7 @@ jobs:
         pip install poetry
     - name: Install dependencies
       run: |
-        poetry install
+        poetry install --extras=s3
     - name: Test with pytest
       run: |
         poetry run pytest --capture=no

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import tempfile
 
 from singer_sdk import Tap
 from singer_sdk import typing as th  # JSON schema typing helpers
@@ -39,6 +40,7 @@ class TapFile(Tap):
         th.Property(
             "cache_filepath",
             th.StringType,
+            default=tempfile.gettempdir(),
             description=(
                 "The location to store cached files when `protocol!=file`. If left "
                 "blank, caching will not be used and the entire contents of each file "
@@ -54,9 +56,6 @@ class TapFile(Tap):
                 "Ignored if `protocol!=s3`."
             ),
         ),
-        # Might want aliasing? Though aliases are also prepended with the name of the
-        # tap, so I think referencing AWS_ACCESS_KEY_ID requires use of os.getenv().
-        # Docs: https://docs.meltano.com/guide/configuration#settings-aliases
         th.Property(
             "AWS_ACCESS_KEY_ID",
             th.StringType,

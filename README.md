@@ -31,7 +31,7 @@ pipx install git+https://github.com/MeltanoLabs/tap-file.git
 | stream_map_config      | False    | None    | User-defined config values to be used within map expressions. |
 | flattening_enabled     | False    | None    | 'True' to enable schema flattening and automatically expand nested properties. |
 | flattening_max_depth   | False    | None    | The max depth to flatten schemas. | <!-- Manually added entries begin below. -->
-| batch_config           | False    | None    | Object containing batch configuration information. Has two child objects: `encoding` and `storage`. |
+| batch_config           | False    | None    | Object containing batch configuration information, as specified in the [Meltano documentation](https://sdk.meltano.com/en/latest/batch.html). Has two child objects: `encoding` and `storage`. |
 | batch_config.encoding  | False    | None    | Object containing information about how to encode batch information. Has two child entries: `format` and `compression`. |
 | batch_config.storage   | False    | None    | Object containing information about how batch files should be stored. Has two child entries: `root` and `prefix`. |
 | batch_config.encoding.format       | False    | None    | Format to store batch files in. Example: `jsonl`. |
@@ -39,11 +39,9 @@ pipx install git+https://github.com/MeltanoLabs/tap-file.git
 | batch_config.storage.root          | False    | None    | Location to store batch files. Examples: `file:///foo/bar`, `file://output`, `s3://bar/foo`. Note that the triple-slash is not a typo: it indicates an absolute filepath. |
 | batch_config.storage.prefix        | False    | None    | Prepended to the names of all batch files. Example: `batch-`.  |
 
-### Additional S3 Dependencies
+### Additional S3 Dependency
 
-If you use `protocol=s3`, you will need to add the additional dependency `s3`. For example, you could update `meltano.yml` to have `pip_url: -e .[s3]`.
-
-If you use batching and send data to S3, you will need to add the additional dependency `s3-batch`. For example, you could update `meltano.yml` to have `pip_url: -e .[s3-batch]`.
+If you use `protocol=s3` and/or if you use batching to send data to S3, you will need to add the additional dependency `s3`. For example, you could update `meltano.yml` to have `pip_url: -e .[s3]`.
 
 ### Sample Batching Config
 

@@ -4,8 +4,10 @@ from singer_sdk.testing import get_tap_test_class
 
 from tap_file.tap import TapFile
 
-SAMPLE_CONFIG = {}
-
+SAMPLE_CONFIG = {
+    "protocol": "s3",
+    "filepath": "tap-file-taptesting",
+    }
 
 # Run standard built-in tap tests from the SDK:
 TestTapFile = get_tap_test_class(

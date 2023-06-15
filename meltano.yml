@@ -8,7 +8,7 @@ plugins:
   extractors:
   - name: tap-file
     namespace: tap_file
-    pip_url: -e .[s3,s3-batch]
+    pip_url: -e .[s3]
     capabilities:
     - state
     - catalog

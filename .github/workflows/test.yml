@@ -13,8 +13,14 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_SECRET }}
+      TESTING_SECRET: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      TESTING_VARIABLE: ${{ secrets.AWS_ACCESS_KEY_SECRET }}
     steps:
     - uses: actions/checkout@v3
+    - name: Check environment variables.
+      run: |
+        echo "secret : $TESTING_SECRET"
+        echo "variable : $TESTING_VARIABLE"
     - name: Set up Python '${{ matrix.python-version }}'
       uses: actions/setup-python@v4
       with:

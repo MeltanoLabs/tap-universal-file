@@ -13,8 +13,8 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_SECRET }}
-      TESTING_SECRET: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      TESTING_VARIABLE: ${{ secrets.AWS_ACCESS_KEY_SECRET }}
+      TESTING_SECRET: ${{ secrets.TESTING_SECRET }}
+      TESTING_VARIABLE: ${{ secrets.TESTING_VARIABLE }}
     steps:
     - uses: actions/checkout@v3
     - name: Check environment variables.

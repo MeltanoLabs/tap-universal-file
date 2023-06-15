@@ -90,7 +90,42 @@ environment variable is set either in the terminal context or in the `.env` file
 
 #### S3
 
-If you use S3, either for fetching files or for batching, you will need to obtain an access key and secret from AWS IAM. Specifically, `protocol=s3` requires the ListBucket and GetObject permissions, and batching requires the PutObject permission. <!-- TODO: Expand this section with more detailed instructions -->
+If you use S3, either for fetching files or for batching, you will need to obtain an access key and secret from AWS IAM. Specifically, `protocol=s3` requires the ListBucket and GetObject permissions, and batching requires the PutObject permission.
+
+You can create a policy that grants the requisite permissions with the following JSON:
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": "s3:ListBucket",
+            "Resource": "arn:aws:s3:::YOUR_BUCKET_NAME"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:PutObject",
+                "s3:GetObject"
+            ],
+            "Resource": "arn:aws:s3:::YOUR_BUCKET_NAME/*"
+        }
+    ]
+}
+```
+
+You can generate an access key for a specific account using the following command:
+
+```bash
+aws iam create-access-key --user-name=YOUR_ACCOUNT_NAME
+```
+
+If you already have two access keys for an account, you will have to delete one of them first. You can delete an access key using the following command:
+
+```bash
+aws iam delete-access-key --user-name=YOUR_ACCOUNT_NAME --access-key-id=YOUR_ACCESS_KEY_ID
+```
 
 ## Usage
 

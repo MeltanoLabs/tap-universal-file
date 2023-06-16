@@ -18,6 +18,13 @@ class TapFile(Tap):
 
     config_jsonschema = th.PropertiesList(
         th.Property(
+            "stream_name",
+            th.StringType,
+            required=False,
+            default="file",
+            description="The name of the stream that is output by the tap.",
+        ),
+        th.Property(
             "protocol",
             th.StringType,
             required=True,
@@ -28,7 +35,9 @@ class TapFile(Tap):
             "filepath",
             th.StringType,
             required=True,
-            description="The path to obtain files from. Example: `/foo/bar`.",
+            description=(
+                "The path to obtain files from. Examples: `/foo/bar`, `s3-bucket-name`."
+            ),
         ),
         th.Property(
             "file_regex",
@@ -84,8 +93,9 @@ class TapFile(Tap):
         Returns:
             A list of discovered streams.
         """
+        name = self.config["stream_name"]
         return [
-            streams.CSVStream(self),
+            streams.CSVStream(self, name = name),
         ]
 
 

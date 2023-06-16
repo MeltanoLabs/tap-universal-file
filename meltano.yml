@@ -16,6 +16,7 @@ plugins:
     - about
     - stream-maps
     settings:
+    - name: stream_name
     - name: protocol
     - name: filepath
     - name: file_regex

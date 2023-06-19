@@ -102,7 +102,7 @@ class FileStream(Stream):
         msg = f"Protocol '{protocol}' is not valid."
         raise ValueError(msg)
 
-    def get_files(self) -> Generator[str, None, None]:
+    def get_files(self, regex: str | None = None) -> Generator[str, None, None]:
         """Gets file names to be synced.
 
         Yields:
@@ -118,6 +118,8 @@ class FileStream(Stream):
                 Path(file).name,
             ):
                 continue
+            if regex is not None and not re.match(regex, Path(file).name):
+                continue
             yield file
 
     def get_rows(self) -> Generator[dict[str | Any, str | Any], None, None]:
@@ -131,6 +133,33 @@ class FileStream(Stream):
         """
         msg = "get_rows must be implemented by subclass."
         raise NotImplementedError(msg)
+
+    def get_compression(self, file: str) -> str | None:  # noqa: PLR0911
+        """Determines what compression encoding is appropraite for a given file.
+
+        Args:
+            file: The file to determine the encoding of.
+
+        Returns:
+            A string representing the appropriate compression encoding, or `None` if no
+            compression is needed or if a compression encoding can't be determined.
+        """
+        compression: str = self.config["compression"]
+        if compression == "none":
+            return None
+        if compression != "detect":
+            return compression
+        if re.match(".*\\.zip$", file):
+            return "zip"
+        if re.match(".*\\.bz2$", file):
+            return "bz2"
+        if re.match(".*\\.(gzip|gz)$", file):
+            return "gzip"
+        if re.match(".*\\.lzma$", file):
+            return "lzma"
+        if re.match(".*\\.xz$", file):
+            return "xz"
+        return None
 
     def get_records(
         self,

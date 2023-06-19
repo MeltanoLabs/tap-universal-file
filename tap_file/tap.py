@@ -47,6 +47,18 @@ class TapFile(Tap):
             ),
         ),
         th.Property(
+            "file_type",
+            th.RegexType,
+            default="detect",
+            description=(
+                "Can be any of `csv`, `tsv`, `json`, `avro`, or `detect`. Indicates "
+                "how to determine a file's type. If set to `detect`, file names "
+                "containing a matching extension will be read as that type and other "
+                "files will not be read. If set to a file type, *all* files will be "
+                "read as that type."
+            ),
+        ),
+        th.Property(
             "cache_filepath",
             th.StringType,
             default=tempfile.gettempdir(),
@@ -54,6 +66,37 @@ class TapFile(Tap):
                 "The location to store cached files when `protocol!=file`. If left "
                 "blank, caching will not be used and the entire contents of each file "
                 "will be fetched for each read operation."
+            ),
+        ),
+        th.Property(
+            "compression",
+            th.StringType,
+            required=True,
+            allowed_values=["none", "zip", "bz2", "gzip", "lzma", "xz", "detect"],
+            default="none",
+            description=(
+                "The encoding to use to decompress data. One of `zip`, `bz2`, `gzip`, "
+                "`lzma`, `xz`, `none`, or `detect`."
+            ),
+        ),
+        th.Property(
+            "delimiter",
+            th.StringType,
+            default="detect",
+            description=(
+                "The character used to separate records in a CSV. Can be any single "
+                "character or the special value `detect`. If a value is provided, all "
+                "CSV and TSV files will use that value. Otherwise, `,` will be used "
+                "for CSV files and `\\t` will be used for TSV files."
+            ),
+        ),
+        th.Property(
+            "quote_character",
+            th.StringType,
+            default='"',
+            description=(
+                "The character used to indicate when a record in a CSV contains a "
+                'delimiter character. Defaults to `"`.'
             ),
         ),
         th.Property(
@@ -95,7 +138,7 @@ class TapFile(Tap):
         """
         name = self.config["stream_name"]
         return [
-            streams.CSVStream(self, name = name),
+            streams.SeparatedValuesStream(self, name=name),
         ]
 
 

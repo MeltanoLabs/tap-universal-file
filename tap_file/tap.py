@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import os
-import tempfile
 
 from singer_sdk import Tap
 from singer_sdk import typing as th  # JSON schema typing helpers
@@ -28,23 +27,18 @@ class TapFile(Tap):
             "filepath",
             th.StringType,
             required=True,
-            description="The path to obtain files from. Example: `/foo/bar`.",
+            description=(
+                "The path to obtain files from. Example: `/foo/bar`. Or, for "
+                "`protocol==s3`, use `s3-bucket-name` instead."
+            ),
         ),
         th.Property(
             "file_regex",
             th.RegexType,
             description=(
-                "A regex pattern to only include certain files. Example: `.*\\.csv`."
-            ),
-        ),
-        th.Property(
-            "cache_filepath",
-            th.StringType,
-            default=tempfile.gettempdir(),
-            description=(
-                "The location to store cached files when `protocol!=file`. If left "
-                "blank, caching will not be used and the entire contents of each file "
-                "will be fetched for each read operation."
+                "A regex pattern to only include certain files. Example: `.*\\.csv$`. "
+                "Note that if you want to sync a subdirectory, use the `filepath` "
+                "setting instead."
             ),
         ),
         th.Property(
@@ -74,6 +68,21 @@ class TapFile(Tap):
                 "The access key secret to use when authenticating to S3. Ignored if "
                 "`protocol!=s3` or `s3_anonymous_connection=True`. Defaults to the "
                 "value of the environment variable of the same name."
+            ),
+        ),
+        th.Property(
+            "cache_mode",
+            th.StringType,
+            default="once",
+            allowed_values=["none", "once", "persistent"],
+            description=(
+                "*DEVELOPERS ONLY* The caching method to use when `protocol!=file`. "
+                "One of `none`, `once`, or `persistent`. `none` does not use caching "
+                "at all. `once` (the default) will cache all files for the duration of "
+                "the tap's invocation, then discard them upon completion. `peristent` "
+                "will allow caches to persist between invocations of the tap, storing "
+                "them in your OS's temp directory. It is recommended that you do not "
+                "modify this setting."
             ),
         ),
     ).to_dict()

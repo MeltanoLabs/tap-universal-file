@@ -21,12 +21,12 @@ pipx install git+https://github.com/MeltanoLabs/tap-file.git
 | Setting                | Required | Default | Description |
 |:-----------------------|:--------:|:-------:|:------------|
 | protocol               | True     | None    | The protocol to use to retrieve data. One of `file` or `s3`. |
-| filepath               | True     | None    | The path to obtain files from. Example: `/foo/bar`. |
-| file_regex             | False    | None    | A regex pattern to only include certain files. Example: `.*\.csv`. |
-| cache_filepath         | False    | None    | The location to store cached files when `protocol!=file`. If left blank, caching will not be used and the entire contents of each resource will be fetched for each read operation. |
-| s3_anonymous_connection| False    |       0 | Whether to use an anonymous S3 connection, without the use of any credentials. Ignored if `protocol!=s3`. |
+| filepath               | True     | None    | The path to obtain files from. Example: `/foo/bar`. Or, for `protocol==s3`, `s3-bucket-name`. |
+| file_regex             | False    | None    | A regex pattern to only include certain files. Example: `.*\.csv`. Note that if you want to sync a subdirectory, use the `filepath` setting instead. |
+| s3_anonymous_connection| False    |       0 | Whether to use an anonymous S3 connection, without any credentials. Ignored if `protocol!=s3`. |
 | AWS_ACCESS_KEY_ID      | False    | $AWS_ACCESS_KEY_ID | The access key to use when authenticating to S3. Ignored if `protocol!=s3` or `s3_anonymous_connection=True`. Defaults to the value of the environment variable of the same name. |
-| AWS_SECRET_ACCESS_KEY  | False    | $AWS_SECRET_ACCESS_KEY | The access key secret to use when authenticating to S3. Ignored if `protocol!=s3`or `s3_anonymous_connection=True`. Defaults to the value of the environment variable of the same name. |
+| AWS_SECRET_ACCESS_KEY  | False    | $AWS_SECRET_ACCESS_KEY | The access key secret to use when authenticating to S3. Ignored if `protocol!=s3` or `s3_anonymous_connection=True`. Defaults to the value of the environment variable of the same name. |
+| cache_mode             | False    | once    | *DEVELOPERS ONLY* The caching method to use when `protocol!=file`. `none` does not use caching at all. `once` (the default) will cache all files for the duration of the tap's invocation, then discard them upon completion. `peristent` will allow caches to persist between invocations of the tap, storing them in your OS's temp directory. It is recommended that you do not modify this setting. |
 | stream_maps            | False    | None    | Config object for stream maps capability. For more information check out [Stream Maps](https://sdk.meltano.com/en/latest/stream_maps.html). |
 | stream_map_config      | False    | None    | User-defined config values to be used within map expressions. |
 | flattening_enabled     | False    | None    | 'True' to enable schema flattening and automatically expand nested properties. |

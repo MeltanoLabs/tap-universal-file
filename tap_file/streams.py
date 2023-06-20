@@ -58,12 +58,12 @@ class SeparatedValuesStream(FileStream):
 
         if file_type == "detect":
             for reader in self.get_readers_helper(
-                delimiter == delimiters["csv"],
+                delimiter=delimiters["csv"],
                 regex=".*\\.csv.*",
             ):
                 yield reader
             for reader in self.get_readers_helper(
-                delimiter == delimiters["tsv"],
+                delimiter=delimiters["tsv"],
                 regex=".*\\.tsv.*",
             ):
                 yield reader

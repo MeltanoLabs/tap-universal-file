@@ -20,13 +20,18 @@ pipx install git+https://github.com/MeltanoLabs/tap-file.git
 
 | Setting                | Required | Default | Description |
 |:-----------------------|:--------:|:-------:|:------------|
+| stream_name            | False    | file    | The name of the stream that is output by the tap. |
 | protocol               | True     | None    | The protocol to use to retrieve data. One of `file` or `s3`. |
-| filepath               | True     | None    | The path to obtain files from. Example: `/foo/bar`. |
+| filepath               | True     | None    | The path to obtain files from. Example: `/foo/bar`. Or, for `protocol==s3`, use `s3-bucket-name` instead. |
 | file_regex             | False    | None    | A regex pattern to only include certain files. Example: `.*\.csv`. |
-| cache_filepath         | False    | None    | The location to store cached files when `protocol!=file`. If left blank, caching will not be used and the entire contents of each resource will be fetched for each read operation. |
-| s3_anonymous_connection| False    |       0 | Whether to use an anonymous S3 connection, without the use of any credentials. Ignored if `protocol!=s3`. |
+| file_type              | False    | detect  | Can be any of `csv`, `tsv`, `json`, `avro`, or `detect`. Indicates how to determine a file's type. If set to `detect`, file names containing a matching extension will be read as that type and other files will not be read. If set to a file type, *all* files will be read as that type. |
+| compression            | False     | detect  | The encoding to use to decompress data. One of `zip`, `bz2`, `gzip`, `lzma`, `xz`, `none`, or `detect`. |
+| delimiter              | False    | detect  | The character used to separate records in a CSV/TSV. Can be any character or the special value `detect`. If a value is provided, all CSV and TSV files will use that value. Otherwise, `,` will be used for CSV files and `\t` will be used for TSV files. |
+| quote_character        | False    | "       | The character used to indicate when a record in a CSV contains a delimiter character. Defaults to `"`. |
+| s3_anonymous_connection| False    |       0 | Whether to use an anonymous S3 connection, without any credentials. Ignored if `protocol!=s3`. |
 | AWS_ACCESS_KEY_ID      | False    | $AWS_ACCESS_KEY_ID | The access key to use when authenticating to S3. Ignored if `protocol!=s3` or `s3_anonymous_connection=True`. Defaults to the value of the environment variable of the same name. |
-| AWS_SECRET_ACCESS_KEY  | False    | $AWS_SECRET_ACCESS_KEY | The access key secret to use when authenticating to S3. Ignored if `protocol!=s3`or `s3_anonymous_connection=True`. Defaults to the value of the environment variable of the same name. |
+| AWS_SECRET_ACCESS_KEY  | False    | $AWS_SECRET_ACCESS_KEY | The access key secret to use when authenticating to S3. Ignored if `protocol!=s3` or `s3_anonymous_connection=True`. Defaults to the value of the environment variable of the same name. |
+| cache_mode             | False    | once    | *DEVELOPERS ONLY* The caching method to use when `protocol!=file`. One of `none`, `once`, or `persistent`. `none` does not use caching at all. `once` (the default) will cache all files for the duration of the tap's invocation, then discard them upon completion. `peristent` will allow caches to persist between invocations of the tap, storing them in your OS's temp directory. It is recommended that you do not modify this setting. |
 | stream_maps            | False    | None    | Config object for stream maps capability. For more information check out [Stream Maps](https://sdk.meltano.com/en/latest/stream_maps.html). |
 | stream_map_config      | False    | None    | User-defined config values to be used within map expressions. |
 | flattening_enabled     | False    | None    | 'True' to enable schema flattening and automatically expand nested properties. |

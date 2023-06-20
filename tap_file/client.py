@@ -5,21 +5,22 @@ from __future__ import annotations
 import re
 from functools import cached_property
 from pathlib import Path
-from typing import Any, Generator, Iterable
+from typing import TYPE_CHECKING, Any, Generator, Iterable
 
-import fsspec
+if TYPE_CHECKING:
+    import fsspec
+
 from singer_sdk.streams import Stream
+
+from tap_file.files import FilesystemManager
 
 
 class FileStream(Stream):
     """Stream class for File streams."""
 
     @cached_property
-    def filesystem(self) -> fsspec.AbstractFileSystem:  # noqa: PLR0911
+    def filesystem(self) -> fsspec.AbstractFileSystem:
         """A fsspec filesytem.
-
-        TODO: Move this logic to an external class if support for further protocols is
-        added.
 
         Raises:
             ValueError: If the supplied protocol is not supported.
@@ -27,80 +28,7 @@ class FileStream(Stream):
         Returns:
             A fileystem object of the appropriate type for the user-supplied protocol.
         """
-        protocol = self.config["protocol"]
-
-        if protocol == "file":
-            return fsspec.filesystem("file")
-        if protocol == "s3":
-            cache_filepath = self.config.get("cache_filepath", None)
-
-            # A user specified anonymous connection overrides all else, allowing for a
-            # uncredentialed requests even when credentials are available.
-            if self.config["s3_anonymous_connection"]:
-                if cache_filepath:
-                    return fsspec.filesystem(
-                        "filecache",
-                        target_protocol="s3",
-                        target_options={"anon": True},
-                        cache_storage=cache_filepath,
-                    )
-                self.logger.warning(
-                    "Caching is not being used. The entire contents of each resource "
-                    "will be fetched during each read operation, which could be "
-                    "expensive.",
-                )
-                return fsspec.filesystem("s3", anon=True)
-
-            # If values are present in config, use them. If not, attempt to resolve
-            # through boto3.
-            if (
-                "AWS_ACCESS_KEY_ID" in self.config
-                and "AWS_SECRET_ACCESS_KEY" in self.config
-            ):
-                if cache_filepath:
-                    return fsspec.filesystem(
-                        "filecache",
-                        target_protocol="s3",
-                        target_options={
-                            "anon": False,
-                            "key": self.config["AWS_ACCESS_KEY_ID"],
-                            "secret": self.config["AWS_SECRET_ACCESS_KEY"],
-                        },
-                        cache_storage=cache_filepath,
-                    )
-                self.logger.warning(
-                    "Caching is not being used. The entire contents of each resource "
-                    "will be fetched during each read operation, which could be "
-                    "expensive.",
-                )
-                return fsspec.filesystem(
-                    "s3",
-                    anon=False,
-                    key=self.config["AWS_ACCESS_KEY_ID"],
-                    secret=self.config["AWS_SECRET_ACCESS_KEY"],
-                )
-
-            # Using boto3 credential resolution.
-            self.logger.warning(
-                "Defaulting to boto3 credential resolution. To force an anonymous "
-                "connection, set 's3_anonymous_connection' to True."
-                "Docs: https://boto3.amazonaws.com/v1/documentation/api/latest/guide/credentials.html#environment-variables",
-            )
-            if cache_filepath:
-                return fsspec.filesystem(
-                    "filecache",
-                    target_protocol="s3",
-                    target_options={"anon": False},
-                    cache_storage=cache_filepath,
-                )
-            self.logger.warning(
-                "Caching is not being used. The entire contents of each resource will "
-                "be fetched during each read operation, which could be expensive.",
-            )
-            return fsspec.filesystem("s3", anon=False)
-
-        msg = f"Protocol '{protocol}' is not valid."
-        raise ValueError(msg)
+        return FilesystemManager(self.config, self.logger).get_filesystem()
 
     def get_files(self, regex: str | None = None) -> Generator[str, None, None]:
         """Gets file names to be synced.
@@ -109,18 +37,31 @@ class FileStream(Stream):
             The name of a file to be synced, matching a regex pattern, if one has been
                 configured.
         """
-        for file in self.filesystem.ls(self.config["filepath"], detail=False):
+        empty = True
+
+        for file in self.filesystem.ls(self.config["filepath"], detail=True):
             # RegEx is currently checked against basename rather than full path.
             # Fullpath matching could be added if recursive subdirectory syncing is
             # implemented.
+            if file["type"] == "directory" or file["size"] == 0:
+                continue
             if "file_regex" in self.config and not re.match(
                 self.config["file_regex"],
-                Path(file).name,
+                Path(file["name"]).name,
             ):
                 continue
-            if regex is not None and not re.match(regex, Path(file).name):
+            if regex is not None and not re.match(regex, Path(file["name"]).name):
                 continue
-            yield file
+            empty = False
+            yield file["name"]
+
+        if empty:
+            msg = (
+                "No files found. Choose a different `filepath` or try a more lenient "
+                "`file_regex`."
+            )
+            raise RuntimeError(msg)
+
 
     def get_rows(self) -> Generator[dict[str | Any, str | Any], None, None]:
         """Gets rows of all files that should be synced.
@@ -153,7 +94,7 @@ class FileStream(Stream):
             return "zip"
         if re.match(".*\\.bz2$", file):
             return "bz2"
-        if re.match(".*\\.(gzip|gz)$", file):
+        if re.match(".*\\.gz(ip)?$", file):
             return "gzip"
         if re.match(".*\\.lzma$", file):
             return "lzma"

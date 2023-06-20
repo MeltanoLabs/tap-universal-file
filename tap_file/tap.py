@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import os
-import tempfile
 
 from singer_sdk import Tap
 from singer_sdk import typing as th  # JSON schema typing helpers
@@ -36,7 +35,8 @@ class TapFile(Tap):
             th.StringType,
             required=True,
             description=(
-                "The path to obtain files from. Examples: `/foo/bar`, `s3-bucket-name`."
+                "The path to obtain files from. Example: `/foo/bar`. Or, for "
+                "`protocol==s3`, use `s3-bucket-name` instead."
             ),
         ),
         th.Property(
@@ -59,21 +59,10 @@ class TapFile(Tap):
             ),
         ),
         th.Property(
-            "cache_filepath",
-            th.StringType,
-            default=tempfile.gettempdir(),
-            description=(
-                "The location to store cached files when `protocol!=file`. If left "
-                "blank, caching will not be used and the entire contents of each file "
-                "will be fetched for each read operation."
-            ),
-        ),
-        th.Property(
             "compression",
             th.StringType,
-            required=True,
             allowed_values=["none", "zip", "bz2", "gzip", "lzma", "xz", "detect"],
-            default="none",
+            default="detect",
             description=(
                 "The encoding to use to decompress data. One of `zip`, `bz2`, `gzip`, "
                 "`lzma`, `xz`, `none`, or `detect`."
@@ -84,7 +73,7 @@ class TapFile(Tap):
             th.StringType,
             default="detect",
             description=(
-                "The character used to separate records in a CSV. Can be any single "
+                "The character used to separate records in a CSV/TSV. Can be any "
                 "character or the special value `detect`. If a value is provided, all "
                 "CSV and TSV files will use that value. Otherwise, `,` will be used "
                 "for CSV files and `\\t` will be used for TSV files."
@@ -126,6 +115,21 @@ class TapFile(Tap):
                 "The access key secret to use when authenticating to S3. Ignored if "
                 "`protocol!=s3` or `s3_anonymous_connection=True`. Defaults to the "
                 "value of the environment variable of the same name."
+            ),
+        ),
+        th.Property(
+            "cache_mode",
+            th.StringType,
+            default="once",
+            allowed_values=["none", "once", "persistent"],
+            description=(
+                "*DEVELOPERS ONLY* The caching method to use when `protocol!=file`. "
+                "One of `none`, `once`, or `persistent`. `none` does not use caching "
+                "at all. `once` (the default) will cache all files for the duration of "
+                "the tap's invocation, then discard them upon completion. `peristent` "
+                "will allow caches to persist between invocations of the tap, storing "
+                "them in your OS's temp directory. It is recommended that you do not "
+                "modify this setting."
             ),
         ),
     ).to_dict()

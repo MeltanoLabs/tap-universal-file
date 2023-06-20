@@ -21,7 +21,6 @@ plugins:
     - name: filepath
     - name: file_regex
     - name: file_type
-    - name: cache_filepath
     - name: compression
     - name: delimiter
     - name: quote_character
@@ -30,6 +29,7 @@ plugins:
       kind: password
     - name: AWS_SECRET_ACCESS_KEY
       kind: password
+    - name: cache_mode
   loaders:
   - name: target-jsonl
     variant: andyh1203

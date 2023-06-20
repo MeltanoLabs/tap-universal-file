@@ -6,7 +6,7 @@ from tap_file.tap import TapFile
 
 SAMPLE_CONFIG = {
     "protocol": "s3",
-    "filepath": "tap-file-taptesting",
+    "filepath": "tap-file-taptesting/grocery",
     # S3 access key and secret are retrieved from environment variables.
 }
 

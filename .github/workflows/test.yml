@@ -19,12 +19,11 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      TAP_FILE_FILEPATH: ${{ vars.TAP_FILE_FILEPATH }}
+      TAP_FILE_FILE_REGEX: ${{ vars.TAP_FILE_FILE_REGEX }}
+      TAP_FILE_PROTOCOL: ${{ vars.TAP_FILE_PROTOCOL }}
     steps:
     - uses: actions/checkout@v3
-    - name: Check environment variables.
-      run: |
-        echo "secret : $TESTING_SECRET"
-        echo "variable : $TESTING_VARIABLE"
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:

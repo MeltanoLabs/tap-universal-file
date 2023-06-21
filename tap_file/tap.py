@@ -74,9 +74,9 @@ class TapFile(Tap):
             default="detect",
             description=(
                 "The character used to separate records in a CSV/TSV. Can be any "
-                "character or the special value `detect`. If a value is provided, all "
-                "CSV and TSV files will use that value. Otherwise, `,` will be used "
-                "for CSV files and `\\t` will be used for TSV files."
+                "character or the special value `detect`. If a character is provided, "
+                "all CSV and TSV files will use that value. `detect` will use `,` for "
+                " CSV files and `\\t` for TSV files."
             ),
         ),
         th.Property(
@@ -85,7 +85,34 @@ class TapFile(Tap):
             default='"',
             description=(
                 "The character used to indicate when a record in a CSV contains a "
-                'delimiter character. Defaults to `"`.'
+                "delimiter character."
+            ),
+        ),
+        th.Property(
+            "jsonl_sampling_strategy",
+            th.StringType,
+            allowed_values=["first", "all"],
+            default="first",
+            description=(
+                "The strategy determining how to read the keys in a JSONL file. Must "
+                "be one of `first` or `all`. Currently, only `first` is supported, "
+                "which will assume that the first record in a file is representative "
+                "of all keys."
+            ),
+        ),
+        th.Property(
+            "jsonl_type_coercion_strategy",
+            th.StringType,
+            allowed_values=["any", "string", "blob"],
+            default="any",
+            description=(
+                "The strategy determining how to construct the schema for JSONL files "
+                "when the types represented are ambiguous. Must be one of `any`, "
+                "`string`, or `blob`. `any` will provide a generic schema for all "
+                "keys, allowing them to be any valid JSON type. `string` will require "
+                "all keys to be strings and will convert other values accordingly. "
+                "`blob` will deliver each JSONL row as a JSON object with no internal "
+                "schema. Currently, only `any` and `string` are supported."
             ),
         ),
         th.Property(
@@ -118,7 +145,7 @@ class TapFile(Tap):
             ),
         ),
         th.Property(
-            "cache_mode",
+            "caching_strategy",
             th.StringType,
             default="once",
             allowed_values=["none", "once", "persistent"],
@@ -143,6 +170,7 @@ class TapFile(Tap):
         name = self.config["stream_name"]
         return [
             streams.SeparatedValuesStream(self, name=name),
+            streams.JSONLStream(self, name=name),
         ]
 
 

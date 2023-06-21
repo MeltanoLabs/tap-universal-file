@@ -50,9 +50,9 @@ class FileStream(Stream):
                 Path(file["name"]).name,
             ):
                 continue
+            empty = False
             if regex is not None and not re.match(regex, Path(file["name"]).name):
                 continue
-            empty = False
             yield file["name"]
 
         if empty:
@@ -61,7 +61,6 @@ class FileStream(Stream):
                 "`file_regex`."
             )
             raise RuntimeError(msg)
-
 
     def get_rows(self) -> Generator[dict[str | Any, str | Any], None, None]:
         """Gets rows of all files that should be synced.

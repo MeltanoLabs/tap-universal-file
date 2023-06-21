@@ -18,24 +18,26 @@ pipx install git+https://github.com/MeltanoLabs/tap-file.git
 
 ### Accepted Config Options
 
-| Setting                | Required | Default | Description |
-|:-----------------------|:--------:|:-------:|:------------|
-| stream_name            | False    | file    | The name of the stream that is output by the tap. |
-| protocol               | True     | None    | The protocol to use to retrieve data. One of `file` or `s3`. |
-| filepath               | True     | None    | The path to obtain files from. Example: `/foo/bar`. Or, for `protocol==s3`, use `s3-bucket-name` instead. |
-| file_regex             | False    | None    | A regex pattern to only include certain files. Example: `.*\.csv`. |
-| file_type              | False    | detect  | Can be any of `csv`, `tsv`, `json`, `avro`, or `detect`. Indicates how to determine a file's type. If set to `detect`, file names containing a matching extension will be read as that type and other files will not be read. If set to a file type, *all* files will be read as that type. |
-| compression            | False     | detect  | The encoding to use to decompress data. One of `zip`, `bz2`, `gzip`, `lzma`, `xz`, `none`, or `detect`. |
-| delimiter              | False    | detect  | The character used to separate records in a CSV/TSV. Can be any character or the special value `detect`. If a value is provided, all CSV and TSV files will use that value. Otherwise, `,` will be used for CSV files and `\t` will be used for TSV files. |
-| quote_character        | False    | "       | The character used to indicate when a record in a CSV contains a delimiter character. Defaults to `"`. |
-| s3_anonymous_connection| False    |       0 | Whether to use an anonymous S3 connection, without any credentials. Ignored if `protocol!=s3`. |
-| AWS_ACCESS_KEY_ID      | False    | $AWS_ACCESS_KEY_ID | The access key to use when authenticating to S3. Ignored if `protocol!=s3` or `s3_anonymous_connection=True`. Defaults to the value of the environment variable of the same name. |
-| AWS_SECRET_ACCESS_KEY  | False    | $AWS_SECRET_ACCESS_KEY | The access key secret to use when authenticating to S3. Ignored if `protocol!=s3` or `s3_anonymous_connection=True`. Defaults to the value of the environment variable of the same name. |
-| cache_mode             | False    | once    | *DEVELOPERS ONLY* The caching method to use when `protocol!=file`. One of `none`, `once`, or `persistent`. `none` does not use caching at all. `once` (the default) will cache all files for the duration of the tap's invocation, then discard them upon completion. `peristent` will allow caches to persist between invocations of the tap, storing them in your OS's temp directory. It is recommended that you do not modify this setting. |
-| stream_maps            | False    | None    | Config object for stream maps capability. For more information check out [Stream Maps](https://sdk.meltano.com/en/latest/stream_maps.html). |
-| stream_map_config      | False    | None    | User-defined config values to be used within map expressions. |
-| flattening_enabled     | False    | None    | 'True' to enable schema flattening and automatically expand nested properties. |
-| flattening_max_depth   | False    | None    | The max depth to flatten schemas. | <!-- Manually added entries begin below. -->
+| Setting                     | Required | Default | Description |
+|:----------------------------|:--------:|:-------:|:------------|
+| stream_name                 | False    | file    | The name of the stream that is output by the tap. |
+| protocol                    | True     | None    | The protocol to use to retrieve data. One of `file` or `s3`. |
+| filepath                    | True     | None    | The path to obtain files from. Example: `/foo/bar`. Or, for `protocol==s3`, use `s3-bucket-name` instead. |
+| file_regex                  | False    | None    | A regex pattern to only include certain files. Example: `.*\.csv`. |
+| file_type                   | False    | detect  | Can be any of `csv`, `tsv`, `json`, `avro`, or `detect`. Indicates how to determine a file's type. If set to `detect`, file names containing a matching extension will be read as that type and other files will not be read. If set to a file type, *all* files will be read as that type. |
+| compression                 | False    | detect  | The encoding to use to decompress data. One of `zip`, `bz2`, `gzip`, `lzma`, `xz`, `none`, or `detect`. |
+| delimiter                   | False    | detect  | The character used to separate records in a CSV/TSV. Can be any character or the special value `detect`. If a character is provided, all CSV and TSV files will use that value. `detect` will use `,` for  CSV files and `\t` for TSV files. |
+| quote_character             | False    | "       | The character used to indicate when a record in a CSV contains a delimiter character. |
+| jsonl_sampling_strategy     | False    | first   | The strategy determining how to read the keys in a JSONL file. Must be one of `first` or `all`. Currently, only `first` is supported, which will assume that the first record in a file is representative of all keys. |
+| jsonl_type_coercion_strategy| False    | any     | The strategy determining how to construct the schema for JSONL files when the types represented are ambiguous. Must be one of `any`, `string`, or `blob`. `any` will provide a generic schema for all keys, allowing them to be any valid JSON type. `string` will require all keys to be strings and will convert other values accordingly. `blob` will deliver each JSONL row as a JSON object with no internal schema. Currently, only `any` and `string` are supported. |
+| s3_anonymous_connection     | False    |       0 | Whether to use an anonymous S3 connection, without any credentials. Ignored if `protocol!=s3`. |
+| AWS_ACCESS_KEY_ID           | False    | $AWS_ACCESS_KEY_ID | The access key to use when authenticating to S3. Ignored if `protocol!=s3` or `s3_anonymous_connection=True`. Defaults to the value of the environment variable of the same name. |
+| AWS_SECRET_ACCESS_KEY       | False    | $AWS_SECRET_ACCESS_KEY | The access key secret to use when authenticating to S3. Ignored if `protocol!=s3` or `s3_anonymous_connection=True`. Defaults to the value of the environment variable of the same name. |
+| caching_strategy            | False    | once    | *DEVELOPERS ONLY* The caching method to use when `protocol!=file`. One of `none`, `once`, or `persistent`. `none` does not use caching at all. `once` (the default) will cache all files for the duration of the tap's invocation, then discard them upon completion. `peristent` will allow caches to persist between invocations of the tap, storing them in your OS's temp directory. It is recommended that you do not modify this setting. |
+| stream_maps                 | False    | None    | Config object for stream maps capability. For more information check out [Stream Maps](https://sdk.meltano.com/en/latest/stream_maps.html). |
+| stream_map_config           | False    | None    | User-defined config values to be used within map expressions. |
+| flattening_enabled          | False    | None    | 'True' to enable schema flattening and automatically expand nested properties. |
+| flattening_max_depth        | False    | None    | The max depth to flatten schemas. | <!-- Manually added entries begin below. -->
 | batch_config           | False    | None    | Object containing batch configuration information, as specified in the [Meltano documentation](https://sdk.meltano.com/en/latest/batch.html). Has two child objects: `encoding` and `storage`. |
 | batch_config.encoding  | False    | None    | Object containing information about how to encode batch information. Has two child entries: `format` and `compression`. |
 | batch_config.storage   | False    | None    | Object containing information about how batch files should be stored. Has two child entries: `root` and `prefix`. |
@@ -62,9 +64,9 @@ config:
       root: file:///foo/bar
       prefix: batch-
 ```
-```json
+```python
 {
-  // ... other config options ...
+  # ... other config options ...
   "batch_config": {
     "encoding": {
       "format": "jsonl",

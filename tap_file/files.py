@@ -35,25 +35,25 @@ class FilesystemManager:
         """
         self._check_config()
         protocol = self.config["protocol"]
-        cache_mode = self.config["cache_mode"]
+        caching_strategy = self.config["caching_strategy"]
 
         if protocol == "file":
             return fsspec.filesystem("file")
 
-        if cache_mode == "once":
+        if caching_strategy == "once":
             return fsspec.filesystem(
                 "filecache",
                 target_protocol=self.config["protocol"],
                 target_options=self._get_args(),
             )
-        if cache_mode == "persistent":
+        if caching_strategy == "persistent":
             return fsspec.filesystem(
                 "filecache",
                 target_protocol=self.config["protocol"],
                 target_options=self._get_args(),
                 cache_storage=tempfile.gettempdir(),
             )
-        if cache_mode == "none":
+        if caching_strategy == "none":
             return fsspec.filesystem(
                 protocol=self.config["protocol"],
                 **self._get_args(),
@@ -79,12 +79,12 @@ class FilesystemManager:
 
     def _check_config(self) -> None:
         protocol = self.config["protocol"]
-        cache_mode = self.config["cache_mode"]
+        caching_strategy = self.config["caching_strategy"]
 
         if protocol not in {"file", "s3"}:
             msg = f"Protocol '{protocol}' is not valid."
             raise ValueError(msg)
 
-        if cache_mode not in {"none", "once", "persistent"}:
-            msg = f"Cache mode '{cache_mode}' is not valid."
+        if caching_strategy not in {"none", "once", "persistent"}:
+            msg = f"Caching strategy '{caching_strategy}' is not valid."
             raise ValueError(msg)

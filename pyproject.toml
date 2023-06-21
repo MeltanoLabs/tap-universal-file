@@ -11,16 +11,20 @@ keywords = [
 license = "Apache-2.0"
 
 [tool.poetry.dependencies]
-python = "<3.12,>=3.7.1"
-singer-sdk = { version="^0.27.0" }
-fs-s3fs = { version = "^1.1.1", optional = true }
+python = "<3.12,>=3.8"
+singer-sdk = { version="^0.28.0" }
+fsspec = "^2023.5.0"
+s3fs = { version = "^2023.5.0", optional = true}
+fs-s3fs = { version = "^1.1.1", optional = true}
+
+[tool.poetry.extras]
+s3=["s3fs", "fs-s3fs"]
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.2.1"
-singer-sdk = { version="^0.27.0", extras = ["testing"] }
-
-[tool.poetry.extras]
-s3 = ["fs-s3fs"]
+ruff = "^0.0.270"
+black = "^23.3.0"
+singer-sdk = { version="^0.28.0", extras = ["testing"] }
 
 [tool.mypy]
 python_version = "3.9"
@@ -30,6 +34,7 @@ warn_unused_configs = true
 ignore = [
     "ANN101",  # missing-type-self
     "ANN102",  # missing-type-cls
+    "TD", # TODO violations
 ]
 select = ["ALL"]
 src = ["tap_file"]

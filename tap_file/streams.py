@@ -2,62 +2,46 @@
 
 from __future__ import annotations
 
-from pathlib import Path
-
-from singer_sdk import typing as th  # JSON Schema typing helpers
+import csv
+from functools import cached_property
+from typing import Any, Generator
 
 from tap_file.client import FileStream
 
-# TODO: Delete this is if not using json files for schema definition
-SCHEMAS_DIR = Path(__file__).parent / Path("./schemas")
-# TODO: - Override `UsersStream` and `GroupsStream` with your own stream definition.
-#       - Copy-paste as many times as needed to create multiple stream types.
 
+class CSVStream(FileStream):
+    """Stream for reading CSVs."""
 
-class UsersStream(FileStream):
-    """Define custom stream."""
+    name = "CSV"
 
-    name = "users"
-    primary_keys = ["id"]
-    replication_key = None
-    # Optionally, you may also use `schema_filepath` in place of `schema`:
-    # schema_filepath = SCHEMAS_DIR / "users.json"  # noqa: ERA001
-    schema = th.PropertiesList(
-        th.Property("name", th.StringType),
-        th.Property(
-            "id",
-            th.StringType,
-            description="The user's system ID",
-        ),
-        th.Property(
-            "age",
-            th.IntegerType,
-            description="The user's age in years",
-        ),
-        th.Property(
-            "email",
-            th.StringType,
-            description="The user's email address",
-        ),
-        th.Property("street", th.StringType),
-        th.Property("city", th.StringType),
-        th.Property(
-            "state",
-            th.StringType,
-            description="State name in ISO 3166-2 format",
-        ),
-        th.Property("zip", th.StringType),
-    ).to_dict()
+    def get_rows(self) -> Generator[dict[str | Any, str | Any], None, None]:
+        """Retrive all rows from all CSVs.
 
+        Yields:
+            A dictionary containing information about a row in a CSV.
+        """
+        for file in self.get_files():
+            with self.filesystem.open(path=file, mode="rt") as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    yield row
 
-class GroupsStream(FileStream):
-    """Define custom stream."""
+    @cached_property
+    def schema(self) -> dict[str, dict]:
+        """Create a schema for a CSV file.
 
-    name = "groups"
-    primary_keys = ["id"]
-    replication_key = "modified"
-    schema = th.PropertiesList(
-        th.Property("name", th.StringType),
-        th.Property("id", th.StringType),
-        th.Property("modified", th.DateTimeType),
-    ).to_dict()
+        Each column in the CSV will have its own entry in the schema. All entries will
+        be of the form: `'FIELD_NAME': {'type': ['null', 'string']}`
+
+        Returns:
+            A schema representing a CSV.
+        """
+        properties = {}
+
+        for file in self.get_files():
+            with self.filesystem.open(path=file, mode="rt") as f:
+                reader = csv.DictReader(f)
+                for field in reader.fieldnames:
+                    properties.update({field: {"type": ["null", "string"]}})
+
+        return {"properties": properties}

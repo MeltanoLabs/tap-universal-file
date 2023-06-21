@@ -1,29 +1,30 @@
 version: 1
 send_anonymous_usage_stats: true
-project_id: "tap-file"
+project_id: tap-file
 default_environment: test
 environments:
 - name: test
 plugins:
   extractors:
-  - name: "tap-file"
-    namespace: "tap_file"
-    pip_url: -e .
+  - name: tap-file
+    namespace: tap_file
+    pip_url: -e .[s3]
     capabilities:
     - state
     - catalog
     - discover
     - about
     - stream-maps
-    config:
-      start_date: '2010-01-01T00:00:00Z'
     settings:
-    # TODO: To configure using Meltano, declare settings and their types here:
-    - name: username
-    - name: password
+    - name: protocol
+    - name: filepath
+    - name: file_regex
+    - name: s3_anonymous_connection
+    - name: AWS_ACCESS_KEY_ID
       kind: password
-    - name: start_date
-      value: '2010-01-01T00:00:00Z'
+    - name: AWS_SECRET_ACCESS_KEY
+      kind: password
+    - name: cache_mode
   loaders:
   - name: target-jsonl
     variant: andyh1203

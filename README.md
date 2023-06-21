@@ -1,42 +1,77 @@
 # tap-file
 
+**IMPORTANT**: This tap is still under development and should not be used in its current form. <!-- TODO: remove disclaimer when feature-complete. -->
+
 `tap-file` is a Singer tap for File.
 
 Built with the [Meltano Tap SDK](https://sdk.meltano.com) for Singer Taps.
 
-<!--
-
-Developer TODO: Update the below as needed to correctly describe the install procedure. For instance, if you do not have a PyPi repo, or if you want users to directly install from your git repo, you can modify this step as appropriate.
-
 ## Installation
 
-Install from PyPi:
+An example GitHub installation command:
 
 ```bash
-pipx install tap-file
+pipx install git+https://github.com/MeltanoLabs/tap-file.git
 ```
-
-Install from GitHub:
-
-```bash
-pipx install git+https://github.com/ORG_NAME/tap-file.git@main
-```
-
--->
 
 ## Configuration
 
 ### Accepted Config Options
 
-<!--
-Developer TODO: Provide a list of config options accepted by the tap.
+| Setting                | Required | Default | Description |
+|:-----------------------|:--------:|:-------:|:------------|
+| protocol               | True     | None    | The protocol to use to retrieve data. One of `file` or `s3`. |
+| filepath               | True     | None    | The path to obtain files from. Example: `/foo/bar`. Or, for `protocol==s3`, `s3-bucket-name`. |
+| file_regex             | False    | None    | A regex pattern to only include certain files. Example: `.*\.csv`. Note that if you want to sync a subdirectory, use the `filepath` setting instead. |
+| s3_anonymous_connection| False    |       0 | Whether to use an anonymous S3 connection, without any credentials. Ignored if `protocol!=s3`. |
+| AWS_ACCESS_KEY_ID      | False    | $AWS_ACCESS_KEY_ID | The access key to use when authenticating to S3. Ignored if `protocol!=s3` or `s3_anonymous_connection=True`. Defaults to the value of the environment variable of the same name. |
+| AWS_SECRET_ACCESS_KEY  | False    | $AWS_SECRET_ACCESS_KEY | The access key secret to use when authenticating to S3. Ignored if `protocol!=s3` or `s3_anonymous_connection=True`. Defaults to the value of the environment variable of the same name. |
+| cache_mode             | False    | once    | *DEVELOPERS ONLY* The caching method to use when `protocol!=file`. `none` does not use caching at all. `once` (the default) will cache all files for the duration of the tap's invocation, then discard them upon completion. `peristent` will allow caches to persist between invocations of the tap, storing them in your OS's temp directory. It is recommended that you do not modify this setting. |
+| stream_maps            | False    | None    | Config object for stream maps capability. For more information check out [Stream Maps](https://sdk.meltano.com/en/latest/stream_maps.html). |
+| stream_map_config      | False    | None    | User-defined config values to be used within map expressions. |
+| flattening_enabled     | False    | None    | 'True' to enable schema flattening and automatically expand nested properties. |
+| flattening_max_depth   | False    | None    | The max depth to flatten schemas. | <!-- Manually added entries begin below. -->
+| batch_config           | False    | None    | Object containing batch configuration information, as specified in the [Meltano documentation](https://sdk.meltano.com/en/latest/batch.html). Has two child objects: `encoding` and `storage`. |
+| batch_config.encoding  | False    | None    | Object containing information about how to encode batch information. Has two child entries: `format` and `compression`. |
+| batch_config.storage   | False    | None    | Object containing information about how batch files should be stored. Has two child entries: `root` and `prefix`. |
+| batch_config.encoding.format       | False    | None    | Format to store batch files in. Example: `jsonl`. |
+| batch_config.encoding.compression  | False    | None    | Method with which to compress batch files. Example: `gzip`. |
+| batch_config.storage.root          | False    | None    | Location to store batch files. Examples: `file:///foo/bar`, `file://output`, `s3://bar/foo`. Note that the triple-slash is not a typo: it indicates an absolute filepath. |
+| batch_config.storage.prefix        | False    | None    | Prepended to the names of all batch files. Example: `batch-`.  |
 
-This section can be created by copy-pasting the CLI output from:
+### Additional S3 Dependency
 
+If you use `protocol=s3` and/or if you use batching to send data to S3, you will need to add the additional dependency `s3`. For example, you could update `meltano.yml` to have `pip_url: -e .[s3]`.
+
+### Sample Batching Config
+
+Here is an example `meltano.yml` entry to configure batch files, and then the same sample configuration in JSON.
+```yml
+config:
+  # ... other config options ...
+  batch_config:
+    encoding:
+      format: jsonl
+      compression: gzip
+    storage:
+      root: file:///foo/bar
+      prefix: batch-
 ```
-tap-file --about --format=markdown
+```json
+{
+  // ... other config options ...
+  "batch_config": {
+    "encoding": {
+      "format": "jsonl",
+      "compression": "gzip",
+    },
+    "storage": {
+      "root": "file:///foo/bar",
+      "prefix": "batch-",
+    }
+  }
+}
 ```
--->
 
 A full list of supported settings and capabilities for this
 tap is available by running:
@@ -53,9 +88,44 @@ environment variable is set either in the terminal context or in the `.env` file
 
 ### Source Authentication and Authorization
 
-<!--
-Developer TODO: If your tap requires special access on the source system, or any special authentication requirements, provide those here.
--->
+#### S3
+
+If you use S3, either for fetching files or for batching, you will need to obtain an access key and secret from AWS IAM. Specifically, `protocol=s3` requires the ListBucket and GetObject permissions, and batching requires the PutObject permission.
+
+You can create a policy that grants the requisite permissions with the following JSON:
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": "s3:ListBucket",
+            "Resource": "arn:aws:s3:::YOUR_BUCKET_NAME"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:PutObject",
+                "s3:GetObject"
+            ],
+            "Resource": "arn:aws:s3:::YOUR_BUCKET_NAME/*"
+        }
+    ]
+}
+```
+
+You can generate an access key for a specific account using the following command:
+
+```bash
+aws iam create-access-key --user-name=YOUR_ACCOUNT_NAME
+```
+
+If you already have two access keys for an account, you will have to delete one of them first. You can delete an access key using the following command:
+
+```bash
+aws iam delete-access-key --user-name=YOUR_ACCOUNT_NAME --access-key-id=YOUR_ACCESS_KEY_ID
+```
 
 ## Usage
 
@@ -99,12 +169,6 @@ poetry run tap-file --help
 
 _**Note:** This tap will work in any Singer environment and does not require Meltano.
 Examples here are for convenience and to streamline end-to-end orchestration scenarios._
-
-<!--
-Developer TODO:
-Your project comes with a custom `meltano.yml` project file already created. Open the `meltano.yml` and follow any "TODO" items listed in
-the file.
--->
 
 Next, install Meltano (if you haven't already) and any needed plugins:
 

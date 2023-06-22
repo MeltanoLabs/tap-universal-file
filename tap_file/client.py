@@ -30,7 +30,7 @@ class FileStream(Stream):
         """
         return FilesystemManager(self.config, self.logger).get_filesystem()
 
-    def get_files(self, regex: str | None = None) -> Generator[str, None, None]:
+    def get_files(self) -> Generator[str, None, None]:
         """Gets file names to be synced.
 
         Yields:
@@ -51,8 +51,6 @@ class FileStream(Stream):
             ):
                 continue
             empty = False
-            if regex is not None and not re.match(regex, Path(file["name"]).name):
-                continue
             yield file["name"]
 
         if empty:

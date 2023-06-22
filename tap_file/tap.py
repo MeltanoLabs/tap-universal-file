@@ -49,13 +49,13 @@ class TapFile(Tap):
         th.Property(
             "file_type",
             th.RegexType,
-            default="detect",
+            default="delimited",
             description=(
-                "Can be any of `csv`, `tsv`, `json`, `avro`, or `detect`. Indicates "
-                "how to determine a file's type. If set to `detect`, file names "
-                "containing a matching extension will be read as that type and other "
-                "files will not be read. If set to a file type, *all* files will be "
-                "read as that type."
+                "Can be any of `delimited`, `jsonl`, or `avro`. Indicates the type of "
+                "file to sync, where `delimited` is for CSV/TSV files and similar. "
+                "Note that *all* files will be read as that type, regardless of file "
+                "extension. To only read from files with a matching file extension, "
+                "appropriately configure `file_regex`."
             ),
         ),
         th.Property(
@@ -65,7 +65,10 @@ class TapFile(Tap):
             default="detect",
             description=(
                 "The encoding to use to decompress data. One of `zip`, `bz2`, `gzip`, "
-                "`lzma`, `xz`, `none`, or `detect`."
+                "`lzma`, `xz`, `none`, or `detect`. If set to `none` or any encoding, "
+                "that setting will be applied to *all* files, regardless of file "
+                "extension. If set to `detect`, encodings will be applied based on "
+                "file extension."
             ),
         ),
         th.Property(
@@ -73,10 +76,11 @@ class TapFile(Tap):
             th.StringType,
             default="detect",
             description=(
-                "The character used to separate records in a CSV/TSV. Can be any "
-                "character or the special value `detect`. If a character is provided, "
-                "all CSV and TSV files will use that value. `detect` will use `,` for "
-                " CSV files and `\\t` for TSV files."
+                "The character used to separate records in a delimited file. Can be "
+                "any character or the special value `detect`. If a character is "
+                "provided, all delimited files will use that value. `detect` will use "
+                "`,` for `.csv` files, `\\t` for `.tsv` files, and fail if other file "
+                "types are present."
             ),
         ),
         th.Property(
@@ -168,10 +172,19 @@ class TapFile(Tap):
             A list of discovered streams.
         """
         name = self.config["stream_name"]
-        return [
-            streams.SeparatedValuesStream(self, name=name),
-            streams.JSONLStream(self, name=name),
-        ]
+        file_type = self.config["file_type"]
+        if file_type == "delimited":
+            return [streams.DelimitedStream(self, name=name)]
+        if file_type == "jsonl":
+            return [streams.JSONLStream(self, name=name)]
+        if file_type == "avro":
+            msg = "avro has not yet been implemented."
+            raise NotImplementedError(msg)
+        if file_type in {"csv", "tsv"}:
+            msg = f"{file_type} is not a valid 'file_type'. Did you mean 'delimited'?"
+            raise ValueError(msg)
+        msg = f"{file_type} is not a valid 'file_type'."
+        raise ValueError(msg)
 
 
 if __name__ == "__main__":

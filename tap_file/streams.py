@@ -4,13 +4,14 @@ from __future__ import annotations
 
 import csv
 import json
+import re
 from functools import cached_property
-from typing import Any, Generator, Iterable
+from typing import Any, Generator
 
 from tap_file.client import FileStream
 
 
-class SeparatedValuesStream(FileStream):
+class DelimitedStream(FileStream):
     """Stream for reading CSVs and TSVs."""
 
     def get_rows(self) -> Generator[dict[str | Any, str | Any], None, None]:
@@ -42,51 +43,24 @@ class SeparatedValuesStream(FileStream):
         return {"properties": properties}
 
     def _get_readers(self) -> Generator[csv.DictReader[str], None, None]:
-        """Get all *SV readers.
-
-        Raises:
-            StopIteration: To end iteration early if no more readers exist.
-
-        Yields:
-            A *SV reader.
-        """
-        file_type: str = self.config["file_type"]
-        delimiter: str = self.config["delimiter"]
-        delimiters: dict[str, str] = {
-            "csv": "," if delimiter == "detect" else delimiter,
-            "tsv": "\t" if delimiter == "detect" else delimiter,
-        }
-
-        if file_type == "detect":
-            for reader in self._get_readers_helper(
-                delimiter=delimiters["csv"],
-                regex=".*\\.csv.*",
-            ):
-                yield reader
-            for reader in self._get_readers_helper(
-                delimiter=delimiters["tsv"],
-                regex=".*\\.tsv.*",
-            ):
-                yield reader
-        elif file_type in {"csv", "tsv"}:
-            for reader in self._get_readers_helper(delimiter=delimiters[file_type]):
-                yield reader
-        else:
-            raise StopIteration
-
-    def _get_readers_helper(
-        self,
-        delimiter: str,
-        regex: str | None = None,
-    ) -> Generator[csv.DictReader[str], None, None]:
-        """Get a subset of *SV readers matching certain criteria.
-
-        Yields:
-            A *SV reader.
-        """
         quote_character: str = self.config["quote_character"]
 
-        for file in self.get_files(regex=regex):
+        for file in self.get_files():
+            if self.config["delimiter"] == "detect":
+                if re.match(".*\\.csv.*", file):
+                    delimiter = ","
+                elif re.match(".*\\.tsv.*", file):
+                    delimiter = "\t"
+                else:
+                    msg = (
+                        "Configuration option 'delimiter' is set to 'detect' but a "
+                        "non-csv non-tsv file is present. Please manually specify "
+                        "'delimiter'."
+                    )
+                    raise RuntimeError(msg)
+            else:
+                delimiter = self.config["delimiter"]
+
             with self.filesystem.open(
                 path=file,
                 mode="rt",
@@ -104,16 +78,7 @@ class JSONLStream(FileStream):
         Yields:
             A dictionary containing information about a row in a JSONL file.
         """
-        file_type: str = self.config["file_type"]
-
-        if file_type == "detect":
-            regex = None
-        elif file_type == "jsonl":
-            regex = ".*\\.jsonl.*"
-        else:
-            raise StopIteration
-
-        for file in self.get_files(regex=regex):
+        for file in self.get_files():
             with self.filesystem.open(
                 path=file,
                 mode="rt",
@@ -144,12 +109,12 @@ class JSONLStream(FileStream):
                 field: {
                     "type": [
                         "null",
-                        "object",
-                        "integer",
-                        "array",
-                        "number",
                         "boolean",
+                        "integer",
+                        "number",
                         "string",
+                        "array",
+                        "object",
                     ],
                 },
             }
@@ -160,10 +125,14 @@ class JSONLStream(FileStream):
         msg = f"The coercion strategy '{strategy}' is not valid."
         raise ValueError(msg)
 
-    def _get_fields(self) -> Iterable[str]:
+    def _get_fields(self) -> Generator[str, None, None]:
         strategy = self.config["jsonl_sampling_strategy"]
         if strategy == "first":
-            return list(next(self.get_rows()))
+            try:
+                yield from next(self.get_rows())
+            except StopIteration:
+                return
+            return
         if strategy == "all":
             msg = f"The sampling strategy '{strategy}' has not been implemented."
             raise NotImplementedError(msg)

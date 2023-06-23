@@ -17,6 +17,13 @@ class TapFile(Tap):
 
     config_jsonschema = th.PropertiesList(
         th.Property(
+            "stream_name",
+            th.StringType,
+            required=False,
+            default="file",
+            description="The name of the stream that is output by the tap.",
+        ),
+        th.Property(
             "protocol",
             th.StringType,
             required=True,
@@ -36,9 +43,80 @@ class TapFile(Tap):
             "file_regex",
             th.RegexType,
             description=(
-                "A regex pattern to only include certain files. Example: `.*\\.csv$`. "
-                "Note that if you want to sync a subdirectory, use the `filepath` "
-                "setting instead."
+                "A regex pattern to only include certain files. Example: `.*\\.csv`."
+            ),
+        ),
+        th.Property(
+            "file_type",
+            th.RegexType,
+            default="delimited",
+            description=(
+                "Can be any of `delimited`, `jsonl`, or `avro`. Indicates the type of "
+                "file to sync, where `delimited` is for CSV/TSV files and similar. "
+                "Note that *all* files will be read as that type, regardless of file "
+                "extension. To only read from files with a matching file extension, "
+                "appropriately configure `file_regex`."
+            ),
+        ),
+        th.Property(
+            "compression",
+            th.StringType,
+            allowed_values=["none", "zip", "bz2", "gzip", "lzma", "xz", "detect"],
+            default="detect",
+            description=(
+                "The encoding to use to decompress data. One of `zip`, `bz2`, `gzip`, "
+                "`lzma`, `xz`, `none`, or `detect`. If set to `none` or any encoding, "
+                "that setting will be applied to *all* files, regardless of file "
+                "extension. If set to `detect`, encodings will be applied based on "
+                "file extension."
+            ),
+        ),
+        th.Property(
+            "delimiter",
+            th.StringType,
+            default="detect",
+            description=(
+                "The character used to separate records in a delimited file. Can be "
+                "any character or the special value `detect`. If a character is "
+                "provided, all delimited files will use that value. `detect` will use "
+                "`,` for `.csv` files, `\\t` for `.tsv` files, and fail if other file "
+                "types are present."
+            ),
+        ),
+        th.Property(
+            "quote_character",
+            th.StringType,
+            default='"',
+            description=(
+                "The character used to indicate when a record in a CSV contains a "
+                "delimiter character."
+            ),
+        ),
+        th.Property(
+            "jsonl_sampling_strategy",
+            th.StringType,
+            allowed_values=["first", "all"],
+            default="first",
+            description=(
+                "The strategy determining how to read the keys in a JSONL file. Must "
+                "be one of `first` or `all`. Currently, only `first` is supported, "
+                "which will assume that the first record in a file is representative "
+                "of all keys."
+            ),
+        ),
+        th.Property(
+            "jsonl_type_coercion_strategy",
+            th.StringType,
+            allowed_values=["any", "string", "blob"],
+            default="any",
+            description=(
+                "The strategy determining how to construct the schema for JSONL files "
+                "when the types represented are ambiguous. Must be one of `any`, "
+                "`string`, or `blob`. `any` will provide a generic schema for all "
+                "keys, allowing them to be any valid JSON type. `string` will require "
+                "all keys to be strings and will convert other values accordingly. "
+                "`blob` will deliver each JSONL row as a JSON object with no internal "
+                "schema. Currently, only `any` and `string` are supported."
             ),
         ),
         th.Property(
@@ -71,7 +149,7 @@ class TapFile(Tap):
             ),
         ),
         th.Property(
-            "cache_mode",
+            "caching_strategy",
             th.StringType,
             default="once",
             allowed_values=["none", "once", "persistent"],
@@ -93,9 +171,20 @@ class TapFile(Tap):
         Returns:
             A list of discovered streams.
         """
-        return [
-            streams.CSVStream(self),
-        ]
+        name = self.config["stream_name"]
+        file_type = self.config["file_type"]
+        if file_type == "delimited":
+            return [streams.DelimitedStream(self, name=name)]
+        if file_type == "jsonl":
+            return [streams.JSONLStream(self, name=name)]
+        if file_type == "avro":
+            msg = "avro has not yet been implemented."
+            raise NotImplementedError(msg)
+        if file_type in {"csv", "tsv"}:
+            msg = f"{file_type} is not a valid 'file_type'. Did you mean 'delimited'?"
+            raise ValueError(msg)
+        msg = f"{file_type} is not a valid 'file_type'."
+        raise ValueError(msg)
 
 
 if __name__ == "__main__":

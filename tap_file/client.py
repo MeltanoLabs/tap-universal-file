@@ -55,8 +55,8 @@ class FileStream(Stream):
 
         if empty:
             msg = (
-                "No files found. Choose a different `filepath` or try a more "
-                "lenient `file_regex`."
+                "No files found. Choose a different `filepath` or try a more lenient "
+                "`file_regex`."
             )
             raise RuntimeError(msg)
 
@@ -71,6 +71,33 @@ class FileStream(Stream):
         """
         msg = "get_rows must be implemented by subclass."
         raise NotImplementedError(msg)
+
+    def get_compression(self, file: str) -> str | None:  # noqa: PLR0911
+        """Determines what compression encoding is appropraite for a given file.
+
+        Args:
+            file: The file to determine the encoding of.
+
+        Returns:
+            A string representing the appropriate compression encoding, or `None` if no
+            compression is needed or if a compression encoding can't be determined.
+        """
+        compression: str = self.config["compression"]
+        if compression == "none":
+            return None
+        if compression != "detect":
+            return compression
+        if re.match(".*\\.zip$", file):
+            return "zip"
+        if re.match(".*\\.bz2$", file):
+            return "bz2"
+        if re.match(".*\\.gz(ip)?$", file):
+            return "gzip"
+        if re.match(".*\\.lzma$", file):
+            return "lzma"
+        if re.match(".*\\.xz$", file):
+            return "xz"
+        return None
 
     def get_records(
         self,

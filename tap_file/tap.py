@@ -72,6 +72,16 @@ class TapFile(Tap):
             ),
         ),
         th.Property(
+            "additional_info",
+            th.BooleanType,
+            default=True,
+            description=(
+                "If `True`, each row in tap's output will have two additional columns: "
+                "`_sdc_file_name` and `_sdc_line_number`. If `False`, these columns "
+                "will not be present."
+            ),
+        ),
+        th.Property(
             "delimiter",
             th.StringType,
             default="detect",
@@ -93,6 +103,32 @@ class TapFile(Tap):
             ),
         ),
         th.Property(
+            "header_skip",
+            th.IntegerType,
+            default=0,
+            description=(
+                "The number of initial rows to skip at the beginning of each delimited "
+                "file."
+            ),
+        ),
+        th.Property(
+            "footer_skip",
+            th.IntegerType,
+            default=0,
+            description=(
+                "The number of initial rows to skip at the end of each delimited file."
+            ),
+        ),
+        th.Property(
+            "override_headers",
+            th.ArrayType(th.StringType),
+            description=(
+                "An optional array of headers used to override the default column "
+                "name in delimited files, allowing for headerless files to be "
+                "correctly read."
+            ),
+        ),
+        th.Property(
             "jsonl_sampling_strategy",
             th.StringType,
             allowed_values=["first", "all"],
@@ -107,16 +143,30 @@ class TapFile(Tap):
         th.Property(
             "jsonl_type_coercion_strategy",
             th.StringType,
-            allowed_values=["any", "string", "blob"],
+            allowed_values=["any", "string", "envelope"],
             default="any",
             description=(
                 "The strategy determining how to construct the schema for JSONL files "
                 "when the types represented are ambiguous. Must be one of `any`, "
-                "`string`, or `blob`. `any` will provide a generic schema for all "
+                "`string`, or `envelope`. `any` will provide a generic schema for all "
                 "keys, allowing them to be any valid JSON type. `string` will require "
                 "all keys to be strings and will convert other values accordingly. "
-                "`blob` will deliver each JSONL row as a JSON object with no internal "
-                "schema. Currently, only `any` and `string` are supported."
+                "`envelope` will deliver each JSONL row as a JSON object with no "
+                "internal schema."
+            ),
+        ),
+        th.Property(
+            "avro_type_coercion_strategy",
+            th.StringType,
+            allowed_values=["convert", "envelope"],
+            default="convert",
+            description=(
+                "The strategy determining how to construct the schema for Avro files "
+                "when conversion between schema types is ambiguous. Must be one of "
+                "`convert` or `envelope`. `convert` will attempt to convert from Avro "
+                "Schema to JSON Schema and will fail if a type can't be easily "
+                "coerced. `envelope` will wrap each record in an object without "
+                "providing an internal schema for the record."
             ),
         ),
         th.Property(
@@ -178,12 +228,14 @@ class TapFile(Tap):
         if file_type == "jsonl":
             return [streams.JSONLStream(self, name=name)]
         if file_type == "avro":
-            msg = "avro has not yet been implemented."
-            raise NotImplementedError(msg)
-        if file_type in {"csv", "tsv"}:
-            msg = f"{file_type} is not a valid 'file_type'. Did you mean 'delimited'?"
+            return [streams.AvroStream(self, name=name)]
+        if file_type in {"csv", "tsv", "txt"}:
+            msg = f"'{file_type}' is not a valid file_type. Did you mean 'delimited'?"
             raise ValueError(msg)
-        msg = f"{file_type} is not a valid 'file_type'."
+        if file_type in {"json", "ndjson"}:
+            msg = f"'{file_type}' is not a valid file_type. Did you mean 'jsonl'?"
+            raise ValueError(msg)
+        msg = f"'{file_type}' is not a valid file_type."
         raise ValueError(msg)
 
 

@@ -24,6 +24,7 @@ plugins:
     - name: compression
     - name: additional_info
       kind: boolean
+    - name: delimited_error_handling
     - name: delimited_delimiter
     - name: delimited_quote_character
     - name: delimited_header_skip
@@ -32,6 +33,7 @@ plugins:
       kind: integer
     - name: delimited_override_headers
       kind: array
+    - name: jsonl_error_handling
     - name: jsonl_sampling_strategy
     - name: jsonl_type_coercion_strategy
     - name: avro_type_coercion_strategy

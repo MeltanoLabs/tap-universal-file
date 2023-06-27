@@ -61,7 +61,7 @@ class DelimitedStream(FileStream):
 
     def _get_reader_dicts(
         self,
-    ) -> Generator[dict[str, str | csv.DictReader[str]], None, None]:
+    ) -> Generator[dict[str, str | ModifiedDictReader], None, None]:
         quote_character: str = self.config["delimited_quote_character"]
         override_headers: list | None = self.config.get(
             "delimited_override_headers",
@@ -85,11 +85,12 @@ class DelimitedStream(FileStream):
                 delimiter = self.config["delimited_delimiter"]
 
             yield {
-                "reader": csv.DictReader(
+                "reader": self.ModifiedDictReader(
                     f=self._skip_rows(file),
                     delimiter=delimiter,
                     quotechar=quote_character,
                     fieldnames=override_headers,
+                    config=self.config,
                 ),
                 "file_name": file,
             }
@@ -112,6 +113,62 @@ class DelimitedStream(FileStream):
             file_list.pop()
         return file_list
 
+    class ModifiedDictReader(csv.DictReader):
+        """A modified version of DictReader that detects improperly formatted rows."""
+
+        def __init__(  # noqa: PLR0913
+            self,
+            f: Any,  # noqa: ANN401
+            fieldnames: Any | None = None,
+            restkey: Any | None = None,
+            restval: Any | None = None,
+            dialect: str = "excel",
+            config: dict = None,
+            *args: Any,
+            **kwds: Any,
+        ) -> None:
+            """Identical to the superclass's method except for defining self.config."""
+            super().__init__(f, fieldnames, restkey, restval, dialect, *args, **kwds)
+            self.config = config if config is not None else {}
+
+        def __next__(self) -> dict:
+            """Identical to the superclass's method except for raising FileFormatErrors.
+
+            Raises:
+                FileFormatError: If a row in the *SV has too few entries.
+                FileFormatError: If a row in the *SV has too many entries.
+
+            Returns:
+                A dictionary containing the records for a row.
+            """
+            if self.line_num == 0:
+                self.fieldnames  # Used for its side-effect. # noqa: B018
+            row = next(self.reader)
+            self.line_num = self.reader.line_num
+            while row == []:
+                row = next(self.reader)
+            d = dict(zip(self.fieldnames, row))
+            lf = len(self.fieldnames)
+            lr = len(row)
+            if lf < lr:
+                d[self.restkey] = row[lf:]
+                if self.config["delimited_error_handling"] == "fail":
+                    msg = (
+                        f"Too few entries at line {self.line_num}. To suppress this "
+                        "error, change 'delimited_error_handling' to 'ignore'."
+                    )
+                    raise RuntimeError(msg)
+            elif lf > lr:
+                for key in self.fieldnames[lr:]:
+                    d[key] = self.restval
+                if self.config["delimited_error_handling"] == "fail":
+                    msg = (
+                        f"Too many entries at line {self.line_num}. To suppress this "
+                        "error, change 'delimited_error_handling' to 'ignore'."
+                    )
+                    raise RuntimeError(msg)
+            return d
+
 
 class JSONLStream(FileStream):
     """Stream for reading JSON files."""
@@ -130,8 +187,19 @@ class JSONLStream(FileStream):
             ) as f:
                 line_number = 1
                 for row in f:
+                    try:
+                        json_row = json.loads(row)
+                    except json.JSONDecodeError as e:
+                        if self.config["jsonl_error_handling"] == "fail":
+                            msg = (
+                                f"Invalid format on line {line_number}. "
+                                f'JSONDecodeError was "{e}". To suppress this error, '
+                                "change 'error_handling' to 'ignore'."
+                            )
+                            raise RuntimeError(msg) from e
+                        continue
                     yield self.add_additional_info(
-                        self._pre_process(json.loads(row)),
+                        self._pre_process(json_row),
                         file,
                         line_number,
                     )

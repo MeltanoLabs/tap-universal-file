@@ -82,6 +82,18 @@ class TapFile(Tap):
             ),
         ),
         th.Property(
+            "delimited_error_handling",
+            th.StringType,
+            allowed_values=["fail", "ignore"],
+            default="fail",
+            description=(
+                "The method with which to handle improperly formatted records in "
+                "delimited files. `fail` will cause the tap to fail if an improperly "
+                "formatted record is detected. `ignore` will ignore the fact that it "
+                "is improperly formatted and process it anyway."
+            ),
+        ),
+        th.Property(
             "delimited_delimiter",
             th.StringType,
             default="detect",
@@ -126,6 +138,18 @@ class TapFile(Tap):
                 "An optional array of headers used to override the default column "
                 "name in delimited files, allowing for headerless files to be "
                 "correctly read."
+            ),
+        ),
+        th.Property(
+            "jsonl_error_handling",
+            th.StringType,
+            allowed_values=["fail", "ignore"],
+            default="fail",
+            description=(
+                "The method with which to handle improperly formatted records in "
+                "jsonl files. `fail` will cause the tap to fail if an improperly "
+                "formatted record is detected. `ignore` will ignore the fact that it "
+                "is improperly formatted and process it anyway."
             ),
         ),
         th.Property(

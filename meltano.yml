@@ -24,13 +24,13 @@ plugins:
     - name: compression
     - name: additional_info
       kind: boolean
-    - name: delimiter
-    - name: quote_character
-    - name: header_skip
+    - name: delimited_delimiter
+    - name: delimited_quote_character
+    - name: delimited_header_skip
       kind: integer
-    - name: footer_skip
+    - name: delimited_footer_skip
       kind: integer
-    - name: override_headers
+    - name: delimited_override_headers
       kind: array
     - name: jsonl_sampling_strategy
     - name: jsonl_type_coercion_strategy

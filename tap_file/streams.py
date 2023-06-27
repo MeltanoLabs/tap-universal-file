@@ -24,26 +24,15 @@ class DelimitedStream(FileStream):
         Yields:
             A dictionary containing information about a row in a *SV.
         """
-        header_skip = self.config["header_skip"]
-        footer_skip = self.config["footer_skip"]
-
-        for reader_dict in self._get_readers():
+        for reader_dict in self._get_reader_dicts():
             reader = reader_dict["reader"]
-            if footer_skip != 0:
-                reader = list(reader)
-                total_lines = len(reader)
             line_number = 1
             for row in reader:
-                if line_number > header_skip and (
-                    True
-                    if footer_skip == 0
-                    else line_number <= total_lines - footer_skip
-                ):
-                    yield self.add_additional_info(
-                        row,
-                        reader_dict["file_name"],
-                        line_number,
-                    )
+                yield self.add_additional_info(
+                    row,
+                    reader_dict["file_name"],
+                    line_number,
+                )
                 line_number += 1
 
     def get_properties(self) -> dict:
@@ -57,49 +46,71 @@ class DelimitedStream(FileStream):
         """
         properties = {}
 
-        for reader_dict in self._get_readers():
+        for reader_dict in self._get_reader_dicts():
             reader = reader_dict["reader"]
+            if reader.fieldnames is None:
+                msg = (
+                    "Column names could not be read because they don't exist. Try "
+                    "manually specifying them using 'delimited_override_headers'."
+                )
+                raise RuntimeError(msg)
             for field in reader.fieldnames:
                 properties.update({field: {"type": ["null", "string"]}})
 
         return properties
 
-    def _get_readers(
+    def _get_reader_dicts(
         self,
     ) -> Generator[dict[str, str | csv.DictReader[str]], None, None]:
-        quote_character: str = self.config["quote_character"]
-        override_headers: list | None = self.config.get("override_headers", None)
+        quote_character: str = self.config["delimited_quote_character"]
+        override_headers: list | None = self.config.get(
+            "delimited_override_headers",
+            None,
+        )
 
         for file in self.get_files():
-            if self.config["delimiter"] == "detect":
+            if self.config["delimited_delimiter"] == "detect":
                 if re.match(".*\\.csv.*", file):
                     delimiter = ","
                 elif re.match(".*\\.tsv.*", file):
                     delimiter = "\t"
                 else:
                     msg = (
-                        "Configuration option 'delimiter' is set to 'detect' but a "
-                        "non-csv non-tsv file is present. Please manually specify "
-                        "'delimiter'."
+                        "Configuration option 'delimited_delimiter' is set to 'detect' "
+                        "but a non-csv non-tsv file is present. Please manually "
+                        "specify 'delimited_delimiter'."
                     )
                     raise RuntimeError(msg)
             else:
-                delimiter = self.config["delimiter"]
+                delimiter = self.config["delimited_delimiter"]
 
-            with self.filesystem.open(
-                path=file,
-                mode="rt",
-                compression=self.get_compression(file=file),
-            ) as f:
-                yield {
-                    "reader": csv.DictReader(
-                        f,
-                        delimiter=delimiter,
-                        quotechar=quote_character,
-                        fieldnames=override_headers,
-                    ),
-                    "file_name": file,
-                }
+            yield {
+                "reader": csv.DictReader(
+                    f=self._skip_rows(file),
+                    delimiter=delimiter,
+                    quotechar=quote_character,
+                    fieldnames=override_headers,
+                ),
+                "file_name": file,
+            }
+
+    def _skip_rows(self, file: str) -> list[str]:
+        with self.filesystem.open(
+            path=file,
+            mode="rt",
+            compression=self.get_compression(file=file),
+        ) as f:
+            file_list = []
+            file_list.extend(f)
+        for _ in range(self.config["delimited_header_skip"]):
+            if len(file_list) == 0:
+                return file_list
+            file_list.pop(0)
+        for _ in range(self.config["delimited_footer_skip"]):
+            if len(file_list) == 0:
+                return file_list
+            file_list.pop()
+        return file_list
 
 
 class JSONLStream(FileStream):
@@ -200,7 +211,7 @@ class AvroStream(FileStream):
         Yields:
             A dictionary containing information about a row in a Avro file.
         """
-        for reader_dict in self._get_readers():
+        for reader_dict in self._get_reader_dicts():
             reader = reader_dict["reader"]
             line_number = 1
             for row in reader:
@@ -225,7 +236,7 @@ class AvroStream(FileStream):
     def _get_fields(self) -> Generator[dict | str, None, None]:
         strategy = self.config["avro_type_coercion_strategy"]
         if strategy == "convert":
-            for reader_dict in self._get_readers():
+            for reader_dict in self._get_reader_dicts():
                 reader = reader_dict["reader"]
                 for field in json.loads(reader.schema)["fields"]:
                     yield field
@@ -246,6 +257,9 @@ class AvroStream(FileStream):
         raise ValueError(msg)
 
     def _type_convert(self, field_type: str) -> str:
+        if type(field_type) != str:
+            msg = f"The field type '{field_type}' has not been implemented."
+            raise NotImplementedError(msg)
         if field_type in {"null", "boolean", "string"}:
             return field_type
         if field_type in {"int", "long"}:
@@ -254,11 +268,8 @@ class AvroStream(FileStream):
             return "number"
         if field_type == "bytes":
             return "string"
-        if field_type == {"record", "enum", "array", "map", "union", "fixed"}:
-            msg = f"The field type '{field_type} has not been implemented."
-            raise NotImplementedError(msg)
-        msg = f"An invalid field type of '{field_type}' was detected."
-        raise RuntimeError(msg)
+        msg = f"The field type '{field_type} has not been implemented."
+        raise NotImplementedError(msg)
 
     def _pre_process(self, row: dict[str, Any]) -> dict[str, Any]:
         strategy = self.config["avro_type_coercion_strategy"]
@@ -269,7 +280,7 @@ class AvroStream(FileStream):
         msg = f"The coercion strategy '{strategy}' is not valid."
         raise ValueError(msg)
 
-    def _get_readers(
+    def _get_reader_dicts(
         self,
     ) -> Generator[dict[str, str | avro.datafile.DataFileReader], None, None]:
         for file in self.get_files():

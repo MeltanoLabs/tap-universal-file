@@ -82,7 +82,7 @@ class TapFile(Tap):
             ),
         ),
         th.Property(
-            "delimiter",
+            "delimited_delimiter",
             th.StringType,
             default="detect",
             description=(
@@ -94,16 +94,16 @@ class TapFile(Tap):
             ),
         ),
         th.Property(
-            "quote_character",
+            "delimited_quote_character",
             th.StringType,
             default='"',
             description=(
-                "The character used to indicate when a record in a CSV contains a "
-                "delimiter character."
+                "The character used to indicate when a record in a delimited file "
+                "contains a delimiter character."
             ),
         ),
         th.Property(
-            "header_skip",
+            "delimited_header_skip",
             th.IntegerType,
             default=0,
             description=(
@@ -112,7 +112,7 @@ class TapFile(Tap):
             ),
         ),
         th.Property(
-            "footer_skip",
+            "delimited_footer_skip",
             th.IntegerType,
             default=0,
             description=(
@@ -120,7 +120,7 @@ class TapFile(Tap):
             ),
         ),
         th.Property(
-            "override_headers",
+            "delimited_override_headers",
             th.ArrayType(th.StringType),
             description=(
                 "An optional array of headers used to override the default column "

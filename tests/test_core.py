@@ -9,7 +9,7 @@ import pytest
 
 from singer_sdk.testing import get_tap_test_class
 
-from tap_file.tap import TapFile
+from tap_file.tap import TapUniversalFile
 
 # Helper functions
 
@@ -30,7 +30,7 @@ base_file_config = {
 
 
 def execute_tap(config: dict = None):
-    """Executes a TapFile tap.
+    """Executes a TapUniversalFile tap.
 
     Args:
         config: Configuration for the tap.
@@ -47,7 +47,7 @@ def execute_tap(config: dict = None):
     stdout_buf = io.StringIO()
     with redirect_stdout(stdout_buf):
         tap_config = config if config is not None else {}
-        TapFile(config=tap_config).run_sync_dry_run(dry_run_record_limit=None)
+        TapUniversalFile(config=tap_config).run_sync_dry_run(dry_run_record_limit=None)
     stdout_buf.seek(0)
 
     for message in [
@@ -78,8 +78,8 @@ def execute_tap(config: dict = None):
 sample_config = base_file_config.copy()
 sample_config.update({"file_regex": "fruit_records\\.csv"})
 
-TestTapFile = get_tap_test_class(
-    tap_class=TapFile,
+TestTapUniversalFile = get_tap_test_class(
+    tap_class=TapUniversalFile,
     config=sample_config,
 )
 
@@ -201,3 +201,22 @@ def test_malformed_jsonl_ignore():
         }
     )
     execute_tap(modified_config)
+
+
+def test_incremental_sync():
+    modified_config = base_file_config.copy()
+    modified_config.update(
+        {
+            "stream_name": "file",
+            "file_regex": ".*hardware\\.csv$",
+            "file_type": "delimited",
+        }
+    )
+    messages = execute_tap(modified_config)
+    assert len(messages["records"]["file"]) == 10, "Improper number of records returned"
+    start_date = messages["state_messages"][0]["value"]["bookmarks"]["file"][
+        "replication_key_value"
+    ]
+    modified_config.update({"start_date": start_date})
+    messages = execute_tap(modified_config)
+    assert len(messages["records"]["file"]) == 5, "Improper number of records returned"

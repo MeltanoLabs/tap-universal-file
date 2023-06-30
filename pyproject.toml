@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "tap-file"
+name = "tap-universal-file"
 version = "0.0.1"
-description = "`tap-file` is a Singer tap for File, built with the Meltano Singer SDK."
+description = "`tap-universal-file` is a Singer tap for File, built with the Meltano Singer SDK."
 readme = "README.md"
 authors = ["Meltano"]
 keywords = [
@@ -11,7 +11,7 @@ keywords = [
 license = "Apache-2.0"
 
 [tool.poetry.dependencies]
-python = "<3.12,>=3.8"
+python = ">=3.8,<3.12"
 singer-sdk = { version="^0.28.0" }
 fsspec = "^2023.5.0"
 s3fs = { version = "^2023.5.0", optional = true}
@@ -38,7 +38,7 @@ ignore = [
     "TD", # TODO violations
 ]
 select = ["ALL"]
-src = ["tap_file"]
+src = ["tap_universal_file"]
 target-version = "py37"
 
 
@@ -46,7 +46,7 @@ target-version = "py37"
 allow-star-arg-any = true
 
 [tool.ruff.isort]
-known-first-party = ["tap_file"]
+known-first-party = ["tap_universal_file"]
 
 [tool.ruff.pydocstyle]
 convention = "google"
@@ -57,4 +57,4 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 # CLI declaration
-tap-file = 'tap_file.tap:TapFile.cli'
+tap-universal-file = 'tap_universal_file.tap:TapUniversalFile.cli'

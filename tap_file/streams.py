@@ -1,4 +1,4 @@
-"""Stream type classes for tap-file."""
+"""Stream type classes for tap-universal-file."""
 
 from __future__ import annotations
 
@@ -29,9 +29,10 @@ class DelimitedStream(FileStream):
             line_number = 1
             for row in reader:
                 yield self.add_additional_info(
-                    row,
-                    reader_dict["file_name"],
-                    line_number,
+                    row=row,
+                    file_name=reader_dict["file_name"],
+                    line_number=line_number,
+                    last_modified=reader_dict["last_modified"],
                 )
                 line_number += 1
 
@@ -68,11 +69,16 @@ class DelimitedStream(FileStream):
             None,
         )
 
-        for file in self.get_files():
+        for file in self.fs_manager.get_files(
+            self.starting_replication_key_value
+            if self.starting_replication_key_value
+            else None
+        ):
+            file_name = file["name"]
             if self.config["delimited_delimiter"] == "detect":
-                if re.match(".*\\.csv.*", file):
+                if re.match(".*\\.csv.*", file_name):
                     delimiter = ","
-                elif re.match(".*\\.tsv.*", file):
+                elif re.match(".*\\.tsv.*", file_name):
                     delimiter = "\t"
                 else:
                     msg = (
@@ -86,17 +92,18 @@ class DelimitedStream(FileStream):
 
             yield {
                 "reader": self.ModifiedDictReader(
-                    f=self._skip_rows(file),
+                    f=self._skip_rows(file_name),
                     delimiter=delimiter,
                     quotechar=quote_character,
                     fieldnames=override_headers,
                     config=self.config,
                 ),
-                "file_name": file,
+                "file_name": file_name,
+                "last_modified": file["last_modified"],
             }
 
     def _skip_rows(self, file: str) -> list[str]:
-        with self.filesystem.open(
+        with self.fs_manager.filesystem.open(
             path=file,
             mode="rt",
             compression=self.get_compression(file=file),
@@ -179,11 +186,16 @@ class JSONLStream(FileStream):
         Yields:
             A dictionary containing information about a row in a JSONL file.
         """
-        for file in self.get_files():
-            with self.filesystem.open(
-                path=file,
+        for file in self.fs_manager.get_files(
+            self.starting_replication_key_value
+            if self.starting_replication_key_value
+            else None
+        ):
+            file_name = file["name"]
+            with self.fs_manager.filesystem.open(
+                path=file_name,
                 mode="rt",
-                compression=self.get_compression(file=file),
+                compression=self.get_compression(file=file_name),
             ) as f:
                 line_number = 1
                 for row in f:
@@ -194,14 +206,15 @@ class JSONLStream(FileStream):
                             msg = (
                                 f"Invalid format on line {line_number}. "
                                 f'JSONDecodeError was "{e}". To suppress this error, '
-                                "change 'error_handling' to 'ignore'."
+                                "change 'jsonl_error_handling' to 'ignore'."
                             )
                             raise RuntimeError(msg) from e
                         continue
                     yield self.add_additional_info(
-                        self._pre_process(json_row),
-                        file,
-                        line_number,
+                        row=self._pre_process(json_row),
+                        file_name=file_name,
+                        line_number=line_number,
+                        last_modified=file["last_modified"],
                     )
                     line_number += 1
 
@@ -284,9 +297,10 @@ class AvroStream(FileStream):
             line_number = 1
             for row in reader:
                 yield self.add_additional_info(
-                    self._pre_process(row),
-                    reader_dict["file_name"],
-                    line_number,
+                    row=self._pre_process(row),
+                    file_name=reader_dict["file_name"],
+                    line_number=line_number,
+                    last_modified=reader_dict["last_modified"],
                 )
                 line_number += 1
 
@@ -351,13 +365,19 @@ class AvroStream(FileStream):
     def _get_reader_dicts(
         self,
     ) -> Generator[dict[str, str | avro.datafile.DataFileReader], None, None]:
-        for file in self.get_files():
-            with self.filesystem.open(
-                path=file,
+        for file in self.fs_manager.get_files(
+            self.starting_replication_key_value
+            if self.starting_replication_key_value
+            else None
+        ):
+            file_name = file["name"]
+            with self.fs_manager.filesystem.open(
+                path=file_name,
                 mode="rb",
-                compression=self.get_compression(file=file),
+                compression=self.get_compression(file=file_name),
             ) as f:
                 yield {
                     "reader": avro.datafile.DataFileReader(f, avro.io.DatumReader()),
-                    "file_name": file,
+                    "file_name": file_name,
+                    "last_modified": file["last_modified"],
                 }

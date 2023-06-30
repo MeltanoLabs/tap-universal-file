@@ -1,13 +1,13 @@
 version: 1
 send_anonymous_usage_stats: true
-project_id: tap-file
+project_id: tap-universal file
 default_environment: test
 environments:
 - name: test
 plugins:
   extractors:
-  - name: tap-file
-    namespace: tap_file
+  - name: tap-universal-file
+    namespace: tap_universal_file
     pip_url: -e .
     capabilities:
     - state
@@ -24,6 +24,9 @@ plugins:
     - name: compression
     - name: additional_info
       kind: boolean
+    - name: start_date
+      kind: date_iso8601
+      format: date-time
     - name: delimited_error_handling
     - name: delimited_delimiter
     - name: delimited_quote_character

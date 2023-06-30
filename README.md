@@ -1,8 +1,8 @@
-# tap-file
+# tap-universal-file
 
 **IMPORTANT**: This tap is still under development and should not be used in its current form. <!-- TODO: remove disclaimer when feature-complete. -->
 
-`tap-file` is a Singer tap for File.
+`tap-universal-file` is a Singer tap for File.
 
 Built with the [Meltano Tap SDK](https://sdk.meltano.com) for Singer Taps.
 
@@ -11,7 +11,7 @@ Built with the [Meltano Tap SDK](https://sdk.meltano.com) for Singer Taps.
 An example GitHub installation command:
 
 ```bash
-pipx install git+https://github.com/MeltanoLabs/tap-file.git
+pipx install git+https://github.com/MeltanoLabs/tap-universal-file.git
 ```
 
 ## Configuration
@@ -51,6 +51,13 @@ pipx install git+https://github.com/MeltanoLabs/tap-file.git
 | batch_config.storage.root          | False    | None    | Location to store batch files. Examples: `file:///foo/bar`, `file://output`, `s3://bar/foo`. Note that the triple-slash is not a typo: it indicates an absolute filepath. |
 | batch_config.storage.prefix        | False    | None    | Prepended to the names of all batch files. Example: `batch-`.  |
 
+A full list of supported settings and capabilities for this
+tap is available by running:
+
+```bash
+tap-universal-file --about
+```
+
 ### Additional S3 Dependency
 
 If you use `protocol=s3` and/or if you use batching to send data to S3, you will need to add the additional dependency `s3`. For example, you could update `meltano.yml` to have `pip_url: -e .[s3]`.
@@ -85,12 +92,9 @@ config:
 }
 ```
 
-A full list of supported settings and capabilities for this
-tap is available by running:
+### Incremental Replication
 
-```bash
-tap-file --about
-```
+If this tap is provided a state or `start_date`, it assumes that incremental replication is desired, in which case only files most recently modified will be synced. Attempting to override this behavior in `meltano.yml` can cause unintended behavior due this tap's use of state during the discovery process. Further note that this tap does not support incremental replication on any column other than `_sdc_last_modified`.
 
 ### Configure using environment variables
 
@@ -141,14 +145,14 @@ aws iam delete-access-key --user-name=YOUR_ACCOUNT_NAME --access-key-id=YOUR_ACC
 
 ## Usage
 
-You can easily run `tap-file` by itself or in a pipeline using [Meltano](https://meltano.com/).
+You can easily run `tap-universal-file` by itself or in a pipeline using [Meltano](https://meltano.com/).
 
 ### Executing the Tap Directly
 
 ```bash
-tap-file --version
-tap-file --help
-tap-file --config CONFIG --discover > ./catalog.json
+tap-universal-file --version
+tap-universal-file --help
+tap-universal-file --config CONFIG --discover > ./catalog.json
 ```
 
 ## Developer Resources
@@ -171,10 +175,10 @@ Create tests within the `tests` subfolder and
 poetry run pytest
 ```
 
-You can also test the `tap-file` CLI interface directly using `poetry run`:
+You can also test the `tap-universal-file` CLI interface directly using `poetry run`:
 
 ```bash
-poetry run tap-file --help
+poetry run tap-universal-file --help
 ```
 
 ### Testing with [Meltano](https://www.meltano.com)
@@ -188,7 +192,7 @@ Next, install Meltano (if you haven't already) and any needed plugins:
 # Install meltano
 pipx install meltano
 # Initialize meltano within this directory
-cd tap-file
+cd tap-universal-file
 meltano install
 ```
 
@@ -196,9 +200,9 @@ Now you can test and orchestrate using Meltano:
 
 ```bash
 # Test invocation:
-meltano invoke tap-file --version
+meltano invoke tap-universal-file --version
 # OR run a test `elt` pipeline:
-meltano elt tap-file target-jsonl
+meltano elt tap-universal-file target-jsonl
 ```
 
 ### SDK Dev Guide

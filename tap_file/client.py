@@ -1,14 +1,15 @@
 """Custom client handling, including FileStream base class."""
 
 from __future__ import annotations
+from os import PathLike
 
 import re
 from functools import cached_property
-from pathlib import Path
-from typing import TYPE_CHECKING, Any, Generator, Iterable
+import time
+from typing import Any, Generator, Iterable
 
-if TYPE_CHECKING:
-    import fsspec
+import singer_sdk._singerlib as singer
+from singer_sdk.tap_base import Tap
 
 from singer_sdk.streams import Stream
 
@@ -18,17 +19,36 @@ from tap_file.files import FilesystemManager
 class FileStream(Stream):
     """Stream class for File streams."""
 
-    @cached_property
-    def filesystem(self) -> fsspec.AbstractFileSystem:
-        """A fsspec filesytem.
+    def __init__(
+        self,
+        tap: Tap,
+        schema: str | PathLike | dict[str, Any] | singer.Schema | None = None,
+        name: str | None = None,
+    ) -> None:
+        self.starting_replication_key_value: str | None = None
+        if tap.state:
+            self.starting_replication_key_value = tap.state["bookmarks"][
+                tap.config["stream_name"]
+            ]["replication_key_value"]
+        else:
+            self.starting_replication_key_value = tap.config.get("start_date", None)
+        super().__init__(tap, schema, name)
+        if not (
+            self.starting_replication_key_value == None
+            or self.config["additional_info"]
+        ):
+            msg = f"Incremental replication requires additional_info to be True."
+            raise RuntimeError(msg)
+        self.replication_key = "_sdc_last_modified"
 
-        Raises:
-            ValueError: If the supplied protocol is not supported.
+    @cached_property
+    def fs_manager(self) -> FilesystemManager:
+        """A filesystem manager as a wrapper for all aspects of the filesystem.
 
         Returns:
-            A fileystem object of the appropriate type for the user-supplied protocol.
+            A FilesystemManager object with appropriate protocol and configuration.
         """
-        return FilesystemManager(self.config, self.logger).get_filesystem()
+        return FilesystemManager(self.config, self.logger)
 
     @cached_property
     def schema(self) -> dict:
@@ -41,11 +61,16 @@ class FileStream(Stream):
         properties = self.get_properties()
         additional_info = self.config["additional_info"]
         if additional_info:
-            properties.update({"_sdc_file_name": {"type": ["string"]}})
-            properties.update({"_sdc_line_number": {"type": ["integer"]}})
+            properties.update({"_sdc_file_name": {"type": "string"}})
+            properties.update({"_sdc_line_number": {"type": "integer"}})
+            properties.update(
+                {"_sdc_last_modified": {"type": "string", "format": "date-time"}}
+            )
         return {"properties": properties}
 
-    def add_additional_info(self, row: dict, file_name: str, line_number: int) -> dict:
+    def add_additional_info(
+        self, row: dict, file_name: str, line_number: int, last_modified: str
+    ) -> dict:
         """Adds _sdc-prefixed additional columns to a row, dependent on config.
 
         Args:
@@ -60,37 +85,8 @@ class FileStream(Stream):
         if additional_info:
             row.update({"_sdc_file_name": file_name})
             row.update({"_sdc_line_number": line_number})
+            row.update({"_sdc_last_modified": last_modified})
         return row
-
-    def get_files(self) -> Generator[str, None, None]:
-        """Gets file names to be synced.
-
-        Yields:
-            The name of a file to be synced, matching a regex pattern, if one has been
-                configured.
-        """
-        empty = True
-
-        for file in self.filesystem.ls(self.config["filepath"], detail=True):
-            # RegEx is currently checked against basename rather than full path.
-            # Fullpath matching could be added if recursive subdirectory syncing is
-            # implemented.
-            if file["type"] == "directory" or file["size"] == 0:
-                continue
-            if "file_regex" in self.config and not re.match(
-                self.config["file_regex"],
-                Path(file["name"]).name,
-            ):
-                continue
-            empty = False
-            yield file["name"]
-
-        if empty:
-            msg = (
-                "No files found. Choose a different `filepath` or try a more lenient "
-                "`file_regex`."
-            )
-            raise RuntimeError(msg)
 
     def get_rows(self) -> Generator[dict[str | Any, str | Any], None, None]:
         """Gets rows of all files that should be synced.

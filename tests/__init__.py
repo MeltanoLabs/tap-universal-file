@@ -1,1 +1,1 @@
-"""Test suite for tap-file."""
+"""Test suite for tap-universal-file."""

@@ -43,7 +43,6 @@ class FilesystemManager:
         Returns:
             An fsspec filesystem.
         """
-        self._check_config()
         caching_strategy = self.config["caching_strategy"]
 
         if self.protocol == "file":
@@ -67,13 +66,21 @@ class FilesystemManager:
                 protocol=self.protocol,
                 **self._get_args(),
             )
-        return None
+        msg = f"The caching strategy '{caching_strategy} is invalid."
+        raise ValueError(msg)
 
     def get_files(
         self,
         starting_replication_key_value: str | None = None,
     ) -> Generator[dict, None, None]:
         """Gets file names to be synced.
+
+        Args:
+            starting_replication_key_value: _description_. Defaults to None.
+
+        Raises:
+            RuntimeError: If no files match the configured regex pattern or replication
+            key value.
 
         Yields:
             The name of a file to be synced, matching a regex pattern, if one has been
@@ -86,9 +93,9 @@ class FilesystemManager:
 
         for file in self.filesystem.ls(self.config["filepath"], detail=True):
             if (
-                file["type"] == "directory"
-                or file["size"] == 0
-                or (
+                file["type"] == "directory"  # Ignore nested folders.
+                or file["size"] == 0  # Ignore empty files.
+                or (  # Ignore files not matching the congigured file_regex
                     "file_regex" in self.config
                     and not re.match(
                         self.config["file_regex"],
@@ -98,29 +105,26 @@ class FilesystemManager:
             ):
                 continue
             none_found = False
-            file_dict = {}
-            file_dict.update(
+            file_dict_list.append(
                 {"name": file["name"], "last_modified": self._get_last_modified(file)},
             )
-            file_dict_list.append(file_dict)
 
-        file_dict_list = sorted(
-            file_dict_list,
-            key=lambda k: k["last_modified"],
-            reverse=True,
-        )
+        # Sort the files so that is_sorted can be True. This allows the tap to pick up
+        # where it left off if interrupted.
+        file_dict_list = sorted(file_dict_list, key=lambda k: k["last_modified"])
 
+        # Only yield files when no replication key is present or when the file is newer
+        # than the replication key value, as a datetime.
         for file_dict in file_dict_list:
             if starting_replication_key_value is None or file_dict[
                 "last_modified"
             ] >= datetime.datetime.strptime(
                 starting_replication_key_value,
-                r"%Y-%m-%dT%H:%M:%S%z",
+                r"%Y-%m-%dT%H:%M:%S%z",  # ISO-8601
             ):
                 none_synced = False
                 yield file_dict
                 continue
-            break
 
         if none_found:
             msg = (
@@ -136,6 +140,18 @@ class FilesystemManager:
             raise RuntimeError(msg)
 
     def _get_last_modified(self, file: dict) -> datetime.datetime | None:
+        """Finds the last modified date from a file dictionary.
+
+        The implementation for the last modified date of a file varies by fsspec
+        protocol. This method takes protocol into account and processes the last
+        modified date of a file accordingly so that a datetime object is returned.
+
+        Args:
+            file: The dictionary containing information about the file.
+
+        Returns:
+            The file's last modified date.
+        """
         if self.protocol == "file":
             return datetime.datetime.fromtimestamp(
                 int(file["mtime"]),
@@ -143,9 +159,23 @@ class FilesystemManager:
             )
         if self.protocol == "s3":
             return file["LastModified"]
-        return None
+        msg = f"The protocol '{self.protocol}' is invalid."
+        raise ValueError(msg)
 
     def _get_args(self) -> dict[str, Any]:
+        """Gets the fsspec arguments for a certain set of configuration options.
+
+        Some fsspec implementations require additional configuration. The behavior
+        here is abstracted to a dedicated method for two reasons:
+          - When further protocols are added, the logic to determine their arguments
+                would become unwieldy if left in the main method.
+          - Creating a consistent dictionary of arguments allows the dictionary to be
+                used both when provided directly as an fsspec argument to a cached
+                implementation and when unpacked (**) for a direct implementation.
+
+        Returns:
+            A dictionary containing fsspec arguements.
+        """
         if self.protocol == "s3":
             if self.config["s3_anonymous_connection"]:
                 return {"anon": True}
@@ -159,15 +189,5 @@ class FilesystemManager:
                     "secret": self.config["AWS_SECRET_ACCESS_KEY"],
                 }
             return {"anon": False}
-        return None
-
-    def _check_config(self) -> None:
-        caching_strategy = self.config["caching_strategy"]
-
-        if self.protocol not in {"file", "s3"}:
-            msg = f"Protocol '{self.protocol}' is not valid."
-            raise ValueError(msg)
-
-        if caching_strategy not in {"none", "once", "persistent"}:
-            msg = f"Caching strategy '{caching_strategy}' is not valid."
-            raise ValueError(msg)
+        msg = f"The protocol '{self.protocol}' is invalid."
+        raise ValueError(msg)

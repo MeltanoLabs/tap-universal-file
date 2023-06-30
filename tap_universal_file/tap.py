@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
     import click
 
-from tap_unniversal_file import streams
+from tap_universal_file import streams
 
 
 class TapUniversalFile(Tap):
@@ -53,7 +53,7 @@ class TapUniversalFile(Tap):
             required=True,
             allowed_values=(allowed_values := ["file", "s3"]),
             description=(
-                "The protocol to use to retrieve data. " f"{one_of(allowed_values)}."
+                f"The protocol to use to retrieve data. {one_of(allowed_values)}."
             ),
         ),
         th.Property(
@@ -69,7 +69,7 @@ class TapUniversalFile(Tap):
             "file_regex",
             th.RegexType,
             description=(
-                "A regex pattern to only include certain files. Example: " "`.*\\.csv`."
+                "A regex pattern to only include certain files. Example: `.*\\.csv`."
             ),
         ),
         th.Property(

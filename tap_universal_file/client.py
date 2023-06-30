@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any, Generator, Iterable
 
 from singer_sdk.streams import Stream
 
-from tap_unniversal_file.files import FilesystemManager
+from tap_universal_file.files import FilesystemManager
 
 if TYPE_CHECKING:
     from os import PathLike
@@ -46,6 +46,11 @@ class FileStream(Stream):
             msg = "Incremental replication requires additional_info to be True."
             raise RuntimeError(msg)
         self.replication_key = "_sdc_last_modified"
+
+    @property
+    def is_sorted(self) -> bool:
+        """The stream returns records in order."""
+        return True
 
     @cached_property
     def fs_manager(self) -> FilesystemManager:

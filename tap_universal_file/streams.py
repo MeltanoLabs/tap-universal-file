@@ -12,7 +12,7 @@ import avro.datafile
 import avro.io
 import avro.schema
 
-from tap_unniversal_file.client import FileStream
+from tap_universal_file.client import FileStream
 
 
 class DelimitedStream(FileStream):
@@ -63,6 +63,14 @@ class DelimitedStream(FileStream):
     def _get_reader_dicts(
         self,
     ) -> Generator[dict[str, str | ModifiedDictReader], None, None]:
+        """Gets a dictionary of reader objects to be processed and read from.
+
+        Raises:
+            RuntimeError: If delimited_delimiter is invalid with current file selection.
+
+        Yields:
+            A dictionary containing a ModifiedDictReader and some meta information.
+        """
         quote_character: str = self.config["delimited_quote_character"]
         override_headers: list | None = self.config.get(
             "delimited_override_headers",
@@ -103,6 +111,14 @@ class DelimitedStream(FileStream):
             }
 
     def _skip_rows(self, file: str) -> list[str]:
+        """Takes a file name and only returns rows which are not configured as skipped.
+
+        Args:
+            file: The name of the file to process.
+
+        Returns:
+            A list containing rows from the file.
+        """
         with self.fs_manager.filesystem.open(
             path=file,
             mode="rt",
@@ -233,6 +249,17 @@ class JSONLStream(FileStream):
         return properties
 
     def _get_property(self, field: str) -> dict[str, dict[str, list[str]]]:
+        """Converts a field into a JSON schema fragment based on coercion strategy.
+
+        Args:
+            field: The name of the field to get a property from.
+
+        Raises:
+            ValueError: If the coercion strategy provided is invalid.
+
+        Returns:
+            A dictionary containing a representation of the field as a property.
+        """
         strategy = self.config["jsonl_type_coercion_strategy"]
         if strategy == "any":
             return {
@@ -256,6 +283,15 @@ class JSONLStream(FileStream):
         raise ValueError(msg)
 
     def _get_fields(self) -> Generator[str, None, None]:
+        """Gets all fields based on sampling method.
+
+        Raises:
+            NotImplementedError: For sampling strategies that aren't yet implemented.
+            ValueError: If the sampling strategy provided is invalid.
+
+        Yields:
+            A str representing a field.
+        """
         strategy = self.config["jsonl_sampling_strategy"]
         if strategy == "first":
             try:
@@ -270,6 +306,18 @@ class JSONLStream(FileStream):
         raise ValueError(msg)
 
     def _pre_process(self, row: dict[str, Any]) -> dict[str, Any]:
+        """Processes a row based on the current coercion strategy.
+
+        Args:
+            row: The row to be pre-processed.
+
+        Raises:
+            ValueError: If the coercion strategy provided is invalid.
+
+        Returns:
+            A dictionary representing a row, converted or enveloped accordingly based on
+            the coercion strategy that was provided.
+        """
         strategy = self.config["jsonl_type_coercion_strategy"]
         if strategy == "any":
             return row
@@ -316,6 +364,14 @@ class AvroStream(FileStream):
         return properties
 
     def _get_fields(self) -> Generator[dict | str, None, None]:
+        """Gets all fields in an avro file from schema and configured coercion strategy.
+
+        Raises:
+            ValueError: If the provided coercion strategy is invalid.
+
+        Yields:
+            A dictionary or string representing a field.
+        """
         strategy = self.config["avro_type_coercion_strategy"]
         if strategy == "convert":
             for reader_dict in self._get_reader_dicts():
@@ -330,6 +386,18 @@ class AvroStream(FileStream):
         raise ValueError(msg)
 
     def _get_property(self, field: dict | str) -> dict[str, dict[str, list[str]]]:
+        """Converts a field into a JSON schema fragment based on coercion strategy.
+
+        Args:
+            field: The name of the field to get a property from.
+
+        Raises:
+            ValueError: If the coercion strategy provided is invalid.
+
+
+        Returns:
+            A dictionary containing a representation of the field as a property.
+        """
         strategy = self.config["avro_type_coercion_strategy"]
         if strategy == "convert":
             return {field["name"]: {"type": [self._type_convert(field["type"])]}}
@@ -339,6 +407,17 @@ class AvroStream(FileStream):
         raise ValueError(msg)
 
     def _type_convert(self, field_type: str) -> str:
+        """Attempt to coerce an Avro schema type to a JSON schema type.
+
+        Args:
+            field_type: The field to be converted.
+
+        Raises:
+            NotImplementedError: If the field type passed in is not implemented.
+
+        Returns:
+            A JSON schema representation of field_type.
+        """
         if type(field_type) != str:
             msg = f"The field type '{field_type}' has not been implemented."
             raise NotImplementedError(msg)
@@ -354,6 +433,18 @@ class AvroStream(FileStream):
         raise NotImplementedError(msg)
 
     def _pre_process(self, row: dict[str, Any]) -> dict[str, Any]:
+        """Processes a row based on the current coercion strategy.
+
+        Args:
+            row: The row to be pre-processed.
+
+        Raises:
+            ValueError: If the coercion strategy provided is invalid.
+
+        Returns:
+            A dictionary representing a row, converted or enveloped accordingly based on
+            the coercion strategy that was provided.
+        """
         strategy = self.config["avro_type_coercion_strategy"]
         if strategy == "convert":
             return row
@@ -365,6 +456,11 @@ class AvroStream(FileStream):
     def _get_reader_dicts(
         self,
     ) -> Generator[dict[str, str | avro.datafile.DataFileReader], None, None]:
+        """Gets a dictionary of reader objects to be processed and read from.
+
+        Yields:
+            A dictionary containing an Avro reader and some meta information.
+        """
         for file in self.fs_manager.get_files(
             self.starting_replication_key_value
             if self.starting_replication_key_value

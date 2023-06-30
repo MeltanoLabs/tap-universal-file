@@ -9,7 +9,7 @@ import pytest
 
 from singer_sdk.testing import get_tap_test_class
 
-from tap_unniversal_file.tap import TapUniversalFile
+from tap_universal_file.tap import TapUniversalFile
 
 # Helper functions
 

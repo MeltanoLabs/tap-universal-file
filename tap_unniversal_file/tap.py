@@ -15,7 +15,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     import click
 
-from tap_file import streams
+from tap_unniversal_file import streams
 
 
 class TapUniversalFile(Tap):

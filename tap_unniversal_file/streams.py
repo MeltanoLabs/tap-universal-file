@@ -12,7 +12,7 @@ import avro.datafile
 import avro.io
 import avro.schema
 
-from tap_file.client import FileStream
+from tap_unniversal_file.client import FileStream
 
 
 class DelimitedStream(FileStream):

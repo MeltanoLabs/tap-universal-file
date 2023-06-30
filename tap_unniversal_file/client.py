@@ -13,7 +13,7 @@ from singer_sdk.tap_base import Tap
 
 from singer_sdk.streams import Stream
 
-from tap_file.files import FilesystemManager
+from tap_unniversal_file.files import FilesystemManager
 
 
 class FileStream(Stream):

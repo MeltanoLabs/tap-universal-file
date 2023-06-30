@@ -72,7 +72,7 @@ class DelimitedStream(FileStream):
         for file in self.fs_manager.get_files(
             self.starting_replication_key_value
             if self.starting_replication_key_value
-            else None
+            else None,
         ):
             file_name = file["name"]
             if self.config["delimited_delimiter"] == "detect":
@@ -189,7 +189,7 @@ class JSONLStream(FileStream):
         for file in self.fs_manager.get_files(
             self.starting_replication_key_value
             if self.starting_replication_key_value
-            else None
+            else None,
         ):
             file_name = file["name"]
             with self.fs_manager.filesystem.open(
@@ -368,7 +368,7 @@ class AvroStream(FileStream):
         for file in self.fs_manager.get_files(
             self.starting_replication_key_value
             if self.starting_replication_key_value
-            else None
+            else None,
         ):
             file_name = file["name"]
             with self.fs_manager.filesystem.open(

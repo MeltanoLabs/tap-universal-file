@@ -1,19 +1,20 @@
 """Custom client handling, including FileStream base class."""
 
 from __future__ import annotations
-from os import PathLike
 
 import re
 from functools import cached_property
-import time
-from typing import Any, Generator, Iterable
-
-import singer_sdk._singerlib as singer
-from singer_sdk.tap_base import Tap
+from typing import TYPE_CHECKING, Any, Generator, Iterable
 
 from singer_sdk.streams import Stream
 
 from tap_unniversal_file.files import FilesystemManager
+
+if TYPE_CHECKING:
+    from os import PathLike
+
+    import singer_sdk._singerlib as singer
+    from singer_sdk.tap_base import Tap
 
 
 class FileStream(Stream):
@@ -25,6 +26,11 @@ class FileStream(Stream):
         schema: str | PathLike | dict[str, Any] | singer.Schema | None = None,
         name: str | None = None,
     ) -> None:
+        """Duplicates superclass functionality but runs replication config before init.
+
+        Raises:
+            RuntimeError: If replication config is invalid.
+        """
         self.starting_replication_key_value: str | None = None
         if tap.state:
             self.starting_replication_key_value = tap.state["bookmarks"][
@@ -34,10 +40,10 @@ class FileStream(Stream):
             self.starting_replication_key_value = tap.config.get("start_date", None)
         super().__init__(tap, schema, name)
         if not (
-            self.starting_replication_key_value == None
+            self.starting_replication_key_value is None
             or self.config["additional_info"]
         ):
-            msg = f"Incremental replication requires additional_info to be True."
+            msg = "Incremental replication requires additional_info to be True."
             raise RuntimeError(msg)
         self.replication_key = "_sdc_last_modified"
 
@@ -64,12 +70,16 @@ class FileStream(Stream):
             properties.update({"_sdc_file_name": {"type": "string"}})
             properties.update({"_sdc_line_number": {"type": "integer"}})
             properties.update(
-                {"_sdc_last_modified": {"type": "string", "format": "date-time"}}
+                {"_sdc_last_modified": {"type": "string", "format": "date-time"}},
             )
         return {"properties": properties}
 
     def add_additional_info(
-        self, row: dict, file_name: str, line_number: int, last_modified: str
+        self,
+        row: dict,
+        file_name: str,
+        line_number: int,
+        last_modified: str,
     ) -> dict:
         """Adds _sdc-prefixed additional columns to a row, dependent on config.
 
@@ -77,6 +87,7 @@ class FileStream(Stream):
             row: The row to add info to.
             file_name: The name of the file that the row came from.
             line_number: The line number of the row within its file.
+            last_modified: The last_modified date of the row's file.
 
         Returns:
             A dictionary representing a row containing additional information columns.

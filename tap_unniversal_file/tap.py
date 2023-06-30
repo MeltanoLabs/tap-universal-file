@@ -3,16 +3,17 @@
 from __future__ import annotations
 
 import os
-from pathlib import PurePath
+from typing import TYPE_CHECKING
 
 from singer_sdk import Stream, Tap
 from singer_sdk import typing as th  # JSON schema typing helpers
 from singer_sdk._singerlib import Catalog
-from singer_sdk.mapper import PluginMapper
 from singer_sdk.helpers._util import read_json_file
-from typing import TYPE_CHECKING
+from singer_sdk.mapper import PluginMapper
 
 if TYPE_CHECKING:
+    from pathlib import PurePath
+
     import click
 
 from tap_unniversal_file import streams
@@ -23,263 +24,268 @@ class TapUniversalFile(Tap):
 
     name = "tap-universal-file"
 
-    def one_of(self, allowed_values: list) -> str:
+    @staticmethod
+    def one_of(allowed_values: list) -> str:
+        """Creates a string listing allowed values.
+
+        Args:
+            allowed_values: The allowed values.
+
+        Returns:
+            A string listing each allowed value.
+        """
         to_return = "Must be one of "
         for i in range(len(allowed_values) - 1):
             to_return += allowed_values[i] + ", "
         to_return += "or " + allowed_values[-1]
         return to_return
 
-    @property
-    def config_jsonschema(self):
-        return th.PropertiesList(
-            th.Property(
-                "stream_name",
-                th.StringType,
-                default="file",
-                description="The name of the stream that is output by the tap.",
+    config_jsonschema = th.PropertiesList(
+        th.Property(
+            "stream_name",
+            th.StringType,
+            default="file",
+            description="The name of the stream that is output by the tap.",
+        ),
+        th.Property(
+            "protocol",
+            th.StringType,
+            required=True,
+            allowed_values=(allowed_values := ["file", "s3"]),
+            description=(
+                "The protocol to use to retrieve data. " f"{one_of(allowed_values)}."
             ),
-            th.Property(
-                "protocol",
-                th.StringType,
-                required=True,
-                allowed_values=(allowed_values := ["file", "s3"]),
-                description=(
-                    "The protocol to use to retrieve data. "
-                    f"{self.one_of(allowed_values)}."
-                ),
+        ),
+        th.Property(
+            "filepath",
+            th.StringType,
+            required=True,
+            description=(
+                "The path to obtain files from. Example: `/foo/bar`. Or, for "
+                "`protocol==s3`, use `s3-bucket-name` instead."
             ),
-            th.Property(
-                "filepath",
-                th.StringType,
-                required=True,
-                description=(
-                    "The path to obtain files from. Example: `/foo/bar`. Or, for "
-                    "`protocol==s3`, use `s3-bucket-name` instead."
-                ),
+        ),
+        th.Property(
+            "file_regex",
+            th.RegexType,
+            description=(
+                "A regex pattern to only include certain files. Example: " "`.*\\.csv`."
             ),
-            th.Property(
-                "file_regex",
-                th.RegexType,
-                description=(
-                    "A regex pattern to only include certain files. Example: "
-                    "`.*\\.csv`."
-                ),
+        ),
+        th.Property(
+            "file_type",
+            th.RegexType,
+            default="delimited",
+            description=(
+                "Can be any of `delimited`, `jsonl`, or `avro`. Indicates the type "
+                "of file to sync, where `delimited` is for CSV/TSV files and "
+                "similar. Note that *all* files will be read as that type, "
+                "regardless of file extension. To only read from files with a "
+                "matching file extension, appropriately configure `file_regex`."
             ),
-            th.Property(
-                "file_type",
-                th.RegexType,
-                default="delimited",
-                description=(
-                    "Can be any of `delimited`, `jsonl`, or `avro`. Indicates the type "
-                    "of file to sync, where `delimited` is for CSV/TSV files and "
-                    "similar. Note that *all* files will be read as that type, "
-                    "regardless of file extension. To only read from files with a "
-                    "matching file extension, appropriately configure `file_regex`."
-                ),
+        ),
+        th.Property(
+            "compression",
+            th.StringType,
+            allowed_values=(
+                allowed_values := [
+                    "none",
+                    "zip",
+                    "bz2",
+                    "gzip",
+                    "lzma",
+                    "xz",
+                    "detect",
+                ]
             ),
-            th.Property(
-                "compression",
-                th.StringType,
-                allowed_values=(
-                    allowed_values := [
-                        "none",
-                        "zip",
-                        "bz2",
-                        "gzip",
-                        "lzma",
-                        "xz",
-                        "detect",
-                    ]
-                ),
-                default="detect",
-                description=(
-                    "The encoding used to decompress data. "
-                    f"{self.one_of(allowed_values)}. If set to `none` or any encoding, "
-                    "that setting will be applied to *all* files, regardless of file "
-                    "extension. If set to `detect`, encodings will be applied based on "
-                    "file extension."
-                ),
+            default="detect",
+            description=(
+                "The encoding used to decompress data. "
+                f"{one_of(allowed_values)}. If set to `none` or any encoding, "
+                "that setting will be applied to *all* files, regardless of file "
+                "extension. If set to `detect`, encodings will be applied based on "
+                "file extension."
             ),
-            th.Property(
-                "additional_info",
-                th.BooleanType,
-                default=True,
-                description=(
-                    "If `True`, each row in tap's output will have three additional "
-                    "columns: `_sdc_file_name`, `_sdc_line_number`, and "
-                    "`_sdc_last_modified`. If `False`, these columns will not be "
-                    "present. Incremental replication requires `additional_info==True`."
-                ),
+        ),
+        th.Property(
+            "additional_info",
+            th.BooleanType,
+            default=True,
+            description=(
+                "If `True`, each row in tap's output will have three additional "
+                "columns: `_sdc_file_name`, `_sdc_line_number`, and "
+                "`_sdc_last_modified`. If `False`, these columns will not be "
+                "present. Incremental replication requires `additional_info==True`."
             ),
-            th.Property(
-                "start_date",
-                th.DateTimeType,
-                description=(
-                    "Used in place of state. Files that were last modified before the "
-                    "`start_date` wwill not be synced."
-                ),
+        ),
+        th.Property(
+            "start_date",
+            th.DateTimeType,
+            description=(
+                "Used in place of state. Files that were last modified before the "
+                "`start_date` wwill not be synced."
             ),
-            th.Property(
-                "delimited_error_handling",
-                th.StringType,
-                allowed_values=(allowed_values := ["fail", "ignore"]),
-                default="fail",
-                description=(
-                    "The method with which to handle improperly formatted records in "
-                    f"delimited files. {self.one_of(allowed_values)}. `fail` will "
-                    "cause the tap to fail if an improperly formatted record is "
-                    "detected. `ignore` will ignore the fact that it is improperly "
-                    "formatted and process it anyway."
-                ),
+        ),
+        th.Property(
+            "delimited_error_handling",
+            th.StringType,
+            allowed_values=(allowed_values := ["fail", "ignore"]),
+            default="fail",
+            description=(
+                "The method with which to handle improperly formatted records in "
+                f"delimited files. {one_of(allowed_values)}. `fail` will "
+                "cause the tap to fail if an improperly formatted record is "
+                "detected. `ignore` will ignore the fact that it is improperly "
+                "formatted and process it anyway."
             ),
-            th.Property(
-                "delimited_delimiter",
-                th.StringType,
-                default="detect",
-                description=(
-                    "The character used to separate records in a delimited file. Can "
-                    "ne any character or the special value `detect`. If a character is "
-                    "provided, all delimited files will use that value. `detect` will "
-                    "use `,` for `.csv` files, `\\t` for `.tsv` files, and fail if "
-                    "other file types are present."
-                ),
+        ),
+        th.Property(
+            "delimited_delimiter",
+            th.StringType,
+            default="detect",
+            description=(
+                "The character used to separate records in a delimited file. Can "
+                "ne any character or the special value `detect`. If a character is "
+                "provided, all delimited files will use that value. `detect` will "
+                "use `,` for `.csv` files, `\\t` for `.tsv` files, and fail if "
+                "other file types are present."
             ),
-            th.Property(
-                "delimited_quote_character",
-                th.StringType,
-                default='"',
-                description=(
-                    "The character used to indicate when a record in a delimited file "
-                    "contains a delimiter character."
-                ),
+        ),
+        th.Property(
+            "delimited_quote_character",
+            th.StringType,
+            default='"',
+            description=(
+                "The character used to indicate when a record in a delimited file "
+                "contains a delimiter character."
             ),
-            th.Property(
-                "delimited_header_skip",
-                th.IntegerType,
-                default=0,
-                description=(
-                    "The number of initial rows to skip at the beginning of each "
-                    "delimited file."
-                ),
+        ),
+        th.Property(
+            "delimited_header_skip",
+            th.IntegerType,
+            default=0,
+            description=(
+                "The number of initial rows to skip at the beginning of each "
+                "delimited file."
             ),
-            th.Property(
-                "delimited_footer_skip",
-                th.IntegerType,
-                default=0,
-                description=(
-                    "The number of initial rows to skip at the end of each delimited "
-                    "file."
-                ),
+        ),
+        th.Property(
+            "delimited_footer_skip",
+            th.IntegerType,
+            default=0,
+            description=(
+                "The number of initial rows to skip at the end of each delimited "
+                "file."
             ),
-            th.Property(
-                "delimited_override_headers",
-                th.ArrayType(th.StringType),
-                description=(
-                    "An optional array of headers used to override the default column "
-                    "name in delimited files, allowing for headerless files to be "
-                    "correctly read."
-                ),
+        ),
+        th.Property(
+            "delimited_override_headers",
+            th.ArrayType(th.StringType),
+            description=(
+                "An optional array of headers used to override the default column "
+                "name in delimited files, allowing for headerless files to be "
+                "correctly read."
             ),
-            th.Property(
-                "jsonl_error_handling",
-                th.StringType,
-                allowed_values=(allowed_values := ["fail", "ignore"]),
-                default="fail",
-                description=(
-                    "The method with which to handle improperly formatted records in "
-                    f"jsonl files. {self.one_of(allowed_values)}. `fail` will cause "
-                    "the tap to fail if an improperly formatted record is detected. "
-                    "`ignore` will ignore the fact that it is improperly formatted and "
-                    "process it anyway."
-                ),
+        ),
+        th.Property(
+            "jsonl_error_handling",
+            th.StringType,
+            allowed_values=(allowed_values := ["fail", "ignore"]),
+            default="fail",
+            description=(
+                "The method with which to handle improperly formatted records in "
+                f"jsonl files. {one_of(allowed_values)}. `fail` will cause "
+                "the tap to fail if an improperly formatted record is detected. "
+                "`ignore` will ignore the fact that it is improperly formatted and "
+                "process it anyway."
             ),
-            th.Property(
-                "jsonl_sampling_strategy",
-                th.StringType,
-                allowed_values=(allowed_values := ["first", "all"]),
-                default="first",
-                description=(
-                    "The strategy determining how to read the keys in a JSONL file. "
-                    f"{self.one_of(allowed_values)}. Currently, only `first` is "
-                    "supported, which will assume that the first record in a file is "
-                    "representative of all keys."
-                ),
+        ),
+        th.Property(
+            "jsonl_sampling_strategy",
+            th.StringType,
+            allowed_values=(allowed_values := ["first", "all"]),
+            default="first",
+            description=(
+                "The strategy determining how to read the keys in a JSONL file. "
+                f"{one_of(allowed_values)}. Currently, only `first` is "
+                "supported, which will assume that the first record in a file is "
+                "representative of all keys."
             ),
-            th.Property(
-                "jsonl_type_coercion_strategy",
-                th.StringType,
-                allowed_values=(allowed_values := ["any", "string", "envelope"]),
-                default="any",
-                description=(
-                    "The strategy determining how to construct the schema for JSONL "
-                    "files when the types represented are ambiguous.  "
-                    f"{self.one_of(allowed_values)}. `any` will provide a generic "
-                    "schema for all keys, allowing them to be any valid JSON type. "
-                    "`string` will require all keys to be strings and will convert "
-                    "other values accordingly. `envelope` will deliver each JSONL "
-                    "row as a JSON object with no internal schema."
-                ),
+        ),
+        th.Property(
+            "jsonl_type_coercion_strategy",
+            th.StringType,
+            allowed_values=(allowed_values := ["any", "string", "envelope"]),
+            default="any",
+            description=(
+                "The strategy determining how to construct the schema for JSONL "
+                "files when the types represented are ambiguous.  "
+                f"{one_of(allowed_values)}. `any` will provide a generic "
+                "schema for all keys, allowing them to be any valid JSON type. "
+                "`string` will require all keys to be strings and will convert "
+                "other values accordingly. `envelope` will deliver each JSONL "
+                "row as a JSON object with no internal schema."
             ),
-            th.Property(
-                "avro_type_coercion_strategy",
-                th.StringType,
-                allowed_values=(allowed_values := ["convert", "envelope"]),
-                default="convert",
-                description=(
-                    "The strategy determining how to convert Avro Schema to JSON Schema "
-                    f"when the conversion is ambiguous. {self.one_of(allowed_values)}. "
-                    "`convert` will attempt to convert from Avro Schema to JSON Schema and "
-                    "will fail if a type can't be easily coerced. `envelope` will wrap "
-                    "each record in an object without providing an internal schema for the "
-                    "record."
-                ),
+        ),
+        th.Property(
+            "avro_type_coercion_strategy",
+            th.StringType,
+            allowed_values=(allowed_values := ["convert", "envelope"]),
+            default="convert",
+            description=(
+                "The strategy deciding how to convert Avro Schema to JSON Schema "
+                f"when the conversion is ambiguous. {one_of(allowed_values)}. "
+                "`convert` will attempt to convert from Avro Schema to JSON Schema "
+                "and will fail if a type can't be easily coerced. `envelope` will "
+                "wrap each record in an object without providing an internal"
+                "schema for the record."
             ),
-            th.Property(
-                "s3_anonymous_connection",
-                th.BooleanType,
-                default=False,
-                description=(
-                    "Whether to use an anonymous S3 connection, without any "
-                    "credentials. Ignored if `protocol!=s3`."
-                ),
+        ),
+        th.Property(
+            "s3_anonymous_connection",
+            th.BooleanType,
+            default=False,
+            description=(
+                "Whether to use an anonymous S3 connection, without any "
+                "credentials. Ignored if `protocol!=s3`."
             ),
-            th.Property(
-                "AWS_ACCESS_KEY_ID",
-                th.StringType,
-                default=os.getenv("AWS_ACCESS_KEY_ID"),
-                description=(
-                    "The access key to use when authenticating to S3. Ignored if "
-                    "`protocol!=s3` or `s3_anonymous_connection=True`. Defaults to the "
-                    "value of the environment variable of the same name."
-                ),
+        ),
+        th.Property(
+            "AWS_ACCESS_KEY_ID",
+            th.StringType,
+            default=os.getenv("AWS_ACCESS_KEY_ID"),
+            description=(
+                "The access key to use when authenticating to S3. Ignored if "
+                "`protocol!=s3` or `s3_anonymous_connection=True`. Defaults to the "
+                "value of the environment variable of the same name."
             ),
-            th.Property(
-                "AWS_SECRET_ACCESS_KEY",
-                th.StringType,
-                default=os.getenv("AWS_SECRET_ACCESS_KEY"),
-                description=(
-                    "The access key secret to use when authenticating to S3. Ignored "
-                    "if `protocol!=s3` or `s3_anonymous_connection=True`. Defaults to "
-                    "the value of the environment variable of the same name."
-                ),
+        ),
+        th.Property(
+            "AWS_SECRET_ACCESS_KEY",
+            th.StringType,
+            default=os.getenv("AWS_SECRET_ACCESS_KEY"),
+            description=(
+                "The access key secret to use when authenticating to S3. Ignored "
+                "if `protocol!=s3` or `s3_anonymous_connection=True`. Defaults to "
+                "the value of the environment variable of the same name."
             ),
-            th.Property(
-                "caching_strategy",
-                th.StringType,
-                default="once",
-                allowed_values=["none", "once", "persistent"],
-                description=(
-                    "*DEVELOPERS ONLY* The caching method to use when "
-                    "`protocol!=file`. One of `none`, `once`, or `persistent`. `none` "
-                    "does not use caching at all. `once` (the default) will cache all "
-                    "files for the duration of the tap's invocation, then discard them "
-                    "upon completion. `peristent` will allow caches to persist between "
-                    "invocations of the tap, storing them in your OS's temp directory. "
-                    "It is recommended that you do not modify this setting."
-                ),
+        ),
+        th.Property(
+            "caching_strategy",
+            th.StringType,
+            default="once",
+            allowed_values=["none", "once", "persistent"],
+            description=(
+                "*DEVELOPERS ONLY* The caching method to use when "
+                "`protocol!=file`. One of `none`, `once`, or `persistent`. `none` "
+                "does not use caching at all. `once` (the default) will cache all "
+                "files for the duration of the tap's invocation, then discard them "
+                "upon completion. `peristent` will allow caches to persist between "
+                "invocations of the tap, storing them in your OS's temp directory. "
+                "It is recommended that you do not modify this setting."
             ),
-        ).to_dict()
+        ),
+    ).to_dict()
 
     def discover_streams(self) -> list[streams.FileStream]:
         """Return a list of discovered streams.
@@ -327,7 +333,7 @@ class TapUniversalFile(Tap):
         tap.run_discovery()
         ctx.exit()
 
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         *,
         config: dict | PurePath | str | list[PurePath | str] | None = None,
@@ -337,7 +343,6 @@ class TapUniversalFile(Tap):
         validate_config: bool = True,
     ) -> None:
         """Initialize the tap, but create state before running discovery."""
-
         # Call grandparent (PluginBase) __init__ method.
         super(Tap, self).__init__(
             config=config,

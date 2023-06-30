@@ -1,15 +1,13 @@
 """Handling for the creation and usage of filesystems."""
 
 from __future__ import annotations
-from pathlib import Path
-import re
 
-import tempfile
-from typing import TYPE_CHECKING, Any, Generator
-from functools import cached_property
 import datetime
-
-import pytz
+import re
+import tempfile
+from functools import cached_property
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, Generator
 
 if TYPE_CHECKING:
     import logging
@@ -31,7 +29,8 @@ class FilesystemManager:
         self.logger: logging.Logger = logger
 
     @cached_property
-    def protocol(self):
+    def protocol(self) -> str:
+        """Protocol from config."""
         return self.config["protocol"]
 
     @cached_property
@@ -45,34 +44,34 @@ class FilesystemManager:
             An fsspec filesystem.
         """
         self._check_config()
-        protocol = self.config["protocol"]
         caching_strategy = self.config["caching_strategy"]
 
-        if protocol == "file":
+        if self.protocol == "file":
             return fsspec.filesystem("file")
 
         if caching_strategy == "once":
             return fsspec.filesystem(
                 "filecache",
-                target_protocol=self.config["protocol"],
+                target_protocol=self.protocol,
                 target_options=self._get_args(),
             )
         if caching_strategy == "persistent":
             return fsspec.filesystem(
                 "filecache",
-                target_protocol=self.config["protocol"],
+                target_protocol=self.protocol,
                 target_options=self._get_args(),
                 cache_storage=tempfile.gettempdir(),
             )
         if caching_strategy == "none":
             return fsspec.filesystem(
-                protocol=self.config["protocol"],
+                protocol=self.protocol,
                 **self._get_args(),
             )
         return None
 
     def get_files(
-        self, starting_replication_key_value: str | None = None
+        self,
+        starting_replication_key_value: str | None = None,
     ) -> Generator[dict, None, None]:
         """Gets file names to be synced.
 
@@ -80,8 +79,8 @@ class FilesystemManager:
             The name of a file to be synced, matching a regex pattern, if one has been
                 configured.
         """
-        noneFound = True
-        noneSynced = True
+        none_found = True
+        none_synced = True
 
         file_dict_list = []
 
@@ -98,49 +97,53 @@ class FilesystemManager:
                 )
             ):
                 continue
-            noneFound = False
+            none_found = False
             file_dict = {}
             file_dict.update(
-                {"name": file["name"], "last_modified": self._get_last_modified(file)}
+                {"name": file["name"], "last_modified": self._get_last_modified(file)},
             )
             file_dict_list.append(file_dict)
 
         file_dict_list = sorted(
-            file_dict_list, key=lambda k: k["last_modified"], reverse=True
+            file_dict_list,
+            key=lambda k: k["last_modified"],
+            reverse=True,
         )
 
         for file_dict in file_dict_list:
-            if starting_replication_key_value == None or file_dict[
+            if starting_replication_key_value is None or file_dict[
                 "last_modified"
             ] >= datetime.datetime.strptime(
-                starting_replication_key_value, r"%Y-%m-%dT%H:%M:%S%z"
+                starting_replication_key_value,
+                r"%Y-%m-%dT%H:%M:%S%z",
             ):
-                noneSynced = False
+                none_synced = False
                 yield file_dict
                 continue
             break
 
-        if noneFound:
+        if none_found:
             msg = (
                 "No files found. Choose a different `filepath` or try a more lenient "
                 "`file_regex`."
             )
             raise RuntimeError(msg)
-        if noneSynced:
+        if none_synced:
             msg = (
                 "Current state precludes files being synced as none have been modified "
                 "since state was last updated."
             )
             raise RuntimeError(msg)
 
-    def _get_last_modified(self, file: dict):
+    def _get_last_modified(self, file: dict) -> datetime.datetime | None:
         if self.protocol == "file":
-            timestamp = file["mtime"]
-            seconds = int(timestamp)
-            dt = datetime.datetime.fromtimestamp(seconds, datetime.timezone.utc)
-            return dt
+            return datetime.datetime.fromtimestamp(
+                int(file["mtime"]),
+                datetime.timezone.utc,
+            )
         if self.protocol == "s3":
             return file["LastModified"]
+        return None
 
     def _get_args(self) -> dict[str, Any]:
         if self.protocol == "s3":

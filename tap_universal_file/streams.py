@@ -24,15 +24,14 @@ class DelimitedStream(FileStream):
         Yields:
             A dictionary containing information about a row in a *SV.
         """
-        for reader_dict in self._get_reader_dicts():
-            reader = reader_dict["reader"]
+        for reader, file_name, last_modified in self._get_readers():
             line_number = 1
             for row in reader:
                 yield self.add_additional_info(
                     row=row,
-                    file_name=reader_dict["file_name"],
+                    file_name=file_name,
                     line_number=line_number,
-                    last_modified=reader_dict["last_modified"],
+                    last_modified=last_modified,
                 )
                 line_number += 1
 
@@ -47,8 +46,7 @@ class DelimitedStream(FileStream):
         """
         properties = {}
 
-        for reader_dict in self._get_reader_dicts():
-            reader = reader_dict["reader"]
+        for reader, _, _ in self._get_readers():
             if reader.fieldnames is None:
                 msg = (
                     "Column names could not be read because they don't exist. Try "
@@ -60,16 +58,16 @@ class DelimitedStream(FileStream):
 
         return properties
 
-    def _get_reader_dicts(
+    def _get_readers(
         self,
-    ) -> Generator[dict[str, str | ModifiedDictReader], None, None]:
-        """Gets a dictionary of reader objects to be processed and read from.
+    ) -> Generator[tuple[ModifiedDictReader, str, str], None, None]:
+        """Gets reader objects and associated meta data.
 
         Raises:
-            RuntimeError: If delimited_delimiter is invalid with current file selection.
+            RuntimeError: If improper configuration is supplied.
 
         Yields:
-            A dictionary containing a ModifiedDictReader and some meta information.
+            A tuple of (ModifiedDictReader, file_name, last_modified).
         """
         quote_character: str = self.config["delimited_quote_character"]
         override_headers: list | None = self.config.get(
@@ -98,17 +96,17 @@ class DelimitedStream(FileStream):
             else:
                 delimiter = self.config["delimited_delimiter"]
 
-            yield {
-                "reader": self.ModifiedDictReader(
+            yield (
+                self.ModifiedDictReader(
                     f=self._skip_rows(file_name),
                     delimiter=delimiter,
                     quotechar=quote_character,
                     fieldnames=override_headers,
                     config=self.config,
                 ),
-                "file_name": file_name,
-                "last_modified": file["last_modified"],
-            }
+                file_name,
+                file["last_modified"],
+            )
 
     def _skip_rows(self, file: str) -> list[str]:
         """Takes a file name and only returns rows which are not configured as skipped.
@@ -340,15 +338,14 @@ class AvroStream(FileStream):
         Yields:
             A dictionary containing information about a row in a Avro file.
         """
-        for reader_dict in self._get_reader_dicts():
-            reader = reader_dict["reader"]
+        for reader, file_name, last_modified in self._get_readers():
             line_number = 1
             for row in reader:
                 yield self.add_additional_info(
                     row=self._pre_process(row),
-                    file_name=reader_dict["file_name"],
+                    file_name=file_name,
                     line_number=line_number,
-                    last_modified=reader_dict["last_modified"],
+                    last_modified=last_modified,
                 )
                 line_number += 1
 
@@ -374,8 +371,7 @@ class AvroStream(FileStream):
         """
         strategy = self.config["avro_type_coercion_strategy"]
         if strategy == "convert":
-            for reader_dict in self._get_reader_dicts():
-                reader = reader_dict["reader"]
+            for reader, _, _ in self._get_readers():
                 for field in json.loads(reader.schema)["fields"]:
                     yield field
             return
@@ -453,13 +449,13 @@ class AvroStream(FileStream):
         msg = f"The coercion strategy '{strategy}' is not valid."
         raise ValueError(msg)
 
-    def _get_reader_dicts(
+    def _get_readers(
         self,
-    ) -> Generator[dict[str, str | avro.datafile.DataFileReader], None, None]:
-        """Gets a dictionary of reader objects to be processed and read from.
+    ) -> Generator[tuple[avro.datafile.DataFileReader, str, str], None, None]:
+        """Gets reader objects and associated meta data.
 
         Yields:
-            A dictionary containing an Avro reader and some meta information.
+            A tuple of (avro.datafile.DataFileReader, file_name, last_modified).
         """
         for file in self.fs_manager.get_files(
             self.starting_replication_key_value
@@ -472,8 +468,8 @@ class AvroStream(FileStream):
                 mode="rb",
                 compression=self.get_compression(file=file_name),
             ) as f:
-                yield {
-                    "reader": avro.datafile.DataFileReader(f, avro.io.DatumReader()),
-                    "file_name": file_name,
-                    "last_modified": file["last_modified"],
-                }
+                yield (
+                    avro.datafile.DataFileReader(f, avro.io.DatumReader()),
+                    file_name,
+                    file["last_modified"],
+                )

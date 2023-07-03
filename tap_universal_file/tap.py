@@ -19,26 +19,32 @@ if TYPE_CHECKING:
 from tap_universal_file import streams
 
 
+def one_of(allowed_values: list) -> str:
+    """Creates a string listing allowed values.
+
+    Args:
+        allowed_values: The allowed values.
+
+    Returns:
+        A string listing each allowed value.
+    """
+    if len(allowed_values) == 1:
+        return "Must be `" + allowed_values[0] + "`"
+    if len(allowed_values) == 2: # noqa: PLR2004
+        return (
+            "Must be either `" + allowed_values[0] + "` or `" + allowed_values[1] + "`"
+        )
+    to_return = "Must be one of "
+    for i in range(len(allowed_values) - 1):
+        to_return += "`" + allowed_values[i] + "`, "
+    to_return += "or `" + allowed_values[-1] + "`"
+    return to_return
+
+
 class TapUniversalFile(Tap):
     """File tap class."""
 
     name = "tap-universal-file"
-
-    @staticmethod
-    def one_of(allowed_values: list) -> str:
-        """Creates a string listing allowed values.
-
-        Args:
-            allowed_values: The allowed values.
-
-        Returns:
-            A string listing each allowed value.
-        """
-        to_return = "Must be one of "
-        for i in range(len(allowed_values) - 1):
-            to_return += allowed_values[i] + ", "
-        to_return += "or " + allowed_values[-1]
-        return to_return
 
     config_jsonschema = th.PropertiesList(
         th.Property(

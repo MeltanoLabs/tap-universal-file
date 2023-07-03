@@ -30,7 +30,7 @@ def one_of(allowed_values: list) -> str:
     """
     if len(allowed_values) == 1:
         return "Must be `" + allowed_values[0] + "`"
-    if len(allowed_values) == 2: # noqa: PLR2004
+    if len(allowed_values) == 2:  # noqa: PLR2004
         return (
             "Must be either `" + allowed_values[0] + "` or `" + allowed_values[1] + "`"
         )
@@ -350,7 +350,6 @@ class TapUniversalFile(Tap):
     ) -> None:
         """Initialize the tap, but create state before running discovery."""
         # Call grandparent (PluginBase) __init__ method.
-        self.logger.warning(f"{config=}")
         super(Tap, self).__init__(
             config=config,
             parse_env_config=parse_env_config,

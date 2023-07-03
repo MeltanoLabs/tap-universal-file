@@ -83,7 +83,7 @@ class TapUniversalFile(Tap):
             th.RegexType,
             default="delimited",
             description=(
-                "Can be any of `delimited`, `jsonl`, or `avro`. Indicates the type "
+                "Must be one of `delimited`, `jsonl`, or `avro`. Indicates the type "
                 "of file to sync, where `delimited` is for CSV/TSV files and "
                 "similar. Note that *all* files will be read as that type, "
                 "regardless of file extension. To only read from files with a "

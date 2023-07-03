@@ -75,15 +75,13 @@ def execute_tap(config: dict = None):
 
 # Run standard built-in tap tests from the SDK on a simple csv.
 
-SAMPLE_CONFIG = {
-    "protocol": "file",
-    "filepath": data_dir(),
-    "file_regex": "fruit_records\\.csv",
-}
+sample_config = base_file_config.copy()
+sample_config.update({"file_regex": "fruit_records\\.csv"})
 
 TestTapUniversalFile = get_tap_test_class(
     tap_class=TapUniversalFile,
-    config=SAMPLE_CONFIG,
+    config=sample_config,
+    schema=sample_config,
 )
 
 # Run custom tests

@@ -31,6 +31,9 @@ class FileStream(Stream):
         Raises:
             RuntimeError: If replication config is invalid.
         """
+        # Define starting_replication_key_value based on state, stream_name, and
+        # start_date. This has to be done before stream initialization below so that
+        # state can be used during the discovery process.
         self.starting_replication_key_value: str | None = None
         if tap.state:
             self.starting_replication_key_value = tap.state["bookmarks"][
@@ -38,13 +41,20 @@ class FileStream(Stream):
             ]["replication_key_value"]
         else:
             self.starting_replication_key_value = tap.config.get("start_date", None)
+
         super().__init__(tap, schema, name)
+
+        # If _sdc_last_modified is not in the stream, incremental replication cannot
+        # be used.
         if not (
             self.starting_replication_key_value is None
             or self.config["additional_info"]
         ):
             msg = "Incremental replication requires additional_info to be True."
             raise RuntimeError(msg)
+
+        # This is set to a constant because the tap only supports _sdc_last_modified as
+        # an incremental replication key, not custom values.
         self.replication_key = "_sdc_last_modified"
 
     @property
@@ -128,7 +138,7 @@ class FileStream(Stream):
         msg = "get_properties must be implemented by subclass."
         raise NotImplementedError(msg)
 
-    def get_compression(self, file: str) -> str | None:  # noqa: PLR0911
+    def get_compression(self, file: str) -> str | None:
         """Determines what compression encoding is appropraite for a given file.
 
         Args:
@@ -143,17 +153,18 @@ class FileStream(Stream):
             return None
         if compression != "detect":
             return compression
+        encoding = None
         if re.match(".*\\.zip$", file):
-            return "zip"
-        if re.match(".*\\.bz2$", file):
-            return "bz2"
-        if re.match(".*\\.gz(ip)?$", file):
-            return "gzip"
-        if re.match(".*\\.lzma$", file):
-            return "lzma"
-        if re.match(".*\\.xz$", file):
-            return "xz"
-        return None
+            encoding = "zip"
+        elif re.match(".*\\.bz2$", file):
+            encoding = "bz2"
+        elif re.match(".*\\.gz(ip)?$", file):
+            encoding = "gzip"
+        elif re.match(".*\\.lzma$", file):
+            encoding = "lzma"
+        elif re.match(".*\\.xz$", file):
+            encoding = "xz"
+        return encoding
 
     def get_records(
         self,

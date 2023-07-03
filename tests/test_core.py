@@ -204,6 +204,7 @@ def test_malformed_jsonl_ignore():
 
 
 def test_incremental_sync():
+    """Requires `touch` to be used in GitHub actions to correct last_modified date."""
     modified_config = base_file_config.copy()
     modified_config.update(
         {

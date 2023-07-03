@@ -49,6 +49,9 @@ class FilesystemManager:
             return fsspec.filesystem("file")
 
         if caching_strategy == "once":
+            # Creaing a filecache without specifying cache_storage location will cause
+            # the cache to be discarded after the filesystem is closed.
+            # Docs: https://filesystem-spec.readthedocs.io/en/latest/features.html#caching-files-locally
             return fsspec.filesystem(
                 "filecache",
                 target_protocol=self.protocol,
@@ -62,6 +65,9 @@ class FilesystemManager:
                 cache_storage=tempfile.gettempdir(),
             )
         if caching_strategy == "none":
+            # When caching is not used, the protocol's arguemnts have to be
+            # star-unpacked because fsspec.filesystem accepts them directly instead of
+            # as a dictionary.
             return fsspec.filesystem(
                 protocol=self.protocol,
                 **self._get_args(),

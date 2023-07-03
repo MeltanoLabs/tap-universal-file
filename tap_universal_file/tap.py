@@ -57,9 +57,8 @@ class TapUniversalFile(Tap):
             "protocol",
             th.StringType,
             required=True,
-            allowed_values=(allowed_values := ["file", "s3"]),
             description=(
-                f"The protocol to use to retrieve data. {one_of(allowed_values)}."
+                f"The protocol to use to retrieve data. ."
             ),
         ),
         th.Property(

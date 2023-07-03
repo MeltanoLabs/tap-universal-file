@@ -350,6 +350,7 @@ class TapUniversalFile(Tap):
     ) -> None:
         """Initialize the tap, but create state before running discovery."""
         # Call grandparent (PluginBase) __init__ method.
+        self.logger.warning(f"{config=}")
         super(Tap, self).__init__(
             config=config,
             parse_env_config=parse_env_config,

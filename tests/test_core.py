@@ -81,7 +81,6 @@ sample_config.update({"file_regex": "fruit_records\\.csv"})
 TestTapUniversalFile = get_tap_test_class(
     tap_class=TapUniversalFile,
     config=sample_config,
-    schema=sample_config,
 )
 
 # Run custom tests

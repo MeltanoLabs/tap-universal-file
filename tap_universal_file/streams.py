@@ -75,11 +75,7 @@ class DelimitedStream(FileStream):
             None,
         )
 
-        for file in self.fs_manager.get_files(
-            self.starting_replication_key_value
-            if self.starting_replication_key_value
-            else None,
-        ):
+        for file in self.fs_manager.get_files(self.starting_replication_key_value):
             file_name = file["name"]
             if self.config["delimited_delimiter"] == "detect":
                 if re.match(".*\\.csv.*", file_name):
@@ -124,15 +120,15 @@ class DelimitedStream(FileStream):
         ) as f:
             file_list = []
             file_list.extend(f)
-        for _ in range(self.config["delimited_header_skip"]):
-            if len(file_list) == 0:
-                return file_list
-            file_list.pop(0)
-        for _ in range(self.config["delimited_footer_skip"]):
-            if len(file_list) == 0:
-                return file_list
-            file_list.pop()
-        return file_list
+        try:
+            for _ in range(self.config["delimited_header_skip"]):
+                file_list.pop(0)
+            for _ in range(self.config["delimited_footer_skip"]):
+                file_list.pop()
+        except IndexError:
+            return []
+        else:
+            return file_list
 
     class ModifiedDictReader(csv.DictReader):
         """A modified version of DictReader that detects improperly formatted rows."""
@@ -172,22 +168,22 @@ class DelimitedStream(FileStream):
             lf = len(self.fieldnames)
             lr = len(row)
             if lf < lr:
-                d[self.restkey] = row[lf:]
                 if self.config["delimited_error_handling"] == "fail":
                     msg = (
                         f"Too few entries at line {self.line_num}. To suppress this "
                         "error, change 'delimited_error_handling' to 'ignore'."
                     )
                     raise RuntimeError(msg)
+                d[self.restkey] = row[lf:]
             elif lf > lr:
-                for key in self.fieldnames[lr:]:
-                    d[key] = self.restval
                 if self.config["delimited_error_handling"] == "fail":
                     msg = (
                         f"Too many entries at line {self.line_num}. To suppress this "
                         "error, change 'delimited_error_handling' to 'ignore'."
                     )
                     raise RuntimeError(msg)
+                for key in self.fieldnames[lr:]:
+                    d[key] = self.restval
             return d
 
 
@@ -200,11 +196,7 @@ class JSONLStream(FileStream):
         Yields:
             A dictionary containing information about a row in a JSONL file.
         """
-        for file in self.fs_manager.get_files(
-            self.starting_replication_key_value
-            if self.starting_replication_key_value
-            else None,
-        ):
+        for file in self.fs_manager.get_files(self.starting_replication_key_value):
             file_name = file["name"]
             with self.fs_manager.filesystem.open(
                 path=file_name,
@@ -457,11 +449,7 @@ class AvroStream(FileStream):
         Yields:
             A tuple of (avro.datafile.DataFileReader, file_name, last_modified).
         """
-        for file in self.fs_manager.get_files(
-            self.starting_replication_key_value
-            if self.starting_replication_key_value
-            else None,
-        ):
+        for file in self.fs_manager.get_files(self.starting_replication_key_value):
             file_name = file["name"]
             with self.fs_manager.filesystem.open(
                 path=file_name,

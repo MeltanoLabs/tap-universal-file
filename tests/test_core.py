@@ -4,6 +4,7 @@ import io
 import json
 from collections import defaultdict
 from contextlib import redirect_stdout
+import os
 from pathlib import Path
 import pytest
 
@@ -164,7 +165,7 @@ def test_malformed_delimited_fail():
     modified_config.update(
         {"file_regex": "^cats\\.csv$", "delimited_error_handling": "fail"}
     )
-    with pytest.raises(RuntimeError, match="^Too \w+ entries at line.*"):
+    with pytest.raises(RuntimeError, match="^Error processing.*"):
         execute_tap(modified_config)
 
 
@@ -186,7 +187,7 @@ def test_malformed_jsonl_fail():
             "jsonl_type_coercion_strategy": "string",
         }
     )
-    with pytest.raises(RuntimeError, match="^Invalid format on line.*"):
+    with pytest.raises(RuntimeError, match="^Error processing.*"):
         execute_tap(modified_config)
 
 
@@ -204,7 +205,8 @@ def test_malformed_jsonl_ignore():
 
 
 def test_incremental_sync():
-    """Requires `touch` to be used in GitHub actions to correct last_modified date."""
+    os.utime(data_dir() + "/old_hardware.csv", (1641124800, 1641124800))
+    os.utime(data_dir() + "/new_hardware.csv", (1641211200, 1641211200))
     modified_config = base_file_config.copy()
     modified_config.update(
         {

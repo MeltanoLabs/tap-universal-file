@@ -36,9 +36,16 @@ class FileStream(Stream):
         # state can be used during the discovery process.
         self.starting_replication_key_value: str | None = None
         if tap.state:
-            self.starting_replication_key_value = tap.state["bookmarks"][
-                tap.config["stream_name"]
-            ]["replication_key_value"]
+            stream_name = tap.config["stream_name"]
+            if stream_name not in tap.state["bookmarks"]:
+                msg = (
+                    "State was passed so incremental replication is assumed. However, "
+                    f"no state was found for a stream_name of {stream_name}."
+                )
+                raise RuntimeError(msg)
+            self.starting_replication_key_value = tap.state["bookmarks"][stream_name][
+                "replication_key_value"
+            ]
         else:
             self.starting_replication_key_value = tap.config.get("start_date", None)
 

@@ -143,7 +143,7 @@ class FilesystemManager:
                 "Current state precludes files being synced as none have been modified "
                 "since state was last updated."
             )
-            raise RuntimeError(msg)
+            self.logger.warning(msg)
 
     def _get_last_modified(self, file: dict) -> datetime.datetime | None:
         """Finds the last modified date from a file dictionary.

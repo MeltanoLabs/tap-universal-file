@@ -25,15 +25,21 @@ class DelimitedStream(FileStream):
             A dictionary containing information about a row in a *SV.
         """
         for reader, file_name, last_modified in self._get_readers():
-            line_number = 1
+            self.logger.info("Starting sync of %s.", file_name)
+            line_number = 0
             for row in reader:
+                line_number += 1
                 yield self.add_additional_info(
                     row=row,
                     file_name=file_name,
                     line_number=line_number,
                     last_modified=last_modified,
                 )
-                line_number += 1
+            self.logger.info(
+                "Completed sync of %s records from %s.",
+                line_number,
+                file_name,
+            )
 
     def get_properties(self) -> dict:
         """Get a list of properties for a *SV file, to be used in creating a schema.
@@ -95,6 +101,7 @@ class DelimitedStream(FileStream):
             yield (
                 self.ModifiedDictReader(
                     f=self._skip_rows(file_name),
+                    file_name=file_name,
                     delimiter=delimiter,
                     quotechar=quote_character,
                     fieldnames=override_headers,
@@ -136,6 +143,7 @@ class DelimitedStream(FileStream):
         def __init__(  # noqa: PLR0913
             self,
             f: Any,  # noqa: ANN401
+            file_name: str,
             fieldnames: Any | None = None,
             restkey: Any | None = None,
             restval: Any | None = None,
@@ -147,13 +155,14 @@ class DelimitedStream(FileStream):
             """Identical to the superclass's method except for defining self.config."""
             super().__init__(f, fieldnames, restkey, restval, dialect, *args, **kwds)
             self.config = config if config is not None else {}
+            self.file_name = file_name
 
         def __next__(self) -> dict:
-            """Identical to the superclass's method except for raising FileFormatErrors.
+            """Identical to superclass except for raising formatting errors.
 
             Raises:
-                FileFormatError: If a row in the *SV has too few entries.
-                FileFormatError: If a row in the *SV has too many entries.
+                RuntimeError: If a row in the *SV has too few entries.
+                RuntimeError: If a row in the *SV has too many entries.
 
             Returns:
                 A dictionary containing the records for a row.
@@ -167,21 +176,17 @@ class DelimitedStream(FileStream):
             d = dict(zip(self.fieldnames, row))
             lf = len(self.fieldnames)
             lr = len(row)
+            if lf != lr and self.config["delimited_error_handling"] == "fail":
+                msg = (
+                    f"Error processing {self.file_name} at line {self.line_num}. "
+                    f"Total number of column headers ({lf}) doesn't align with the "
+                    f"number of fields in the data ({lr}). To suppress this error, "
+                    "change delimited_error_handling to 'ignore'."
+                )
+                raise RuntimeError(msg)
             if lf < lr:
-                if self.config["delimited_error_handling"] == "fail":
-                    msg = (
-                        f"Total Number of fields/columns doesn't align with the data at line number: {self.line_num}. To suppress this "
-                        "error, change 'delimited_error_handling' to 'ignore'."
-                    )
-                    raise RuntimeError(msg)
                 d[self.restkey] = row[lf:]
             elif lf > lr:
-                if self.config["delimited_error_handling"] == "fail":
-                    msg = (
-                        f"Too many entries at line {self.line_num}. To suppress this "
-                        "error, change 'delimited_error_handling' to 'ignore'."
-                    )
-                    raise RuntimeError(msg)
                 for key in self.fieldnames[lr:]:
                     d[key] = self.restval
             return d
@@ -198,19 +203,21 @@ class JSONLStream(FileStream):
         """
         for file in self.fs_manager.get_files(self.starting_replication_key_value):
             file_name = file["name"]
+            self.logger.info("Starting sync of %s.", file_name)
             with self.fs_manager.filesystem.open(
                 path=file_name,
                 mode="rt",
                 compression=self.get_compression(file=file_name),
             ) as f:
-                line_number = 1
+                line_number = 0
                 for row in f:
+                    line_number += 1
                     try:
                         json_row = json.loads(row)
                     except json.JSONDecodeError as e:
                         if self.config["jsonl_error_handling"] == "fail":
                             msg = (
-                                f"Invalid format on line {line_number}. "
+                                f"Error processing {file_name} at line {line_number}. "
                                 f'JSONDecodeError was "{e}". To suppress this error, '
                                 "change 'jsonl_error_handling' to 'ignore'."
                             )
@@ -222,7 +229,11 @@ class JSONLStream(FileStream):
                         line_number=line_number,
                         last_modified=file["last_modified"],
                     )
-                    line_number += 1
+            self.logger.info(
+                "Completed sync of %s records from %s.",
+                line_number,
+                file_name,
+            )
 
     def get_properties(self) -> dict:
         """Get a list of properties for a JSONL file, to be used in creating a schema.
@@ -331,15 +342,21 @@ class AvroStream(FileStream):
             A dictionary containing information about a row in a Avro file.
         """
         for reader, file_name, last_modified in self._get_readers():
-            line_number = 1
+            self.logger.info("Starting sync of %s.", file_name)
+            line_number = 0
             for row in reader:
+                line_number += 1
                 yield self.add_additional_info(
                     row=self._pre_process(row),
                     file_name=file_name,
                     line_number=line_number,
                     last_modified=last_modified,
                 )
-                line_number += 1
+            self.logger.info(
+                "Completed sync of %s records from %s.",
+                line_number,
+                file_name,
+            )
 
     def get_properties(self) -> dict:
         """Get a list of properties for an Avro file, to be used in creating a schema.

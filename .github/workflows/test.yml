@@ -37,10 +37,6 @@ jobs:
     - name: Install dependencies
       run: |
         poetry install --extras=s3
-    - name: Touch files
-      run: |
-        touch -t 01021200 /home/runner/work/tap-file/tap-file/tests/data/old_hardware.csv
-        touch -t 01031200 /home/runner/work/tap-file/tap-file/tests/data/new_hardware.csv
     - name: Test with pytest
       run: |
         poetry run pytest

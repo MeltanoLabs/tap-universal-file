@@ -30,6 +30,38 @@ class FileStream(Stream):
         """
         return FilesystemManager(self.config, self.logger).get_filesystem()
 
+    @cached_property
+    def schema(self) -> dict:
+        """Orchestrates schema creation for all streams.
+
+        Returns:
+            A schema constructed using the get_properties() method of whichever stream
+            is currently in use.
+        """
+        properties = self.get_properties()
+        additional_info = self.config["additional_info"]
+        if additional_info:
+            properties.update({"_sdc_file_name": {"type": ["string"]}})
+            properties.update({"_sdc_line_number": {"type": ["integer"]}})
+        return {"properties": properties}
+
+    def add_additional_info(self, row: dict, file_name: str, line_number: int) -> dict:
+        """Adds _sdc-prefixed additional columns to a row, dependent on config.
+
+        Args:
+            row: The row to add info to.
+            file_name: The name of the file that the row came from.
+            line_number: The line number of the row within its file.
+
+        Returns:
+            A dictionary representing a row containing additional information columns.
+        """
+        additional_info = self.config["additional_info"]
+        if additional_info:
+            row.update({"_sdc_file_name": file_name})
+            row.update({"_sdc_line_number": line_number})
+        return row
+
     def get_files(self) -> Generator[str, None, None]:
         """Gets file names to be synced.
 
@@ -70,6 +102,18 @@ class FileStream(Stream):
             A dictionary representing a row to be synced.
         """
         msg = "get_rows must be implemented by subclass."
+        raise NotImplementedError(msg)
+
+    def get_properties(self) -> dict:
+        """Gets properties for the purpose of schema generation.
+
+        Raises:
+            NotImplementedError: This must be implemented by a subclass.
+
+        Returns:
+            A dictionary representing a series of properties for schema generation.
+        """
+        msg = "get_properties must be implemented by subclass."
         raise NotImplementedError(msg)
 
     def get_compression(self, file: str) -> str | None:  # noqa: PLR0911

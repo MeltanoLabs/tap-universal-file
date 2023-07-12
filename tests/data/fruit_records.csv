@@ -1,0 +1,1001 @@
+id,name,quantity,price_per_unit,total_price,supplier_name,expiration_date,organic,country_of_origin
+1,pineapple,67,1.84,123.28,Homespun Pastures,10/29/2022,false,Panama
+2,grape,49,6.46,316.54,Homespun Pastures,7/7/2022,false,China
+3,orange,91,6.91,628.81,Green Grocers,11/13/2022,false,Australia
+4,apple,43,2.1,90.3,Fresh Fruits Inc.,2/23/2022,false,Indonesia
+5,grape,10,2.91,29.1,Green Grocers,7/17/2022,true,Sweden
+6,pineapple,61,3.9,237.9,Fresh Fruits Inc.,1/11/2022,false,China
+7,banana,19,9.85,187.15,Green Grocers,12/15/2022,true,Peru
+8,banana,70,8.94,625.8,Homespun Pastures,7/8/2022,false,China
+9,grapefruit,5,3.75,18.75,Fresh Fruits Inc.,1/23/2022,false,Indonesia
+10,apricot,49,5.52,270.48,Homespun Pastures,2/26/2022,true,China
+11,banana,55,6.94,381.7,Homespun Pastures,3/21/2022,false,Philippines
+12,strawberry,97,2.37,229.89,Green Grocers,3/25/2022,false,Canada
+13,strawberry,24,2.2,52.8,Homespun Pastures,9/24/2022,true,Brazil
+14,grapefruit,29,0.97,28.13,Green Grocers,2/27/2022,true,Haiti
+15,apple,24,2.79,66.96,Green Grocers,9/9/2022,false,Greece
+16,banana,53,5.68,301.04,Fresh Fruits Inc.,11/20/2022,true,Russia
+17,banana,77,9.87,759.99,Homespun Pastures,12/11/2022,true,China
+18,grapefruit,68,1.0,68.0,Fresh Fruits Inc.,12/19/2022,false,Croatia
+19,orange,10,7.0,70.0,Fresh Fruits Inc.,10/31/2022,false,Argentina
+20,grape,39,4.95,193.05,Green Grocers,4/22/2022,true,Portugal
+21,apricot,60,3.47,208.2,Fresh Fruits Inc.,7/14/2022,false,Laos
+22,grape,9,6.99,153.78,Homespun Pastures,8/17/2022,false,Portugal
+23,grape,36,8.61,309.96,Green Grocers,5/25/2022,true,United States
+24,mango,67,2.98,199.66,Green Grocers,7/30/2022,false,Iran
+25,grapefruit,49,6.11,299.39,Fresh Fruits Inc.,5/19/2022,true,China
+26,mango,45,9.66,434.7,Green Grocers,4/25/2022,false,New Zealand
+27,pineapple,96,9.19,882.24,Fresh Fruits Inc.,8/8/2022,false,Poland
+28,banana,1,1.12,1.12,Homespun Pastures,8/21/2022,true,Saudi Arabia
+29,orange,66,5.46,360.36,Green Grocers,6/25/2022,false,France
+30,banana,32,9.03,288.96,Fresh Fruits Inc.,9/29/2022,false,Indonesia
+31,banana,67,3.85,257.95,Green Grocers,6/7/2022,false,Sweden
+32,mango,21,2.02,42.42,Fresh Fruits Inc.,10/14/2022,false,Japan
+33,strawberry,37,6.44,238.28,Green Grocers,7/25/2022,false,Spain
+34,grapefruit,55,7.97,438.35,Green Grocers,2/2/2022,false,China
+35,banana,71,1.19,84.49,Fresh Fruits Inc.,12/2/2022,false,Russia
+36,orange,92,8.69,799.48,Homespun Pastures,9/10/2022,true,Russia
+37,apple,60,6.84,410.4,Green Grocers,1/24/2022,false,Spain
+38,strawberry,47,1.46,68.62,Fresh Fruits Inc.,4/25/2022,true,Brazil
+39,apple,18,8.96,161.28,Green Grocers,3/9/2022,false,Japan
+40,grape,5,1.89,9.45,Fresh Fruits Inc.,9/17/2022,false,Iran
+41,mango,36,4.52,162.72,Homespun Pastures,1/15/2022,false,Haiti
+42,pineapple,88,9.14,804.32,Fresh Fruits Inc.,12/23/2022,true,Sweden
+43,pineapple,69,4.97,342.93,Homespun Pastures,7/27/2022,false,Bulgaria
+44,grapefruit,20,9.61,192.2,Green Grocers,11/18/2022,false,Sierra Leone
+45,grapefruit,36,1.42,51.12,Fresh Fruits Inc.,11/2/2022,true,China
+46,mango,44,7.09,311.96,Green Grocers,5/17/2022,true,Sweden
+47,apricot,77,9.39,723.03,Fresh Fruits Inc.,10/17/2022,false,Philippines
+48,mango,48,5.11,245.28,Fresh Fruits Inc.,5/19/2022,true,Brazil
+49,strawberry,97,6.11,592.67,Fresh Fruits Inc.,7/19/2022,true,China
+50,strawberry,63,7.69,484.47,Green Grocers,6/19/2022,false,Indonesia
+51,strawberry,59,2.62,154.58,Green Grocers,8/10/2022,false,Philippines
+52,mango,87,4.26,370.62,Homespun Pastures,6/14/2022,false,Philippines
+53,strawberry,47,6.48,304.56,Green Grocers,1/24/2022,true,China
+54,grape,33,5.79,191.07,Homespun Pastures,5/5/2022,false,Peru
+55,grapefruit,90,4.51,405.9,Homespun Pastures,3/5/2022,true,China
+56,mango,2,4.73,9.46,Fresh Fruits Inc.,10/7/2022,true,Portugal
+57,orange,49,3.31,162.19,Homespun Pastures,10/31/2022,true,Mongolia
+58,mango,57,0.28,15.96,Green Grocers,10/25/2022,true,Ukraine
+59,orange,49,2.69,131.81,Green Grocers,7/8/2022,false,Bulgaria
+60,pineapple,8,8.99,71.92,Homespun Pastures,2/26/2022,true,Sweden
+61,grapefruit,59,7.53,444.27,Fresh Fruits Inc.,3/24/2022,false,Philippines
+62,grapefruit,29,2.32,67.28,Homespun Pastures,1/26/2022,true,Indonesia
+63,apple,79,2.85,225.15,Homespun Pastures,4/22/2022,true,Indonesia
+64,apple,6,5.2,31.2,Fresh Fruits Inc.,10/27/2022,true,Russia
+65,orange,12,1.77,21.24,Homespun Pastures,6/6/2022,false,Bulgaria
+66,mango,74,4.76,352.24,Fresh Fruits Inc.,6/19/2022,false,Azerbaijan
+67,pineapple,68,6.82,463.76,Fresh Fruits Inc.,7/8/2022,false,Morocco
+68,strawberry,96,3.87,371.52,Homespun Pastures,9/6/2022,false,Philippines
+69,grape,78,1.28,99.84,Green Grocers,5/26/2022,false,China
+70,orange,50,6.6,330.0,Green Grocers,10/23/2022,true,Russia
+71,mango,9,3.52,31.68,Fresh Fruits Inc.,8/27/2022,true,China
+72,apple,31,9.58,296.98,Green Grocers,6/30/2022,false,Russia
+73,pineapple,48,0.79,37.92,Fresh Fruits Inc.,11/8/2022,false,United States
+74,grape,69,4.2,289.8,Homespun Pastures,10/8/2022,false,Germany
+75,orange,57,4.76,271.32,Fresh Fruits Inc.,3/10/2022,false,China
+76,strawberry,81,7.94,643.14,Green Grocers,9/14/2022,true,Bolivia
+77,grape,81,8.74,707.94,Fresh Fruits Inc.,6/29/2022,false,France
+78,apple,51,3.49,177.99,Green Grocers,9/11/2022,true,China
+79,grapefruit,59,5.83,343.97,Fresh Fruits Inc.,6/11/2022,true,Portugal
+80,apricot,69,9.38,647.22,Green Grocers,2/1/2022,true,Sweden
+81,apricot,33,5.75,189.75,Fresh Fruits Inc.,1/24/2022,false,Brazil
+82,grapefruit,76,9.77,742.52,Homespun Pastures,9/18/2022,false,Brazil
+83,strawberry,12,8.35,100.2,Fresh Fruits Inc.,5/18/2022,false,South Korea
+84,apricot,83,5.03,417.49,Green Grocers,8/9/2022,true,Indonesia
+85,apricot,45,9.4,423.0,Homespun Pastures,9/27/2022,true,Albania
+86,pineapple,83,8.55,709.65,Fresh Fruits Inc.,5/14/2022,false,China
+87,grape,89,3.01,267.89,Homespun Pastures,4/25/2022,false,China
+88,grapefruit,43,7.36,316.48,Fresh Fruits Inc.,9/1/2022,true,Tanzania
+89,apple,69,6.76,466.44,Homespun Pastures,1/15/2022,true,China
+90,grapefruit,23,2.37,54.51,Green Grocers,5/28/2022,true,Portugal
+91,grape,2,2.81,5.62,Green Grocers,11/3/2022,true,Colombia
+92,pineapple,79,8.76,692.04,Fresh Fruits Inc.,6/14/2022,true,China
+93,apple,21,2.7,56.7,Green Grocers,7/29/2022,false,Mauritius
+94,grapefruit,26,9.12,237.12,Homespun Pastures,2/18/2022,false,Vietnam
+95,apple,76,4.34,329.84,Homespun Pastures,1/26/2022,true,China
+96,mango,82,2.82,231.24,Homespun Pastures,2/16/2022,true,Russia
+97,grape,57,6.05,344.85,Green Grocers,6/19/2022,false,Thailand
+98,mango,93,6.66,619.38,Fresh Fruits Inc.,5/25/2022,true,China
+99,strawberry,66,1.15,75.9,Homespun Pastures,7/4/2022,true,Afghanistan
+100,banana,50,4.9,245.0,Homespun Pastures,4/7/2022,true,China
+101,strawberry,45,7.87,354.15,Green Grocers,10/3/2022,true,Brazil
+102,orange,6,1.41,8.46,Fresh Fruits Inc.,5/9/2022,false,Venezuela
+103,orange,6,8.74,52.44,Fresh Fruits Inc.,8/11/2022,true,Morocco
+104,strawberry,2,0.05,0.1,Green Grocers,7/3/2022,false,Japan
+105,grapefruit,94,6.53,613.82,Homespun Pastures,8/18/2022,true,Honduras
+106,mango,84,5.93,498.12,Fresh Fruits Inc.,6/18/2022,true,Ukraine
+107,strawberry,27,4.34,117.18,Fresh Fruits Inc.,4/21/2022,true,China
+108,pineapple,80,2.47,197.6,Homespun Pastures,8/1/2022,true,Indonesia
+109,strawberry,42,6.02,252.84,Green Grocers,11/10/2022,false,China
+110,grape,87,4.47,388.89,Homespun Pastures,9/6/2022,true,Vietnam
+111,pineapple,60,4.25,255.0,Fresh Fruits Inc.,1/2/2022,true,Indonesia
+112,apple,54,7.46,402.84,Green Grocers,8/15/2022,false,Czech Republic
+113,apricot,16,8.7,139.2,Green Grocers,9/15/2022,true,Indonesia
+114,orange,10,7.06,70.6,Homespun Pastures,3/21/2022,false,Panama
+115,grapefruit,61,0.85,51.85,Fresh Fruits Inc.,3/14/2022,false,Indonesia
+116,apricot,7,0.23,1.61,Green Grocers,5/20/2022,false,Greece
+117,orange,40,7.53,301.2,Homespun Pastures,7/13/2022,false,Kyrgyzstan
+118,grapefruit,80,8.62,689.6,Homespun Pastures,3/14/2022,true,China
+119,grape,5,4.0,20.0,Fresh Fruits Inc.,9/16/2022,true,Indonesia
+120,grapefruit,74,6.47,478.78,Fresh Fruits Inc.,12/22/2022,true,Indonesia
+121,apple,43,4.15,178.45,Homespun Pastures,10/2/2022,false,Mexico
+122,banana,34,4.26,144.84,Homespun Pastures,1/25/2022,false,China
+123,grapefruit,83,9.24,766.92,Fresh Fruits Inc.,12/15/2022,true,Belarus
+124,apricot,29,2.5,72.5,Homespun Pastures,5/28/2022,false,Philippines
+125,mango,61,3.07,187.27,Green Grocers,2/9/2022,true,Argentina
+126,grape,74,3.41,252.34,Homespun Pastures,9/6/2022,false,Tajikistan
+127,pineapple,43,0.64,27.52,Homespun Pastures,5/31/2022,true,Philippines
+128,apricot,50,0.52,26.0,Fresh Fruits Inc.,8/9/2022,false,Panama
+129,mango,90,4.81,432.9,Green Grocers,5/24/2022,true,Ukraine
+130,strawberry,71,5.38,381.98,Homespun Pastures,10/11/2022,true,Indonesia
+131,grape,79,9.84,777.36,Homespun Pastures,12/25/2022,false,Guatemala
+132,strawberry,7,0.46,3.22,Fresh Fruits Inc.,7/31/2022,false,Portugal
+133,apple,4,1.05,4.2,Green Grocers,7/19/2022,false,Indonesia
+134,pineapple,80,8.3,664.0,Green Grocers,8/15/2022,true,Peru
+135,strawberry,53,9.89,524.17,Green Grocers,7/16/2022,false,Portugal
+136,mango,6,1.59,9.54,Fresh Fruits Inc.,5/2/2022,true,Germany
+137,orange,74,4.11,304.14,Green Grocers,6/1/2022,true,Indonesia
+138,pineapple,56,1.05,58.8,Homespun Pastures,1/31/2022,true,Brazil
+139,apricot,28,1.5,42.0,Green Grocers,3/4/2022,false,Ireland
+140,grapefruit,19,5.3,100.7,Fresh Fruits Inc.,8/29/2022,true,Greece
+141,apple,55,8.25,453.75,Fresh Fruits Inc.,10/28/2022,true,China
+142,mango,88,3.79,333.52,Green Grocers,10/17/2022,true,Portugal
+143,orange,56,3.74,209.44,Fresh Fruits Inc.,5/12/2022,false,China
+144,apple,12,2.72,32.64,Homespun Pastures,8/2/2022,false,Russia
+145,grape,10,0.79,7.9,Fresh Fruits Inc.,7/16/2022,false,Finland
+146,grapefruit,47,6.55,307.85,Fresh Fruits Inc.,12/15/2022,false,Sweden
+147,apricot,80,0.52,41.6,Green Grocers,4/2/2022,true,Vietnam
+148,apricot,73,9.02,658.46,Fresh Fruits Inc.,12/11/2022,true,France
+149,orange,28,1.92,53.76,Green Grocers,3/13/2022,true,Vietnam
+150,banana,100,5.29,529.0,Homespun Pastures,2/2/2022,false,Philippines
+151,apricot,20,7.52,150.4,Fresh Fruits Inc.,4/29/2022,true,Canada
+152,mango,83,4.56,378.48,Fresh Fruits Inc.,10/6/2022,true,Kosovo
+153,apple,7,3.99,27.93,Homespun Pastures,10/9/2022,true,China
+154,grapefruit,70,6.01,420.7,Fresh Fruits Inc.,12/10/2022,true,Russia
+155,grape,36,1.11,39.96,Fresh Fruits Inc.,6/10/2022,true,Brazil
+156,mango,83,8.3,688.9,Green Grocers,10/19/2022,false,Poland
+157,orange,77,4.42,340.34,Homespun Pastures,6/20/2022,false,New Zealand
+158,mango,9,6.11,54.99,Green Grocers,1/31/2022,false,Bosnia and Herzegovina
+159,apricot,92,7.11,654.12,Fresh Fruits Inc.,2/26/2022,true,Canada
+160,grapefruit,71,5.87,416.77,Green Grocers,7/4/2022,true,Serbia
+161,grape,48,0.5,24.0,Homespun Pastures,1/25/2022,true,China
+162,grapefruit,79,6.88,543.52,Homespun Pastures,11/9/2022,false,Indonesia
+163,pineapple,1,2.39,2.39,Fresh Fruits Inc.,4/28/2022,false,China
+164,pineapple,20,9.38,187.6,Homespun Pastures,1/3/2022,false,China
+165,strawberry,48,7.72,370.56,Fresh Fruits Inc.,4/23/2022,false,Kosovo
+166,apple,96,9.74,935.04,Homespun Pastures,3/31/2022,true,Myanmar
+167,banana,20,6.38,127.6,Homespun Pastures,2/7/2022,false,Argentina
+168,pineapple,63,3.52,221.76,Homespun Pastures,12/29/2022,true,Portugal
+169,strawberry,6,7.27,43.62,Fresh Fruits Inc.,1/24/2022,false,Indonesia
+170,grape,78,6.06,472.68,Homespun Pastures,3/14/2022,false,Colombia
+171,pineapple,70,9.24,646.8,Green Grocers,7/29/2022,false,Albania
+172,mango,10,5.04,50.4,Homespun Pastures,12/14/2022,false,China
+173,grapefruit,27,8.95,241.65,Fresh Fruits Inc.,6/28/2022,false,Sweden
+174,grape,27,9.17,247.59,Fresh Fruits Inc.,4/27/2022,true,United States
+175,apricot,84,7.33,615.72,Homespun Pastures,3/8/2022,false,Indonesia
+176,apple,20,9.36,187.2,Homespun Pastures,11/5/2022,true,Colombia
+177,pineapple,30,2.1,63.0,Homespun Pastures,4/14/2022,true,France
+178,strawberry,51,7.95,405.45,Homespun Pastures,4/12/2022,true,Faroe Islands
+179,grape,22,0.03,0.66,Green Grocers,3/25/2022,true,Lithuania
+180,grape,19,7.56,143.64,Fresh Fruits Inc.,7/31/2022,false,Philippines
+181,apricot,92,4.51,414.92,Fresh Fruits Inc.,2/24/2022,false,China
+182,banana,46,6.06,278.76,Fresh Fruits Inc.,10/2/2022,false,Sweden
+183,apricot,44,8.86,389.84,Fresh Fruits Inc.,11/2/2022,true,Slovenia
+184,banana,41,2.85,116.85,Fresh Fruits Inc.,8/18/2022,false,Democratic Republic of the Congo
+185,banana,90,8.24,741.6,Fresh Fruits Inc.,3/24/2022,true,Uruguay
+186,apricot,41,2.16,88.56,Homespun Pastures,12/28/2022,true,Portugal
+187,grapefruit,1,5.82,5.82,Homespun Pastures,11/30/2022,false,Albania
+188,orange,5,2.53,12.65,Green Grocers,2/9/2022,true,Poland
+189,apple,45,2.91,130.95,Homespun Pastures,4/26/2022,false,Cameroon
+190,mango,86,7.7,662.2,Fresh Fruits Inc.,10/30/2022,false,Japan
+191,mango,5,6.39,31.95,Green Grocers,5/22/2022,false,Guadeloupe
+192,banana,69,1.41,97.29,Homespun Pastures,2/15/2022,true,China
+193,mango,36,2.88,103.68,Homespun Pastures,8/26/2022,false,Indonesia
+194,mango,76,4.47,339.72,Green Grocers,10/16/2022,false,Colombia
+195,strawberry,89,1.11,98.79,Fresh Fruits Inc.,1/16/2022,true,Venezuela
+196,apple,85,6.52,554.2,Fresh Fruits Inc.,2/3/2022,true,China
+197,apple,54,0.49,26.46,Green Grocers,11/23/2022,true,Belgium
+198,strawberry,51,4.2,214.2,Fresh Fruits Inc.,4/5/2022,false,Madagascar
+199,pineapple,45,1.06,47.7,Fresh Fruits Inc.,3/16/2022,true,Argentina
+200,mango,88,1.83,161.04,Green Grocers,9/29/2022,false,Uruguay
+201,orange,87,8.02,697.74,Green Grocers,4/6/2022,true,Indonesia
+202,grapefruit,74,5.53,409.22,Green Grocers,7/14/2022,false,Peru
+203,strawberry,60,5.65,339.0,Homespun Pastures,2/20/2022,true,Pakistan
+204,pineapple,74,2.49,184.26,Fresh Fruits Inc.,12/26/2022,false,Indonesia
+205,grape,88,6.77,595.76,Homespun Pastures,10/21/2022,true,Argentina
+206,apricot,91,0.92,83.72,Homespun Pastures,3/6/2022,true,Libya
+207,pineapple,27,1.11,29.97,Fresh Fruits Inc.,7/23/2022,true,China
+208,grapefruit,87,8.69,756.03,Homespun Pastures,10/5/2022,true,Zimbabwe
+209,strawberry,87,6.92,602.04,Homespun Pastures,10/7/2022,true,Colombia
+210,banana,66,9.27,611.82,Homespun Pastures,10/12/2022,false,China
+211,apricot,61,8.04,490.44,Fresh Fruits Inc.,9/16/2022,true,Poland
+212,apple,49,9.92,486.08,Fresh Fruits Inc.,3/22/2022,true,China
+213,grapefruit,98,8.23,806.54,Green Grocers,7/4/2022,false,China
+214,banana,23,6.32,145.36,Fresh Fruits Inc.,7/16/2022,false,Peru
+215,grape,57,7.42,422.94,Green Grocers,6/17/2022,true,Malaysia
+216,apricot,47,6.3,296.1,Fresh Fruits Inc.,1/13/2022,true,Russia
+217,apple,4,3.29,13.16,Homespun Pastures,4/27/2022,false,Colombia
+218,strawberry,41,6.42,263.22,Homespun Pastures,10/20/2022,true,South Africa
+219,apple,56,4.42,247.52,Green Grocers,4/19/2022,true,China
+220,apricot,59,4.94,291.46,Homespun Pastures,10/12/2022,true,Mongolia
+221,mango,46,6.96,320.16,Fresh Fruits Inc.,4/20/2022,true,Malaysia
+222,banana,14,4.86,68.04,Homespun Pastures,6/26/2022,true,Czech Republic
+223,mango,15,9.07,136.05,Homespun Pastures,12/9/2022,false,Philippines
+224,apple,56,2.34,131.04,Fresh Fruits Inc.,10/13/2022,false,China
+225,grapefruit,80,3.81,304.8,Green Grocers,10/26/2022,true,Poland
+226,strawberry,88,0.51,44.88,Homespun Pastures,5/3/2022,false,Brazil
+227,grapefruit,93,1.76,163.68,Fresh Fruits Inc.,10/6/2022,false,China
+228,apple,44,7.54,331.76,Homespun Pastures,7/4/2022,false,China
+229,strawberry,30,8.63,258.9,Green Grocers,3/3/2022,false,Mauritania
+230,grapefruit,9,0.39,3.51,Homespun Pastures,9/18/2022,true,Sweden
+231,orange,24,0.8,19.2,Homespun Pastures,4/7/2022,true,China
+232,mango,6,4.19,25.14,Homespun Pastures,7/28/2022,true,Peru
+233,strawberry,79,8.2,647.8,Green Grocers,10/13/2022,false,Russia
+234,grape,67,3.14,210.38,Homespun Pastures,9/2/2022,false,China
+235,apple,100,2.64,264.0,Homespun Pastures,8/7/2022,false,Yemen
+236,apricot,35,7.42,259.7,Green Grocers,5/25/2022,true,China
+237,strawberry,70,3.73,261.1,Green Grocers,8/11/2022,true,China
+238,banana,7,8.27,57.89,Green Grocers,6/29/2022,true,Uganda
+239,pineapple,45,8.08,363.6,Homespun Pastures,2/13/2022,false,China
+240,apricot,16,0.61,9.76,Homespun Pastures,10/5/2022,true,Somalia
+241,apple,92,8.31,764.52,Fresh Fruits Inc.,11/22/2022,false,Egypt
+242,orange,74,7.24,535.76,Homespun Pastures,9/16/2022,true,Indonesia
+243,pineapple,4,7.54,30.16,Fresh Fruits Inc.,6/1/2022,true,Brazil
+244,grape,95,9.58,910.1,Fresh Fruits Inc.,7/4/2022,false,Sweden
+245,grape,52,0.86,44.72,Green Grocers,8/6/2022,false,Indonesia
+246,banana,7,9.84,68.88,Fresh Fruits Inc.,7/28/2022,true,Nigeria
+247,orange,79,9.41,743.39,Fresh Fruits Inc.,6/2/2022,true,Czech Republic
+248,apricot,78,7.76,605.28,Homespun Pastures,1/4/2022,true,Russia
+249,orange,45,9.47,426.15,Green Grocers,5/31/2022,false,Japan
+250,grapefruit,14,3.85,53.9,Homespun Pastures,7/13/2022,false,Czech Republic
+251,banana,45,4.7,211.5,Fresh Fruits Inc.,11/22/2022,false,China
+252,orange,14,5.17,72.38,Homespun Pastures,12/12/2022,true,France
+253,mango,89,0.27,24.03,Fresh Fruits Inc.,12/10/2022,false,Russia
+254,orange,69,4.97,342.93,Fresh Fruits Inc.,7/17/2022,true,Portugal
+255,strawberry,45,7.64,343.8,Homespun Pastures,1/13/2022,false,China
+256,grapefruit,49,5.7,279.3,Homespun Pastures,5/9/2022,true,France
+257,banana,4,3.24,12.96,Green Grocers,7/21/2022,true,Syria
+258,grape,40,7.36,294.4,Homespun Pastures,10/17/2022,true,Russia
+259,apricot,69,3.46,238.74,Homespun Pastures,7/23/2022,true,Italy
+260,grapefruit,71,0.03,2.13,Homespun Pastures,6/21/2022,false,Indonesia
+261,pineapple,54,7.56,408.24,Homespun Pastures,8/11/2022,true,China
+262,apricot,10,8.7,87.0,Green Grocers,10/4/2022,false,China
+263,mango,81,9.3,753.3,Fresh Fruits Inc.,1/9/2022,true,Poland
+264,apple,34,7.26,246.84,Green Grocers,11/6/2022,false,China
+265,mango,85,8.82,749.7,Fresh Fruits Inc.,1/23/2022,true,Indonesia
+266,strawberry,16,0.95,15.2,Green Grocers,5/6/2022,true,Russia
+267,grape,44,8.57,377.08,Homespun Pastures,10/25/2022,false,Albania
+268,apple,74,8.66,640.84,Fresh Fruits Inc.,1/24/2022,true,Portugal
+269,mango,30,3.77,113.1,Fresh Fruits Inc.,10/9/2022,false,Indonesia
+270,apple,96,5.52,529.92,Fresh Fruits Inc.,3/12/2022,false,Bosnia and Herzegovina
+271,mango,65,9.19,597.35,Fresh Fruits Inc.,5/28/2022,false,China
+272,orange,4,8.06,32.24,Fresh Fruits Inc.,2/17/2022,false,France
+273,pineapple,78,0.91,70.98,Fresh Fruits Inc.,5/29/2022,false,China
+274,mango,83,3.5,290.5,Fresh Fruits Inc.,2/19/2022,true,United States
+275,orange,89,6.84,608.76,Homespun Pastures,6/25/2022,true,China
+276,strawberry,20,1.41,28.2,Homespun Pastures,7/4/2022,false,Czech Republic
+277,mango,69,7.19,496.11,Homespun Pastures,4/9/2022,true,Serbia
+278,orange,94,1.47,138.18,Homespun Pastures,9/26/2022,false,Zimbabwe
+279,apple,70,0.29,20.3,Green Grocers,12/2/2022,true,China
+280,grape,40,0.2,8.0,Green Grocers,3/16/2022,false,Indonesia
+281,mango,81,9.63,780.03,Green Grocers,12/22/2022,true,Russia
+282,grapefruit,25,9.81,245.25,Homespun Pastures,9/11/2022,true,Macedonia
+283,orange,84,7.41,622.44,Homespun Pastures,4/29/2022,true,Benin
+284,apricot,85,0.53,45.05,Homespun Pastures,11/3/2022,true,France
+285,pineapple,15,4.96,74.4,Green Grocers,11/28/2022,true,China
+286,orange,27,0.08,2.16,Fresh Fruits Inc.,7/11/2022,false,France
+287,grapefruit,71,3.1,220.1,Homespun Pastures,6/8/2022,false,Portugal
+288,strawberry,25,0.48,12.0,Fresh Fruits Inc.,10/15/2022,true,Czech Republic
+289,grape,80,4.6,368.0,Fresh Fruits Inc.,11/29/2022,false,China
+290,banana,14,2.82,39.48,Fresh Fruits Inc.,1/4/2022,true,Italy
+291,apple,37,6.16,227.92,Homespun Pastures,4/24/2022,false,United States
+292,apple,75,0.7,52.5,Fresh Fruits Inc.,4/15/2022,false,Russia
+293,mango,72,2.54,182.88,Green Grocers,11/13/2022,false,Poland
+294,apple,83,2.83,234.89,Fresh Fruits Inc.,11/23/2022,false,Japan
+295,pineapple,71,2.66,188.86,Homespun Pastures,7/26/2022,true,Indonesia
+296,strawberry,92,0.92,84.64,Homespun Pastures,6/2/2022,false,Colombia
+297,mango,81,1.56,126.36,Green Grocers,9/28/2022,true,China
+298,grape,98,1.06,103.88,Homespun Pastures,4/25/2022,false,Indonesia
+299,pineapple,48,8.14,390.72,Green Grocers,10/6/2022,false,Philippines
+300,pineapple,100,4.28,428.0,Green Grocers,7/29/2022,false,Portugal
+301,banana,41,1.21,49.61,Green Grocers,7/28/2022,true,Indonesia
+302,strawberry,87,1.88,163.56,Homespun Pastures,3/21/2022,true,Russia
+303,banana,2,9.77,19.54,Homespun Pastures,10/4/2022,false,Senegal
+304,apricot,45,2.63,118.35,Fresh Fruits Inc.,3/21/2022,true,Afghanistan
+305,grape,44,4.64,204.16,Homespun Pastures,9/2/2022,true,Indonesia
+306,grapefruit,28,9.6,268.8,Green Grocers,4/3/2022,false,China
+307,apricot,87,9.5,826.5,Fresh Fruits Inc.,6/11/2022,false,Jamaica
+308,grape,52,0.26,13.52,Green Grocers,12/15/2022,false,China
+309,banana,16,2.73,43.68,Green Grocers,6/14/2022,true,Philippines
+310,mango,24,8.9,213.6,Green Grocers,1/7/2022,true,China
+311,pineapple,93,0.56,52.08,Fresh Fruits Inc.,2/14/2022,false,South Korea
+312,strawberry,43,2.46,105.78,Green Grocers,10/17/2022,true,China
+313,orange,76,0.42,31.92,Green Grocers,1/5/2022,true,United States
+314,pineapple,13,8.32,108.16,Green Grocers,5/6/2022,true,China
+315,grape,38,2.59,98.42,Homespun Pastures,5/28/2022,true,Dominican Republic
+316,apple,14,0.79,11.06,Homespun Pastures,12/9/2022,false,Philippines
+317,banana,13,4.46,57.98,Fresh Fruits Inc.,10/10/2022,true,Indonesia
+318,grapefruit,98,4.16,407.68,Green Grocers,9/2/2022,true,Kazakhstan
+319,mango,21,9.72,204.12,Homespun Pastures,10/16/2022,false,Japan
+320,apple,36,9.52,342.72,Fresh Fruits Inc.,2/28/2022,true,Czech Republic
+321,orange,20,4.41,88.2,Fresh Fruits Inc.,12/9/2022,true,Georgia
+322,apple,11,9.76,107.36,Fresh Fruits Inc.,7/14/2022,true,China
+323,mango,79,9.54,753.66,Fresh Fruits Inc.,2/8/2022,true,Brazil
+324,strawberry,85,3.09,262.65,Homespun Pastures,11/16/2022,false,Uganda
+325,banana,46,6.3,289.8,Fresh Fruits Inc.,11/18/2022,true,Philippines
+326,apple,97,8.5,824.5,Homespun Pastures,7/12/2022,false,Brunei
+327,pineapple,76,6.12,465.12,Homespun Pastures,5/5/2022,true,Syria
+328,apricot,16,8.86,141.76,Green Grocers,9/2/2022,true,Morocco
+329,orange,1,8.97,8.97,Green Grocers,8/2/2022,true,Russia
+330,apple,28,4.96,138.88,Green Grocers,6/30/2022,true,Poland
+331,apple,79,2.98,235.42,Fresh Fruits Inc.,11/13/2022,true,Netherlands
+332,orange,6,8.87,53.22,Fresh Fruits Inc.,6/12/2022,false,Indonesia
+333,apricot,87,8.97,780.39,Green Grocers,10/21/2022,false,Brazil
+334,strawberry,18,4.97,89.46,Homespun Pastures,7/31/2022,true,Croatia
+335,pineapple,54,1.02,55.08,Green Grocers,1/15/2022,true,Russia
+336,grapefruit,58,1.03,59.74,Homespun Pastures,4/24/2022,false,China
+337,pineapple,8,6.19,49.52,Fresh Fruits Inc.,3/17/2022,true,China
+338,grape,20,6.11,122.2,Homespun Pastures,5/14/2022,true,Honduras
+339,banana,55,0.31,17.05,Fresh Fruits Inc.,1/12/2022,true,Guatemala
+340,banana,31,9.5,294.5,Fresh Fruits Inc.,12/6/2022,true,Italy
+341,strawberry,69,2.25,155.25,Green Grocers,6/26/2022,false,Libya
+342,apple,9,5.71,51.39,Green Grocers,12/16/2022,true,Portugal
+343,banana,83,4.87,404.21,Homespun Pastures,9/29/2022,true,Indonesia
+344,grapefruit,31,5.99,185.69,Fresh Fruits Inc.,2/2/2022,true,Thailand
+345,pineapple,29,0.2,5.8,Green Grocers,9/26/2022,true,Vietnam
+346,apple,100,4.81,481.0,Homespun Pastures,3/26/2022,true,Czech Republic
+347,pineapple,72,7.49,539.28,Green Grocers,6/29/2022,true,Micronesia
+348,grape,46,4.53,208.38,Homespun Pastures,11/26/2022,true,Philippines
+349,grape,15,9.08,136.2,Green Grocers,5/26/2022,true,Macedonia
+350,grape,43,1.31,56.33,Homespun Pastures,7/1/2022,false,Russia
+351,grape,12,3.48,41.76,Green Grocers,3/14/2022,true,China
+352,mango,92,5.39,495.88,Fresh Fruits Inc.,11/8/2022,false,Sweden
+353,mango,21,9.43,198.03,Green Grocers,12/6/2022,true,Philippines
+354,mango,24,1.74,41.76,Green Grocers,6/6/2022,true,China
+355,apricot,10,8.86,88.6,Homespun Pastures,7/31/2022,false,Argentina
+356,banana,18,7.44,133.92,Green Grocers,10/12/2022,false,Philippines
+357,orange,85,4.75,403.75,Fresh Fruits Inc.,9/28/2022,false,Philippines
+358,pineapple,59,5.6,330.4,Homespun Pastures,5/1/2022,false,Bolivia
+359,strawberry,78,8.79,685.62,Homespun Pastures,6/25/2022,true,Uruguay
+360,apricot,15,6.26,93.9,Green Grocers,12/17/2022,true,China
+361,mango,24,5.88,141.12,Green Grocers,10/23/2022,true,Kazakhstan
+362,grapefruit,88,5.28,464.64,Fresh Fruits Inc.,5/11/2022,true,China
+363,mango,61,5.96,363.56,Green Grocers,11/16/2022,false,Russia
+364,orange,51,6.58,335.58,Homespun Pastures,6/8/2022,true,Philippines
+365,mango,42,7.59,318.78,Homespun Pastures,6/22/2022,true,China
+366,grape,72,1.05,75.6,Fresh Fruits Inc.,4/15/2022,false,Yemen
+367,apricot,87,5.62,488.94,Homespun Pastures,7/27/2022,false,Russia
+368,pineapple,25,9.96,249.0,Fresh Fruits Inc.,1/30/2022,false,Haiti
+369,strawberry,60,7.29,437.4,Fresh Fruits Inc.,2/15/2022,true,Bolivia
+370,pineapple,81,9.5,769.5,Fresh Fruits Inc.,12/15/2022,false,Brazil
+371,grapefruit,3,2.04,6.12,Fresh Fruits Inc.,6/27/2022,false,Netherlands
+372,strawberry,23,3.92,90.16,Homespun Pastures,2/8/2022,false,France
+373,orange,36,9.99,359.64,Fresh Fruits Inc.,6/9/2022,true,Colombia
+374,banana,73,5.88,429.24,Homespun Pastures,10/6/2022,false,Tajikistan
+375,strawberry,63,8.89,560.07,Fresh Fruits Inc.,4/6/2022,false,Brazil
+376,apple,93,9.87,917.91,Homespun Pastures,5/1/2022,false,France
+377,apple,29,5.49,159.21,Green Grocers,2/20/2022,true,Philippines
+378,orange,60,2.75,165.0,Homespun Pastures,3/24/2022,false,Tunisia
+379,apple,75,9.76,732.0,Homespun Pastures,7/2/2022,true,Vietnam
+380,apricot,89,7.58,674.62,Homespun Pastures,9/11/2022,true,China
+381,pineapple,6,2.81,16.86,Fresh Fruits Inc.,3/4/2022,false,Azerbaijan
+382,orange,91,6.42,584.22,Fresh Fruits Inc.,12/19/2022,true,Morocco
+383,mango,70,4.38,306.6,Green Grocers,1/23/2022,true,Mexico
+384,mango,51,9.71,495.21,Fresh Fruits Inc.,9/28/2022,false,China
+385,strawberry,77,8.25,635.25,Green Grocers,2/6/2022,false,Brazil
+386,banana,57,8.15,464.55,Homespun Pastures,12/16/2022,true,Japan
+387,grapefruit,87,8.45,735.15,Fresh Fruits Inc.,1/21/2022,false,China
+388,apple,22,4.48,98.56,Green Grocers,12/25/2022,false,China
+389,strawberry,39,2.13,83.07,Green Grocers,12/3/2022,true,Egypt
+390,pineapple,51,2.68,136.68,Fresh Fruits Inc.,4/26/2022,true,Luxembourg
+391,apricot,47,9.13,429.11,Homespun Pastures,3/8/2022,false,Indonesia
+392,pineapple,61,6.95,423.95,Green Grocers,10/26/2022,true,Bulgaria
+393,banana,42,4.38,183.96,Fresh Fruits Inc.,6/21/2022,true,United States
+394,apple,82,2.76,226.32,Homespun Pastures,5/22/2022,true,Sweden
+395,grape,42,9.41,395.22,Fresh Fruits Inc.,11/8/2022,true,Ukraine
+396,apricot,22,1.13,24.86,Green Grocers,7/20/2022,true,Philippines
+397,apricot,51,2.2,112.2,Homespun Pastures,10/11/2022,true,China
+398,apricot,80,6.63,530.4,Green Grocers,11/10/2022,false,China
+399,mango,51,0.23,11.73,Fresh Fruits Inc.,6/5/2022,false,Syria
+400,apple,15,2.23,33.45,Green Grocers,2/7/2022,true,Palestinian Territory
+401,pineapple,68,5.97,405.96,Fresh Fruits Inc.,11/1/2022,true,China
+402,apple,51,1.63,83.13,Homespun Pastures,1/7/2022,false,Indonesia
+403,orange,12,4.26,51.12,Fresh Fruits Inc.,11/2/2022,true,Djibouti
+404,banana,15,3.1,46.5,Fresh Fruits Inc.,6/7/2022,false,Nepal
+405,grapefruit,43,2.3,98.9,Homespun Pastures,1/3/2022,true,Indonesia
+406,apple,75,3.58,268.5,Green Grocers,6/14/2022,true,Argentina
+407,apple,39,5.88,229.32,Fresh Fruits Inc.,9/15/2022,true,China
+408,mango,38,6.78,257.64,Homespun Pastures,2/26/2022,true,Brazil
+409,grape,48,9.79,469.92,Fresh Fruits Inc.,11/9/2022,true,Yemen
+410,apple,18,5.9,106.2,Homespun Pastures,6/17/2022,false,China
+411,grapefruit,77,6.53,502.81,Green Grocers,10/30/2022,false,Thailand
+412,grapefruit,32,5.78,184.96,Homespun Pastures,1/14/2022,true,Armenia
+413,grape,39,7.95,310.05,Green Grocers,2/17/2022,false,Russia
+414,apple,32,1.16,37.12,Green Grocers,5/25/2022,true,France
+415,apple,95,2.04,193.8,Green Grocers,2/9/2022,true,Syria
+416,mango,48,7.06,338.88,Fresh Fruits Inc.,9/26/2022,false,Japan
+417,grape,89,1.13,100.57,Homespun Pastures,10/24/2022,false,Netherlands
+418,apricot,36,8.93,321.48,Homespun Pastures,11/15/2022,true,China
+419,orange,11,2.74,30.14,Green Grocers,8/1/2022,true,China
+420,mango,87,1.93,167.91,Homespun Pastures,6/5/2022,false,Finland
+421,strawberry,73,4.08,297.84,Green Grocers,6/14/2022,false,Poland
+422,strawberry,86,2.51,215.86,Green Grocers,3/23/2022,true,China
+423,mango,56,6.3,352.8,Homespun Pastures,12/16/2022,false,Ethiopia
+424,pineapple,42,8.71,365.82,Green Grocers,8/4/2022,true,Poland
+425,strawberry,42,6.97,292.74,Homespun Pastures,7/29/2022,true,Poland
+426,pineapple,60,6.87,412.2,Fresh Fruits Inc.,1/11/2022,false,China
+427,grapefruit,51,2.22,113.22,Green Grocers,5/20/2022,true,Honduras
+428,apple,88,3.65,321.2,Fresh Fruits Inc.,7/10/2022,true,Poland
+429,mango,21,9.62,202.02,Homespun Pastures,6/18/2022,true,China
+430,mango,35,2.46,86.1,Homespun Pastures,2/19/2022,false,Russia
+431,banana,67,2.34,156.78,Fresh Fruits Inc.,7/3/2022,false,China
+432,mango,56,0.15,8.4,Homespun Pastures,3/26/2022,true,Philippines
+433,grape,16,5.87,93.92,Homespun Pastures,5/9/2022,true,Philippines
+434,mango,5,0.96,4.8,Green Grocers,2/6/2022,false,Russia
+435,orange,55,3.02,166.1,Fresh Fruits Inc.,2/9/2022,false,United Kingdom
+436,pineapple,31,7.09,219.79,Homespun Pastures,7/23/2022,false,Poland
+437,mango,29,9.73,282.17,Homespun Pastures,6/21/2022,false,Russia
+438,apple,88,1.03,90.64,Green Grocers,12/8/2022,true,China
+439,grape,56,5.98,334.88,Green Grocers,4/18/2022,false,Philippines
+440,apple,33,5.71,188.43,Homespun Pastures,12/26/2022,false,Iran
+441,grapefruit,75,8.05,603.75,Green Grocers,3/13/2022,false,China
+442,strawberry,53,0.24,12.72,Homespun Pastures,10/30/2022,true,Canada
+443,apricot,49,2.01,98.49,Fresh Fruits Inc.,12/21/2022,true,Philippines
+444,mango,76,6.86,521.36,Homespun Pastures,4/22/2022,true,Paraguay
+445,strawberry,12,1.03,12.36,Homespun Pastures,10/26/2022,true,China
+446,banana,77,4.1,315.7,Green Grocers,4/27/2022,false,Argentina
+447,grape,39,6.06,236.34,Green Grocers,5/23/2022,true,Philippines
+448,banana,15,1.8,27.0,Homespun Pastures,1/1/2022,true,Indonesia
+449,grape,60,6.72,403.2,Green Grocers,5/20/2022,false,Serbia
+450,orange,42,3.23,135.66,Fresh Fruits Inc.,10/17/2022,true,Central African Republic
+451,orange,38,3.21,121.98,Green Grocers,11/4/2022,true,Croatia
+452,orange,88,4.59,403.92,Green Grocers,9/9/2022,false,Finland
+453,pineapple,77,4.44,341.88,Fresh Fruits Inc.,5/16/2022,true,Canada
+454,strawberry,82,3.26,267.32,Fresh Fruits Inc.,8/26/2022,false,Czech Republic
+455,mango,66,2.78,183.48,Homespun Pastures,4/22/2022,true,Madagascar
+456,pineapple,36,4.79,172.44,Green Grocers,11/6/2022,true,Colombia
+457,apricot,4,0.16,0.64,Fresh Fruits Inc.,5/4/2022,false,Cameroon
+458,orange,18,6.12,110.16,Green Grocers,3/28/2022,false,Indonesia
+459,apple,66,0.28,18.48,Homespun Pastures,12/20/2022,true,Georgia
+460,strawberry,35,6.61,231.35,Green Grocers,12/8/2022,false,France
+461,mango,65,3.92,254.8,Homespun Pastures,4/10/2022,true,Cuba
+462,banana,50,2.97,148.5,Green Grocers,3/10/2022,true,Finland
+463,apricot,69,9.11,628.59,Homespun Pastures,6/3/2022,false,Philippines
+464,apple,99,6.63,656.37,Fresh Fruits Inc.,11/13/2022,true,Indonesia
+465,grape,31,8.29,256.99,Green Grocers,2/13/2022,false,Russia
+466,grapefruit,60,5.06,303.6,Green Grocers,5/3/2022,true,Canada
+467,banana,61,9.84,600.24,Green Grocers,9/24/2022,false,North Korea
+468,apricot,68,4.57,310.76,Homespun Pastures,12/11/2022,true,Syria
+469,apple,54,8.29,447.66,Green Grocers,2/4/2022,false,Costa Rica
+470,orange,100,7.83,783.0,Homespun Pastures,1/28/2022,false,Sweden
+471,strawberry,72,9.52,685.44,Fresh Fruits Inc.,1/21/2022,true,Indonesia
+472,apricot,98,5.67,555.66,Homespun Pastures,10/9/2022,false,Croatia
+473,strawberry,64,7.92,506.88,Green Grocers,12/9/2022,false,China
+474,banana,94,0.77,72.38,Homespun Pastures,3/11/2022,false,China
+475,orange,72,7.15,514.8,Fresh Fruits Inc.,12/22/2022,false,China
+476,mango,28,6.7,187.6,Fresh Fruits Inc.,8/1/2022,false,Yemen
+477,grape,3,0.49,1.47,Fresh Fruits Inc.,11/14/2022,true,Tunisia
+478,orange,89,9.11,810.79,Homespun Pastures,11/17/2022,true,Jamaica
+479,grape,31,5.07,157.17,Fresh Fruits Inc.,11/24/2022,true,Malaysia
+480,apple,89,2.08,185.12,Homespun Pastures,12/20/2022,true,Denmark
+481,apricot,54,5.97,322.38,Homespun Pastures,2/22/2022,true,Netherlands
+482,banana,100,9.38,938.0,Homespun Pastures,3/5/2022,false,Morocco
+483,apple,61,9.66,589.26,Green Grocers,12/6/2022,false,Poland
+484,grape,89,7.81,695.09,Green Grocers,10/1/2022,true,Poland
+485,grapefruit,61,9.62,586.82,Homespun Pastures,2/17/2022,true,Tanzania
+486,mango,39,5.0,195.0,Green Grocers,4/12/2022,false,France
+487,apple,23,6.53,150.19,Green Grocers,9/30/2022,false,Czech Republic
+488,orange,100,9.58,958.0,Homespun Pastures,7/21/2022,true,Japan
+489,apricot,56,4.76,266.56,Green Grocers,1/21/2022,true,Philippines
+490,strawberry,61,0.63,38.43,Green Grocers,10/1/2022,false,Mexico
+491,pineapple,24,5.95,142.8,Green Grocers,2/27/2022,true,Portugal
+492,orange,19,7.2,136.8,Homespun Pastures,5/11/2022,false,Luxembourg
+493,pineapple,86,0.03,2.58,Homespun Pastures,6/15/2022,false,China
+494,mango,32,5.15,164.8,Green Grocers,6/19/2022,true,Armenia
+495,orange,57,9.03,514.71,Green Grocers,1/26/2022,false,Portugal
+496,apricot,95,6.34,602.3,Homespun Pastures,11/4/2022,true,Tunisia
+497,grape,38,5.51,209.38,Homespun Pastures,3/24/2022,false,Spain
+498,mango,100,8.01,801.0,Homespun Pastures,8/1/2022,true,Indonesia
+499,apple,80,5.2,416.0,Fresh Fruits Inc.,2/4/2022,true,Armenia
+500,grape,60,4.77,286.2,Green Grocers,12/22/2022,true,Denmark
+501,apple,22,8.39,184.58,Homespun Pastures,1/3/2022,false,Philippines
+502,banana,16,6.64,106.24,Homespun Pastures,11/11/2022,false,Guinea
+503,strawberry,2,6.01,12.02,Fresh Fruits Inc.,10/22/2022,false,Canada
+504,apricot,72,3.33,239.76,Fresh Fruits Inc.,7/28/2022,true,Philippines
+505,orange,11,4.29,47.19,Green Grocers,4/20/2022,false,China
+506,apricot,36,4.06,146.16,Homespun Pastures,10/12/2022,false,Portugal
+507,apple,52,9.43,490.36,Green Grocers,10/31/2022,false,China
+508,orange,19,4.82,91.58,Homespun Pastures,5/15/2022,true,Malawi
+509,grapefruit,12,7.59,91.08,Homespun Pastures,5/1/2022,false,Indonesia
+510,apple,94,4.18,392.92,Fresh Fruits Inc.,11/28/2022,false,Thailand
+511,grape,59,7.78,459.02,Fresh Fruits Inc.,2/28/2022,false,Uzbekistan
+512,grape,61,7.05,430.05,Fresh Fruits Inc.,4/12/2022,true,Japan
+513,orange,44,0.58,25.52,Fresh Fruits Inc.,12/19/2022,true,China
+514,apricot,35,7.91,276.85,Homespun Pastures,1/23/2022,true,Thailand
+515,banana,71,5.97,423.87,Homespun Pastures,7/27/2022,false,Peru
+516,apricot,7,1.05,7.35,Homespun Pastures,11/23/2022,true,China
+517,apricot,54,8.42,454.68,Fresh Fruits Inc.,7/11/2022,true,China
+518,grapefruit,20,3.58,71.6,Homespun Pastures,11/1/2022,true,Netherlands
+519,pineapple,71,4.85,344.35,Green Grocers,1/2/2022,true,Latvia
+520,banana,51,0.59,30.09,Fresh Fruits Inc.,10/7/2022,true,Poland
+521,orange,78,8.88,692.64,Homespun Pastures,10/13/2022,true,Indonesia
+522,pineapple,86,5.01,430.86,Homespun Pastures,11/23/2022,false,Brazil
+523,mango,89,8.97,798.33,Fresh Fruits Inc.,12/12/2022,true,Philippines
+524,apple,77,3.12,240.24,Fresh Fruits Inc.,4/18/2022,false,Vietnam
+525,pineapple,89,4.05,360.45,Homespun Pastures,12/3/2022,false,Cameroon
+526,apricot,74,2.34,173.16,Homespun Pastures,1/17/2022,true,Mexico
+527,strawberry,43,5.85,251.55,Green Grocers,5/14/2022,false,Poland
+528,orange,37,3.17,117.29,Homespun Pastures,7/21/2022,true,Brazil
+529,banana,30,0.3,9.0,Homespun Pastures,7/26/2022,false,China
+530,grapefruit,2,4.46,8.92,Fresh Fruits Inc.,1/8/2022,false,Indonesia
+531,grape,29,4.72,136.88,Homespun Pastures,1/12/2022,true,Uzbekistan
+532,apple,30,7.04,211.2,Fresh Fruits Inc.,3/8/2022,false,Philippines
+533,banana,55,6.34,348.7,Homespun Pastures,9/8/2022,false,China
+534,strawberry,72,1.86,133.92,Homespun Pastures,7/7/2022,true,United States
+535,grape,21,4.33,90.93,Homespun Pastures,8/30/2022,false,Brazil
+536,apricot,31,2.39,74.09,Green Grocers,11/24/2022,false,Russia
+537,pineapple,34,7.88,267.92,Green Grocers,5/18/2022,false,China
+538,apple,5,0.39,1.95,Homespun Pastures,8/22/2022,true,China
+539,apricot,97,9.32,904.04,Green Grocers,9/12/2022,false,China
+540,strawberry,35,5.43,190.05,Green Grocers,4/9/2022,true,Canada
+541,grapefruit,50,3.74,187.0,Fresh Fruits Inc.,1/9/2022,true,Thailand
+542,mango,41,1.99,81.59,Green Grocers,8/10/2022,true,China
+543,grape,98,5.67,555.66,Homespun Pastures,8/21/2022,true,Indonesia
+544,pineapple,9,5.91,53.19,Fresh Fruits Inc.,6/26/2022,true,Malaysia
+545,apricot,100,5.8,580.0,Fresh Fruits Inc.,5/30/2022,false,Colombia
+546,banana,44,9.14,402.16,Homespun Pastures,1/13/2022,false,Pakistan
+547,grapefruit,17,3.13,53.21,Homespun Pastures,2/17/2022,false,Syria
+548,mango,100,6.28,628.0,Fresh Fruits Inc.,4/9/2022,false,Canada
+549,banana,88,8.75,770.0,Homespun Pastures,11/6/2022,true,Russia
+550,grape,7,4.29,30.03,Homespun Pastures,6/24/2022,false,Paraguay
+551,apricot,56,5.89,329.84,Green Grocers,8/28/2022,false,Argentina
+552,apple,94,6.01,564.94,Fresh Fruits Inc.,12/23/2022,true,Czech Republic
+553,pineapple,70,5.5,385.0,Homespun Pastures,10/30/2022,false,Portugal
+554,orange,59,2.45,144.55,Fresh Fruits Inc.,6/22/2022,false,Dominica
+555,apricot,89,8.2,729.8,Homespun Pastures,8/15/2022,true,Indonesia
+556,pineapple,88,0.83,73.04,Homespun Pastures,2/9/2022,true,Pakistan
+557,apple,22,1.2,26.4,Green Grocers,11/23/2022,false,Japan
+558,orange,51,8.55,436.05,Fresh Fruits Inc.,5/26/2022,true,China
+559,grapefruit,67,1.59,106.53,Homespun Pastures,6/4/2022,false,South Africa
+560,grape,52,9.56,497.12,Homespun Pastures,11/8/2022,false,Greece
+561,strawberry,45,3.8,171.0,Fresh Fruits Inc.,4/15/2022,true,Jamaica
+562,pineapple,31,6.84,212.04,Homespun Pastures,2/17/2022,false,China
+563,apricot,22,4.88,107.36,Fresh Fruits Inc.,6/15/2022,false,Philippines
+564,apricot,3,4.94,14.82,Fresh Fruits Inc.,2/24/2022,false,Argentina
+565,strawberry,65,1.95,126.75,Green Grocers,12/29/2022,false,Cameroon
+566,grapefruit,100,1.74,174.0,Green Grocers,11/24/2022,false,Democratic Republic of the Congo
+567,orange,69,2.76,190.44,Homespun Pastures,8/26/2022,false,Philippines
+568,mango,87,9.39,816.93,Green Grocers,4/20/2022,false,Honduras
+569,apple,74,1.06,78.44,Fresh Fruits Inc.,2/13/2022,true,Russia
+570,orange,52,0.92,47.84,Homespun Pastures,4/29/2022,true,Brazil
+571,orange,100,6.44,644.0,Green Grocers,4/6/2022,true,Belarus
+572,banana,2,7.53,15.06,Homespun Pastures,10/10/2022,true,China
+573,banana,23,4.1,94.3,Fresh Fruits Inc.,10/17/2022,false,Indonesia
+574,strawberry,99,3.38,334.62,Fresh Fruits Inc.,2/21/2022,false,China
+575,grapefruit,91,0.13,11.83,Green Grocers,8/9/2022,true,Indonesia
+576,orange,14,7.98,111.72,Homespun Pastures,6/17/2022,false,Burkina Faso
+577,pineapple,82,0.42,34.44,Fresh Fruits Inc.,9/26/2022,true,China
+578,strawberry,4,0.87,3.48,Homespun Pastures,9/20/2022,true,Paraguay
+579,apricot,15,4.92,73.8,Homespun Pastures,6/24/2022,true,Belgium
+580,mango,83,9.42,781.86,Homespun Pastures,1/24/2022,false,Poland
+581,pineapple,57,2.44,139.08,Green Grocers,4/23/2022,false,China
+582,strawberry,64,7.19,460.16,Fresh Fruits Inc.,8/1/2022,false,Philippines
+583,orange,13,6.61,85.93,Fresh Fruits Inc.,4/25/2022,false,Russia
+584,orange,33,8.36,275.88,Fresh Fruits Inc.,6/21/2022,false,Czech Republic
+585,mango,14,0.72,10.08,Fresh Fruits Inc.,3/21/2022,true,Indonesia
+586,banana,33,2.16,71.28,Homespun Pastures,1/19/2022,false,Brazil
+587,strawberry,31,4.16,128.96,Homespun Pastures,6/8/2022,true,Portugal
+588,banana,93,7.06,656.58,Green Grocers,10/8/2022,false,China
+589,mango,76,2.62,199.12,Fresh Fruits Inc.,1/9/2022,false,Macedonia
+590,apricot,46,2.13,97.98,Green Grocers,12/10/2022,true,Latvia
+591,grapefruit,98,4.16,407.68,Homespun Pastures,9/20/2022,false,Armenia
+592,apricot,84,3.57,299.88,Homespun Pastures,12/30/2022,true,South Korea
+593,grape,15,3.16,47.4,Fresh Fruits Inc.,10/3/2022,true,Azerbaijan
+594,grapefruit,16,2.35,37.6,Fresh Fruits Inc.,5/6/2022,true,Panama
+595,grape,46,4.52,207.92,Green Grocers,6/16/2022,true,Indonesia
+596,pineapple,61,8.49,517.89,Fresh Fruits Inc.,4/13/2022,false,Philippines
+597,grapefruit,25,0.37,9.25,Fresh Fruits Inc.,9/20/2022,false,Indonesia
+598,apricot,1,1.3,1.3,Green Grocers,3/20/2022,false,Russia
+599,apricot,67,1.96,131.32,Fresh Fruits Inc.,1/10/2022,true,China
+600,pineapple,57,7.24,412.68,Fresh Fruits Inc.,3/11/2022,true,South Africa
+601,grape,95,3.77,358.15,Fresh Fruits Inc.,3/27/2022,true,French Polynesia
+602,apricot,57,0.71,40.47,Homespun Pastures,5/22/2022,false,Bulgaria
+603,pineapple,19,9.14,173.66,Homespun Pastures,7/6/2022,true,Bosnia and Herzegovina
+604,apple,44,4.37,192.28,Fresh Fruits Inc.,3/10/2022,false,Canada
+605,grape,31,7.3,226.3,Green Grocers,8/13/2022,false,China
+606,grape,74,0.89,65.86,Fresh Fruits Inc.,3/3/2022,false,Indonesia
+607,strawberry,91,1.98,180.18,Homespun Pastures,3/15/2022,false,China
+608,apricot,98,4.69,459.62,Green Grocers,6/10/2022,false,Mexico
+609,grape,14,2.72,38.08,Green Grocers,5/17/2022,false,United States
+610,grapefruit,38,3.69,140.22,Fresh Fruits Inc.,1/7/2022,false,Bulgaria
+611,grapefruit,56,7.28,407.68,Homespun Pastures,10/19/2022,true,Kenya
+612,apricot,30,8.05,241.5,Green Grocers,12/13/2022,true,China
+613,grapefruit,80,3.92,313.6,Homespun Pastures,11/21/2022,true,Indonesia
+614,apple,72,7.33,527.76,Homespun Pastures,10/19/2022,true,Bosnia and Herzegovina
+615,strawberry,50,1.74,87.0,Green Grocers,1/6/2022,true,Argentina
+616,mango,90,1.08,97.2,Fresh Fruits Inc.,1/21/2022,true,Russia
+617,pineapple,68,2.91,197.88,Fresh Fruits Inc.,10/4/2022,false,Philippines
+618,apricot,90,5.42,487.8,Homespun Pastures,12/28/2022,true,Philippines
+619,pineapple,40,6.98,279.2,Green Grocers,2/26/2022,true,Russia
+620,pineapple,86,4.14,356.04,Fresh Fruits Inc.,8/4/2022,false,Belgium
+621,grapefruit,64,0.94,60.16,Fresh Fruits Inc.,12/30/2022,false,China
+622,strawberry,25,1.07,26.75,Fresh Fruits Inc.,4/8/2022,false,China
+623,pineapple,49,9.92,486.08,Green Grocers,6/1/2022,true,Morocco
+624,pineapple,71,0.98,69.58,Fresh Fruits Inc.,3/11/2022,true,Kazakhstan
+625,banana,51,4.45,226.95,Fresh Fruits Inc.,1/28/2022,true,China
+626,mango,48,2.17,104.16,Green Grocers,10/6/2022,true,China
+627,pineapple,68,3.44,233.92,Green Grocers,3/16/2022,true,China
+628,orange,28,7.47,209.16,Fresh Fruits Inc.,3/19/2022,true,Indonesia
+629,mango,25,0.57,14.25,Fresh Fruits Inc.,1/2/2022,false,China
+630,banana,50,8.04,402.0,Green Grocers,4/1/2022,false,Philippines
+631,orange,74,8.21,607.54,Green Grocers,4/27/2022,false,Philippines
+632,grapefruit,91,3.12,283.92,Green Grocers,5/5/2022,true,Philippines
+633,banana,96,9.27,889.92,Green Grocers,7/12/2022,false,Iceland
+634,banana,95,6.03,572.85,Fresh Fruits Inc.,7/20/2022,true,China
+635,strawberry,73,6.88,502.24,Homespun Pastures,9/6/2022,true,China
+636,mango,19,6.12,116.28,Fresh Fruits Inc.,6/3/2022,true,Philippines
+637,apricot,12,8.16,97.92,Green Grocers,6/17/2022,true,Ireland
+638,mango,37,9.39,347.43,Green Grocers,11/11/2022,true,Philippines
+639,grapefruit,61,0.62,37.82,Green Grocers,1/28/2022,true,Lebanon
+640,apricot,93,5.39,501.27,Green Grocers,3/13/2022,true,Russia
+641,strawberry,100,8.26,826.0,Homespun Pastures,8/16/2022,true,Russia
+642,grape,32,0.56,17.92,Green Grocers,10/29/2022,false,Philippines
+643,apricot,20,9.07,181.4,Fresh Fruits Inc.,6/2/2022,true,Madagascar
+644,strawberry,74,5.42,401.08,Green Grocers,11/26/2022,true,Indonesia
+645,strawberry,91,9.66,879.06,Fresh Fruits Inc.,6/5/2022,true,Finland
+646,grape,76,2.88,218.88,Fresh Fruits Inc.,1/22/2022,true,Luxembourg
+647,orange,27,0.47,12.69,Homespun Pastures,3/11/2022,true,Moldova
+648,strawberry,73,3.47,253.31,Green Grocers,2/27/2022,false,Brazil
+649,apple,74,3.42,253.08,Fresh Fruits Inc.,2/20/2022,true,Thailand
+650,grape,33,8.49,280.17,Fresh Fruits Inc.,11/19/2022,false,Montenegro
+651,orange,31,4.68,145.08,Green Grocers,3/9/2022,false,Sweden
+652,grapefruit,57,0.76,43.32,Green Grocers,4/23/2022,false,Philippines
+653,strawberry,100,1.79,179.0,Green Grocers,12/28/2022,false,Vietnam
+654,apricot,30,9.52,285.6,Fresh Fruits Inc.,5/21/2022,true,Brazil
+655,grape,60,2.81,168.6,Green Grocers,12/29/2022,true,Ukraine
+656,orange,71,3.02,214.42,Fresh Fruits Inc.,5/13/2022,false,China
+657,apricot,5,9.28,46.4,Fresh Fruits Inc.,12/20/2022,false,Indonesia
+658,apple,47,1.48,69.56,Homespun Pastures,1/12/2022,false,Marshall Islands
+659,grape,38,6.3,239.4,Fresh Fruits Inc.,3/6/2022,true,Philippines
+660,apricot,5,3.76,18.8,Homespun Pastures,3/21/2022,true,China
+661,mango,33,2.34,77.22,Fresh Fruits Inc.,1/31/2022,false,Madagascar
+662,mango,59,5.11,301.49,Homespun Pastures,4/14/2022,true,Thailand
+663,grapefruit,71,7.67,544.57,Homespun Pastures,2/23/2022,true,Thailand
+664,apricot,97,9.51,922.47,Homespun Pastures,2/20/2022,false,Russia
+665,pineapple,41,5.59,229.19,Fresh Fruits Inc.,9/2/2022,false,Russia
+666,grapefruit,37,4.89,180.93,Fresh Fruits Inc.,7/6/2022,false,China
+667,grapefruit,8,7.16,57.28,Homespun Pastures,10/22/2022,false,Australia
+668,grapefruit,45,5.51,247.95,Green Grocers,2/1/2022,true,Argentina
+669,grape,50,3.68,184.0,Homespun Pastures,9/12/2022,false,Thailand
+670,pineapple,22,0.33,7.26,Fresh Fruits Inc.,12/11/2022,true,Argentina
+671,banana,19,1.85,35.15,Homespun Pastures,9/5/2022,false,Bangladesh
+672,apple,84,5.73,481.32,Green Grocers,6/9/2022,false,Canada
+673,grape,55,6.5,357.5,Green Grocers,1/28/2022,true,China
+674,banana,27,8.01,216.27,Green Grocers,6/25/2022,true,Spain
+675,pineapple,92,4.49,413.08,Fresh Fruits Inc.,11/27/2022,true,Indonesia
+676,grapefruit,15,5.0,75.0,Homespun Pastures,6/7/2022,false,China
+677,orange,52,0.74,38.48,Green Grocers,8/21/2022,false,United States
+678,orange,22,6.19,136.18,Green Grocers,9/14/2022,true,Indonesia
+679,grape,61,5.18,315.98,Green Grocers,4/20/2022,false,Russia
+680,grape,21,4.43,93.03,Fresh Fruits Inc.,12/5/2022,false,Sweden
+681,grape,42,3.78,158.76,Fresh Fruits Inc.,2/14/2022,true,China
+682,apple,19,5.69,108.11,Fresh Fruits Inc.,12/6/2022,false,Mexico
+683,banana,14,6.07,84.98,Homespun Pastures,2/23/2022,true,Indonesia
+684,orange,9,4.05,36.45,Green Grocers,7/17/2022,false,China
+685,grape,46,6.2,285.2,Fresh Fruits Inc.,5/23/2022,false,Indonesia
+686,apricot,40,6.54,261.6,Homespun Pastures,8/13/2022,false,Brazil
+687,strawberry,82,3.25,266.5,Green Grocers,10/3/2022,false,China
+688,pineapple,20,9.92,198.4,Green Grocers,6/28/2022,false,Israel
+689,apricot,3,3.96,11.88,Fresh Fruits Inc.,4/18/2022,false,China
+690,apple,96,7.27,697.92,Fresh Fruits Inc.,1/29/2022,true,China
+691,mango,31,5.46,169.26,Fresh Fruits Inc.,9/7/2022,false,Syria
+692,apricot,13,6.39,83.07,Green Grocers,9/28/2022,true,Peru
+693,banana,80,6.77,541.6,Fresh Fruits Inc.,5/22/2022,true,China
+694,grapefruit,48,6.25,300.0,Fresh Fruits Inc.,8/30/2022,false,Indonesia
+695,mango,47,1.39,65.33,Green Grocers,9/15/2022,false,China
+696,grape,8,3.08,24.64,Fresh Fruits Inc.,2/11/2022,false,Slovenia
+697,orange,86,2.57,221.02,Fresh Fruits Inc.,8/13/2022,true,Syria
+698,grape,100,1.71,171.0,Green Grocers,3/2/2022,true,Hungary
+699,apple,65,6.84,444.6,Homespun Pastures,9/5/2022,false,Peru
+700,mango,60,4.26,255.6,Fresh Fruits Inc.,10/30/2022,false,China
+701,orange,65,9.44,613.6,Green Grocers,9/10/2022,true,Philippines
+702,banana,44,5.45,239.8,Green Grocers,7/15/2022,false,Vietnam
+703,grape,51,9.64,491.64,Homespun Pastures,3/29/2022,false,Mexico
+704,mango,42,7.59,318.78,Fresh Fruits Inc.,9/10/2022,false,South Korea
+705,apple,60,7.69,461.4,Green Grocers,9/22/2022,true,Poland
+706,pineapple,10,2.04,20.4,Green Grocers,6/23/2022,false,Indonesia
+707,banana,66,6.18,407.88,Fresh Fruits Inc.,12/6/2022,false,Madagascar
+708,grapefruit,76,8.92,677.92,Homespun Pastures,8/10/2022,false,Tajikistan
+709,mango,92,3.98,366.16,Homespun Pastures,4/25/2022,true,North Korea
+710,pineapple,99,6.92,685.08,Homespun Pastures,3/15/2022,false,China
+711,grapefruit,35,5.8,203.0,Green Grocers,11/16/2022,false,Portugal
+712,mango,20,7.02,140.4,Fresh Fruits Inc.,8/8/2022,false,Indonesia
+713,apple,3,3.92,11.76,Green Grocers,11/26/2022,true,China
+714,grapefruit,98,2.12,207.76,Homespun Pastures,6/8/2022,false,Philippines
+715,banana,92,6.39,587.88,Homespun Pastures,6/3/2022,true,Czech Republic
+716,mango,90,9.76,878.4,Homespun Pastures,4/16/2022,true,Brazil
+717,grapefruit,64,1.98,126.72,Fresh Fruits Inc.,9/13/2022,true,China
+718,orange,72,8.93,642.96,Homespun Pastures,4/24/2022,true,Poland
+719,strawberry,77,0.79,60.83,Fresh Fruits Inc.,12/3/2022,true,Finland
+720,grape,17,5.57,94.69,Homespun Pastures,10/26/2022,true,Indonesia
+721,banana,100,4.51,451.0,Fresh Fruits Inc.,12/7/2022,false,Japan
+722,grapefruit,4,9.87,39.48,Green Grocers,9/21/2022,false,Bangladesh
+723,apple,100,1.78,178.0,Green Grocers,8/20/2022,true,Philippines
+724,grapefruit,60,2.85,171.0,Green Grocers,1/3/2022,false,Sweden
+725,grapefruit,59,0.63,37.17,Homespun Pastures,10/5/2022,false,China
+726,grape,35,9.66,338.1,Homespun Pastures,1/4/2022,false,China
+727,grape,84,8.08,678.72,Green Grocers,4/13/2022,false,Russia
+728,grapefruit,80,0.61,48.8,Fresh Fruits Inc.,3/31/2022,false,Poland
+729,strawberry,15,4.05,60.75,Green Grocers,11/22/2022,true,China
+730,apple,55,1.06,58.3,Homespun Pastures,10/8/2022,false,Kyrgyzstan
+731,grapefruit,68,1.11,75.48,Green Grocers,10/21/2022,false,Indonesia
+732,mango,20,7.41,148.2,Fresh Fruits Inc.,5/18/2022,false,Indonesia
+733,pineapple,54,7.99,431.46,Green Grocers,3/17/2022,true,Dominican Republic
+734,apple,99,2.31,228.69,Green Grocers,3/14/2022,false,Peru
+735,pineapple,41,1.7,69.7,Homespun Pastures,10/20/2022,false,Belarus
+736,apricot,35,6.04,211.4,Homespun Pastures,11/29/2022,false,Portugal
+737,apple,44,3.43,150.92,Fresh Fruits Inc.,7/4/2022,true,Portugal
+738,orange,36,7.06,254.16,Fresh Fruits Inc.,11/22/2022,true,Indonesia
+739,strawberry,97,4.96,481.12,Fresh Fruits Inc.,7/23/2022,false,South Africa
+740,strawberry,51,7.58,386.58,Homespun Pastures,8/23/2022,false,Pakistan
+741,grapefruit,16,3.49,55.84,Green Grocers,12/17/2022,true,Sweden
+742,grape,9,3.28,29.52,Fresh Fruits Inc.,6/20/2022,true,Azerbaijan
+743,grape,81,0.75,60.75,Green Grocers,12/21/2022,true,France
+744,mango,31,1.41,43.71,Green Grocers,10/6/2022,true,Moldova
+745,banana,32,1.52,48.64,Homespun Pastures,3/20/2022,true,Sweden
+746,apple,89,8.75,778.75,Homespun Pastures,2/11/2022,false,Philippines
+747,mango,11,2.51,27.61,Green Grocers,4/18/2022,false,China
+748,pineapple,51,7.33,373.83,Homespun Pastures,3/28/2022,true,Japan
+749,pineapple,2,8.93,17.86,Fresh Fruits Inc.,3/15/2022,true,Indonesia
+750,grape,70,9.73,681.1,Green Grocers,2/19/2022,true,Portugal
+751,apricot,2,7.16,14.32,Green Grocers,6/20/2022,false,China
+752,orange,90,2.29,206.1,Green Grocers,3/2/2022,false,France
+753,strawberry,40,5.05,202.0,Green Grocers,6/15/2022,false,Brazil
+754,banana,75,2.92,219.0,Green Grocers,11/13/2022,false,China
+755,strawberry,76,9.45,718.2,Green Grocers,10/4/2022,true,Peru
+756,strawberry,11,7.45,81.95,Green Grocers,6/24/2022,false,China
+757,strawberry,16,2.22,35.52,Homespun Pastures,7/31/2022,false,China
+758,apricot,73,5.47,399.31,Fresh Fruits Inc.,3/31/2022,false,China
+759,pineapple,27,5.97,161.19,Homespun Pastures,9/16/2022,true,Colombia
+760,strawberry,44,8.07,355.08,Homespun Pastures,3/21/2022,true,Indonesia
+761,orange,30,9.1,273.0,Green Grocers,12/25/2022,false,Pakistan
+762,strawberry,54,0.9,48.6,Fresh Fruits Inc.,10/27/2022,true,France
+763,grapefruit,45,7.75,348.75,Fresh Fruits Inc.,1/4/2022,true,Philippines
+764,orange,5,4.67,23.35,Fresh Fruits Inc.,9/22/2022,true,Indonesia
+765,pineapple,23,6.07,139.61,Green Grocers,8/9/2022,true,Nicaragua
+766,strawberry,80,7.76,620.8,Homespun Pastures,2/13/2022,false,France
+767,pineapple,29,9.62,278.98,Green Grocers,6/17/2022,false,Indonesia
+768,strawberry,73,1.99,145.27,Green Grocers,6/2/2022,false,China
+769,strawberry,8,9.52,76.16,Green Grocers,3/2/2022,true,Morocco
+770,mango,32,6.61,211.52,Green Grocers,6/28/2022,false,United States
+771,mango,86,2.62,225.32,Green Grocers,7/15/2022,false,Canada
+772,orange,92,8.76,805.92,Homespun Pastures,2/14/2022,false,Indonesia
+773,banana,33,4.5,148.5,Homespun Pastures,8/10/2022,true,Brazil
+774,apricot,30,7.88,236.4,Homespun Pastures,9/22/2022,true,Indonesia
+775,grapefruit,89,6.01,534.89,Green Grocers,2/4/2022,true,Japan
+776,apple,23,3.21,73.83,Homespun Pastures,1/8/2022,true,Philippines
+777,apple,97,6.8,659.6,Homespun Pastures,12/29/2022,true,Russia
+778,apple,92,6.69,615.48,Homespun Pastures,11/6/2022,false,Sweden
+779,banana,7,4.21,29.47,Green Grocers,4/30/2022,false,Indonesia
+780,mango,100,2.07,207.0,Homespun Pastures,5/5/2022,true,Portugal
+781,grape,35,0.84,29.4,Fresh Fruits Inc.,9/26/2022,true,China
+782,apricot,30,9.98,299.4,Green Grocers,7/16/2022,true,Indonesia
+783,pineapple,48,1.76,84.48,Fresh Fruits Inc.,1/30/2022,false,Uganda
+784,apricot,21,9.5,199.5,Fresh Fruits Inc.,2/2/2022,false,China
+785,grapefruit,41,9.57,392.37,Fresh Fruits Inc.,3/11/2022,false,Iran
+786,banana,73,5.04,367.92,Green Grocers,9/22/2022,false,China
+787,banana,24,8.25,198.0,Homespun Pastures,3/12/2022,false,China
+788,grape,77,0.43,33.11,Green Grocers,7/14/2022,false,China
+789,orange,59,6.04,356.36,Homespun Pastures,5/29/2022,false,Somalia
+790,banana,39,9.04,352.56,Fresh Fruits Inc.,12/30/2022,false,China
+791,banana,78,5.11,398.58,Homespun Pastures,2/27/2022,false,China
+792,strawberry,89,2.55,226.95,Green Grocers,6/17/2022,true,Brazil
+793,banana,8,1.48,11.84,Fresh Fruits Inc.,8/27/2022,false,China
+794,apple,74,7.17,530.58,Homespun Pastures,7/27/2022,false,Czech Republic
+795,strawberry,7,3.92,27.44,Homespun Pastures,9/10/2022,true,France
+796,apple,81,9.15,741.15,Green Grocers,11/19/2022,false,Macedonia
+797,strawberry,24,8.58,205.92,Green Grocers,5/24/2022,false,Kosovo
+798,apricot,68,4.54,308.72,Homespun Pastures,8/1/2022,true,Thailand
+799,strawberry,58,2.32,134.56,Fresh Fruits Inc.,9/30/2022,true,Sweden
+800,strawberry,84,7.99,671.16,Fresh Fruits Inc.,10/12/2022,true,China
+801,grape,62,1.47,91.14,Homespun Pastures,6/3/2022,true,Mozambique
+802,apricot,91,1.43,130.13,Homespun Pastures,10/25/2022,false,Philippines
+803,grape,16,8.72,139.52,Homespun Pastures,3/17/2022,false,Norway
+804,strawberry,7,0.58,4.06,Green Grocers,2/14/2022,false,France
+805,apricot,78,7.8,608.4,Green Grocers,11/29/2022,true,Indonesia
+806,grapefruit,39,4.1,159.9,Homespun Pastures,4/15/2022,false,China
+807,apple,97,5.77,559.69,Fresh Fruits Inc.,11/15/2022,true,China
+808,banana,55,6.87,377.85,Green Grocers,10/15/2022,false,Kyrgyzstan
+809,strawberry,70,9.99,699.3,Homespun Pastures,11/16/2022,false,United States
+810,apple,100,0.32,32.0,Homespun Pastures,3/30/2022,false,China
+811,orange,22,9.11,200.42,Green Grocers,8/16/2022,false,China
+812,grape,83,4.71,390.93,Fresh Fruits Inc.,1/6/2022,true,Nigeria
+813,apple,50,8.79,439.5,Fresh Fruits Inc.,9/17/2022,true,China
+814,banana,59,4.62,272.58,Green Grocers,6/17/2022,false,Portugal
+815,mango,39,3.94,153.66,Green Grocers,7/12/2022,false,Madagascar
+816,grapefruit,80,0.44,35.2,Homespun Pastures,6/18/2022,false,Myanmar
+817,orange,71,5.5,390.5,Fresh Fruits Inc.,7/7/2022,true,Portugal
+818,mango,46,5.44,250.24,Fresh Fruits Inc.,6/15/2022,false,Nigeria
+819,apricot,7,2.2,15.4,Green Grocers,1/4/2022,false,Finland
+820,pineapple,35,0.93,32.55,Fresh Fruits Inc.,10/22/2022,true,Indonesia
+821,pineapple,49,0.15,7.35,Fresh Fruits Inc.,3/7/2022,false,Saint Lucia
+822,banana,1,2.99,2.99,Homespun Pastures,6/30/2022,false,Portugal
+823,orange,92,4.54,417.68,Fresh Fruits Inc.,7/7/2022,false,Ivory Coast
+824,grape,19,8.13,154.47,Green Grocers,11/29/2022,false,Mexico
+825,grape,98,8.21,804.58,Fresh Fruits Inc.,5/4/2022,true,Philippines
+826,strawberry,64,9.89,632.96,Fresh Fruits Inc.,2/20/2022,true,China
+827,grape,76,3.26,247.76,Fresh Fruits Inc.,2/1/2022,true,Morocco
+828,mango,57,8.87,505.59,Green Grocers,11/23/2022,true,Philippines
+829,banana,71,5.6,397.6,Homespun Pastures,2/8/2022,true,China
+830,mango,60,4.19,251.4,Homespun Pastures,7/3/2022,false,Niue
+831,grape,83,8.46,702.18,Homespun Pastures,10/27/2022,true,Philippines
+832,apricot,55,2.19,120.45,Fresh Fruits Inc.,8/19/2022,false,Mongolia
+833,mango,19,9.33,177.27,Homespun Pastures,5/6/2022,true,Russia
+834,apple,5,0.15,0.75,Green Grocers,7/16/2022,false,Slovenia
+835,orange,84,7.66,643.44,Green Grocers,11/12/2022,false,Russia
+836,mango,37,1.69,62.53,Green Grocers,6/12/2022,false,Paraguay
+837,pineapple,76,9.54,725.04,Fresh Fruits Inc.,8/26/2022,true,Vietnam
+838,banana,7,9.88,69.16,Homespun Pastures,3/13/2022,false,Philippines
+839,apple,78,2.61,203.58,Homespun Pastures,9/12/2022,false,Oman
+840,banana,24,0.66,15.84,Fresh Fruits Inc.,11/21/2022,false,Malta
+841,orange,37,6.13,226.81,Homespun Pastures,2/3/2022,false,Sweden
+842,apple,30,5.06,151.8,Green Grocers,3/17/2022,false,Mexico
+843,grapefruit,86,7.28,626.08,Green Grocers,3/13/2022,false,Venezuela
+844,banana,73,2.88,210.24,Green Grocers,1/5/2022,false,Japan
+845,pineapple,57,2.29,130.53,Green Grocers,7/1/2022,true,Brazil
+846,strawberry,78,4.37,340.86,Fresh Fruits Inc.,2/20/2022,true,Indonesia
+847,banana,39,8.59,335.01,Green Grocers,4/12/2022,false,Cape Verde
+848,pineapple,37,0.42,15.54,Fresh Fruits Inc.,10/13/2022,false,Poland
+849,apple,27,0.97,26.19,Green Grocers,12/26/2022,false,China
+850,mango,20,0.85,17.0,Green Grocers,12/1/2022,false,Philippines
+851,grape,21,4.9,102.9,Green Grocers,3/6/2022,false,Greece
+852,strawberry,59,0.96,56.64,Homespun Pastures,11/11/2022,false,Thailand
+853,mango,44,6.88,302.72,Fresh Fruits Inc.,5/20/2022,true,Russia
+854,apricot,71,8.79,624.09,Green Grocers,4/13/2022,true,Georgia
+855,apricot,29,5.66,164.14,Green Grocers,12/2/2022,false,Indonesia
+856,grape,91,9.04,822.64,Fresh Fruits Inc.,12/13/2022,false,Iran
+857,banana,79,5.3,418.7,Green Grocers,2/14/2022,true,Norway
+858,strawberry,30,6.87,206.1,Fresh Fruits Inc.,4/26/2022,false,Macedonia
+859,apricot,7,1.62,11.34,Homespun Pastures,4/5/2022,false,Latvia
+860,orange,38,2.79,106.02,Green Grocers,8/22/2022,true,Philippines
+861,banana,47,9.36,439.92,Green Grocers,1/8/2022,false,South Korea
+862,grape,40,0.62,24.8,Green Grocers,6/19/2022,true,Vietnam
+863,strawberry,76,2.02,153.52,Fresh Fruits Inc.,12/27/2022,true,Philippines
+864,grapefruit,65,8.67,563.55,Homespun Pastures,10/17/2022,true,China
+865,apricot,49,0.19,9.31,Homespun Pastures,11/28/2022,false,Pakistan
+866,mango,97,5.41,524.77,Green Grocers,2/13/2022,false,China
+867,apricot,90,7.98,718.2,Fresh Fruits Inc.,4/3/2022,false,China
+868,grape,99,1.58,156.42,Homespun Pastures,9/28/2022,false,Brazil
+869,grapefruit,65,1.59,103.35,Homespun Pastures,3/25/2022,true,Brazil
+870,grapefruit,67,2.0,134.0,Green Grocers,12/12/2022,true,China
+871,orange,29,4.71,136.59,Homespun Pastures,3/5/2022,true,Indonesia
+872,apricot,12,1.08,12.96,Fresh Fruits Inc.,5/27/2022,false,China
+873,pineapple,38,9.01,342.38,Green Grocers,10/24/2022,false,Brazil
+874,apricot,51,2.91,148.41,Homespun Pastures,10/30/2022,false,Latvia
+875,apple,33,0.34,11.22,Fresh Fruits Inc.,11/19/2022,true,China
+876,apricot,89,2.71,241.19,Green Grocers,3/8/2022,true,Sweden
+877,strawberry,9,6.07,54.63,Homespun Pastures,11/25/2022,true,Sudan
+878,apricot,42,1.77,74.34,Homespun Pastures,4/4/2022,true,Nicaragua
+879,banana,20,5.56,111.2,Fresh Fruits Inc.,9/6/2022,false,Czech Republic
+880,pineapple,47,7.86,369.42,Fresh Fruits Inc.,8/17/2022,false,Indonesia
+881,apple,16,1.62,25.92,Green Grocers,8/10/2022,true,China
+882,orange,98,3.46,339.08,Fresh Fruits Inc.,1/3/2022,true,Portugal
+883,strawberry,17,1.66,28.22,Fresh Fruits Inc.,7/4/2022,true,South Africa
+884,orange,13,9.9,128.7,Fresh Fruits Inc.,5/24/2022,false,China
+885,mango,25,5.74,143.5,Fresh Fruits Inc.,4/12/2022,false,Greece
+886,grape,72,9.67,696.24,Green Grocers,1/30/2022,false,Portugal
+887,pineapple,19,0.93,17.67,Green Grocers,2/7/2022,true,Japan
+888,orange,86,6.34,545.24,Fresh Fruits Inc.,9/1/2022,true,Indonesia
+889,apple,46,7.04,323.84,Fresh Fruits Inc.,4/9/2022,true,Japan
+890,strawberry,28,9.77,273.56,Fresh Fruits Inc.,1/30/2022,true,Colombia
+891,strawberry,45,4.79,215.55,Green Grocers,11/14/2022,true,Indonesia
+892,apple,16,3.28,52.48,Fresh Fruits Inc.,2/17/2022,true,United States
+893,grapefruit,11,9.26,101.86,Fresh Fruits Inc.,10/10/2022,true,Palestinian Territory
+894,apricot,44,7.49,329.56,Homespun Pastures,2/10/2022,true,Kazakhstan
+895,grape,98,2.94,288.12,Fresh Fruits Inc.,7/23/2022,false,Philippines
+896,grape,60,6.41,384.6,Green Grocers,9/30/2022,true,Indonesia
+897,pineapple,19,6.03,114.57,Fresh Fruits Inc.,5/24/2022,false,France
+898,grape,8,7.39,59.12,Homespun Pastures,10/18/2022,false,China
+899,banana,87,9.36,814.32,Green Grocers,7/17/2022,false,Brazil
+900,mango,45,4.41,198.45,Fresh Fruits Inc.,7/13/2022,true,Brazil
+901,strawberry,17,1.06,18.02,Fresh Fruits Inc.,2/13/2022,false,Japan
+902,mango,44,8.69,382.36,Fresh Fruits Inc.,12/3/2022,true,Egypt
+903,grape,29,9.13,264.77,Green Grocers,6/16/2022,false,China
+904,grapefruit,29,4.67,135.43,Homespun Pastures,10/14/2022,false,Russia
+905,apricot,2,7.48,14.96,Green Grocers,4/14/2022,true,Honduras
+906,mango,78,8.09,631.02,Fresh Fruits Inc.,12/2/2022,true,South Africa
+907,strawberry,40,8.82,352.8,Homespun Pastures,11/22/2022,true,China
+908,orange,90,9.76,878.4,Green Grocers,2/11/2022,true,Poland
+909,apricot,47,3.76,176.72,Green Grocers,2/3/2022,true,Brazil
+910,mango,39,6.45,251.55,Green Grocers,8/12/2022,false,China
+911,strawberry,18,9.65,173.7,Green Grocers,5/21/2022,true,Cape Verde
+912,apricot,30,5.06,151.8,Fresh Fruits Inc.,7/15/2022,false,Indonesia
+913,mango,74,1.93,142.82,Homespun Pastures,3/9/2022,true,Croatia
+914,mango,98,9.15,896.7,Fresh Fruits Inc.,3/27/2022,true,China
+915,mango,81,4.55,368.55,Homespun Pastures,1/25/2022,false,Yemen
+916,mango,58,0.8,46.4,Fresh Fruits Inc.,11/26/2022,true,Indonesia
+917,banana,20,4.74,94.8,Green Grocers,10/17/2022,true,Russia
+918,strawberry,85,4.47,379.95,Fresh Fruits Inc.,8/21/2022,true,Colombia
+919,apricot,20,7.09,141.8,Homespun Pastures,7/6/2022,false,China
+920,orange,47,0.47,22.09,Fresh Fruits Inc.,7/25/2022,true,China
+921,apricot,28,7.53,210.84,Green Grocers,1/18/2022,false,Mauritius
+922,grapefruit,31,6.06,187.86,Green Grocers,8/16/2022,false,China
+923,grapefruit,50,1.2,60.0,Green Grocers,5/19/2022,true,Finland
+924,mango,14,2.52,35.28,Green Grocers,6/29/2022,true,France
+925,orange,2,8.65,17.3,Green Grocers,10/19/2022,false,Ukraine
+926,banana,72,7.96,573.12,Fresh Fruits Inc.,6/28/2022,false,Indonesia
+927,grapefruit,43,7.67,329.81,Homespun Pastures,10/3/2022,false,Portugal
+928,grape,35,9.46,331.1,Green Grocers,1/23/2022,false,Brazil
+929,apricot,26,7.76,201.76,Homespun Pastures,11/8/2022,true,Lithuania
+930,orange,74,2.22,164.28,Homespun Pastures,4/8/2022,true,Sweden
+931,apricot,5,7.07,35.35,Fresh Fruits Inc.,1/5/2022,false,Indonesia
+932,pineapple,52,0.75,39.0,Fresh Fruits Inc.,3/6/2022,true,Afghanistan
+933,apple,84,6.94,582.96,Green Grocers,12/4/2022,true,United States
+934,pineapple,44,8.78,386.32,Green Grocers,1/27/2022,true,Peru
+935,mango,35,6.44,225.4,Fresh Fruits Inc.,10/1/2022,true,Canada
+936,grapefruit,1,5.23,5.23,Homespun Pastures,9/3/2022,true,Bangladesh
+937,grape,68,6.55,445.4,Green Grocers,2/25/2022,true,Sweden
+938,strawberry,35,7.52,263.2,Green Grocers,2/2/2022,false,Indonesia
+939,grapefruit,33,6.44,212.52,Green Grocers,1/29/2022,true,Indonesia
+940,strawberry,73,3.28,239.44,Homespun Pastures,1/27/2022,true,Peru
+941,apple,45,0.45,20.25,Homespun Pastures,8/9/2022,true,China
+942,apple,26,6.3,163.8,Green Grocers,11/3/2022,false,China
+943,grape,60,2.25,135.0,Green Grocers,12/6/2022,false,Finland
+944,strawberry,95,3.88,368.6,Homespun Pastures,2/9/2022,true,Portugal
+945,grapefruit,54,2.69,145.26,Green Grocers,4/15/2022,true,Vietnam
+946,strawberry,79,8.01,632.79,Fresh Fruits Inc.,10/17/2022,true,Brazil
+947,banana,31,1.12,34.72,Fresh Fruits Inc.,7/27/2022,true,Thailand
+948,banana,85,9.05,769.25,Fresh Fruits Inc.,11/8/2022,true,Mexico
+949,pineapple,63,5.74,361.62,Fresh Fruits Inc.,6/20/2022,true,Kuwait
+950,orange,60,3.93,235.8,Homespun Pastures,4/10/2022,true,Luxembourg
+951,pineapple,74,9.22,682.28,Green Grocers,1/22/2022,true,China
+952,apple,43,6.52,280.36,Homespun Pastures,5/30/2022,true,Indonesia
+953,apple,65,6.33,411.45,Homespun Pastures,9/7/2022,false,Ethiopia
+954,orange,68,5.31,361.08,Fresh Fruits Inc.,4/10/2022,true,Brazil
+955,orange,71,1.76,124.96,Green Grocers,6/15/2022,true,Russia
+956,mango,37,2.68,99.16,Homespun Pastures,10/12/2022,true,Czech Republic
+957,orange,20,3.35,67.0,Green Grocers,10/4/2022,false,China
+958,strawberry,65,9.27,602.55,Green Grocers,11/14/2022,false,Belarus
+959,orange,5,3.04,15.2,Fresh Fruits Inc.,2/22/2022,false,Czech Republic
+960,grape,88,8.59,755.92,Fresh Fruits Inc.,4/16/2022,false,Czech Republic
+961,orange,98,6.2,607.6,Fresh Fruits Inc.,3/2/2022,true,Myanmar
+962,apricot,9,5.96,53.64,Fresh Fruits Inc.,3/24/2022,false,Cuba
+963,apple,26,4.39,114.14,Green Grocers,1/22/2022,true,Portugal
+964,apricot,56,0.19,10.64,Homespun Pastures,4/7/2022,true,France
+965,grapefruit,16,1.51,24.16,Homespun Pastures,8/28/2022,true,Lithuania
+966,apple,73,9.0,657.0,Fresh Fruits Inc.,10/10/2022,true,Colombia
+967,grapefruit,83,4.61,382.63,Green Grocers,8/10/2022,true,China
+968,grape,80,1.48,118.4,Fresh Fruits Inc.,7/19/2022,true,Afghanistan
+969,apple,89,6.64,590.96,Homespun Pastures,8/4/2022,true,Latvia
+970,orange,57,4.69,267.33,Fresh Fruits Inc.,9/10/2022,true,Philippines
+971,orange,68,6.95,472.6,Homespun Pastures,3/9/2022,false,France
+972,orange,7,9.67,67.69,Fresh Fruits Inc.,12/20/2022,true,United States
+973,mango,28,5.55,155.4,Fresh Fruits Inc.,10/14/2022,false,China
+974,strawberry,99,8.74,865.26,Green Grocers,10/26/2022,false,Ireland
+975,banana,47,0.83,39.01,Green Grocers,3/30/2022,false,Czech Republic
+976,banana,18,9.55,171.9,Green Grocers,11/20/2022,true,China
+977,pineapple,48,2.24,107.52,Green Grocers,10/28/2022,false,China
+978,grape,34,8.39,285.26,Homespun Pastures,12/15/2022,false,Nigeria
+979,pineapple,72,0.06,4.32,Green Grocers,12/28/2022,false,Poland
+980,strawberry,59,1.77,104.43,Homespun Pastures,1/20/2022,true,France
+981,grape,51,7.03,358.53,Fresh Fruits Inc.,11/30/2022,true,China
+982,grapefruit,63,9.67,609.21,Green Grocers,4/1/2022,false,Greece
+983,mango,48,2.61,125.28,Fresh Fruits Inc.,12/24/2022,true,Philippines
+984,orange,69,9.3,641.7,Fresh Fruits Inc.,12/13/2022,true,Colombia
+985,mango,71,3.79,269.09,Homespun Pastures,6/17/2022,false,Czech Republic
+986,pineapple,60,4.19,251.4,Homespun Pastures,12/6/2022,true,Ukraine
+987,strawberry,74,3.76,278.24,Fresh Fruits Inc.,12/23/2022,false,China
+988,apricot,36,7.68,276.48,Fresh Fruits Inc.,3/25/2022,false,Brazil
+989,apricot,53,5.92,313.76,Homespun Pastures,9/15/2022,true,Philippines
+990,grape,11,9.59,105.49,Fresh Fruits Inc.,4/11/2022,false,Portugal
+991,grapefruit,38,4.69,178.22,Homespun Pastures,4/10/2022,true,Canada
+992,pineapple,9,0.15,1.35,Fresh Fruits Inc.,4/4/2022,true,Libya
+993,banana,50,4.76,238.0,Fresh Fruits Inc.,5/18/2022,true,Indonesia
+994,pineapple,81,3.95,319.95,Fresh Fruits Inc.,4/13/2022,true,Russia
+995,banana,51,2.55,130.05,Green Grocers,10/10/2022,false,France
+996,grapefruit,8,9.32,74.56,Fresh Fruits Inc.,7/7/2022,true,Indonesia
+997,orange,32,9.51,304.32,Green Grocers,8/9/2022,true,Panama
+998,banana,83,2.48,205.84,Homespun Pastures,11/5/2022,true,Norway
+999,grapefruit,1,1.4,1.4,Fresh Fruits Inc.,1/16/2022,false,Indonesia
+1000,pineapple,91,4.89,444.99,Fresh Fruits Inc.,11/13/2022,false,Norway

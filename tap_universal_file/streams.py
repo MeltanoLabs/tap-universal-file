@@ -170,7 +170,7 @@ class DelimitedStream(FileStream):
             if lf < lr:
                 if self.config["delimited_error_handling"] == "fail":
                     msg = (
-                        f"Too few entries at line {self.line_num}. To suppress this "
+                        f"Total Number of fields/columns doesn't align with the data at line number: {self.line_num}. To suppress this "
                         "error, change 'delimited_error_handling' to 'ignore'."
                     )
                     raise RuntimeError(msg)

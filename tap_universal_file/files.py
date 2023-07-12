@@ -101,7 +101,7 @@ class FilesystemManager:
             if (
                 file["type"] == "directory"  # Ignore nested folders.
                 or file["size"] == 0  # Ignore empty files.
-                or (  # Ignore files not matching the congigured file_regex
+                or (  # Ignore files not matching the configured file_regex
                     "file_regex" in self.config
                     and not re.match(
                         self.config["file_regex"],

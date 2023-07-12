@@ -26,7 +26,6 @@ plugins:
       kind: boolean
     - name: start_date
       kind: date_iso8601
-      format: date-time
     - name: delimited_error_handling
     - name: delimited_delimiter
     - name: delimited_quote_character

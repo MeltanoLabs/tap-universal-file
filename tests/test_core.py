@@ -132,7 +132,11 @@ def test_avro_execution():
 
 
 def test_s3_execution():
-    s3_config = {"protocol": "s3", "filepath": "tap-file-taptesting/grocery"}
+    s3_config = {
+        "protocol": "s3",
+        "filepath": "derek-tap-filetesting/2023",
+        "file_regex": "airtravel\\.csv$",
+    }
     execute_tap(s3_config)
 
 

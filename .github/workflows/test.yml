@@ -17,11 +17,11 @@ jobs:
       matrix:
         python-version: ["3.8", "3.9", "3.10", "3.11"]
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_ACCESS_KEY_ID: AKIAZPOBIXUJJ434XT5T
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      TAP_UNIVERSAL_FILE_FILEPATH: ${{ vars.TAP_UNIVERSAL_FILE_FILEPATH }}
-      TAP_UNIVERSAL_FILE_FILE_REGEX: ${{ vars.TAP_UNIVERSAL_FILE_FILE_REGEX }}
-      TAP_UNIVERSAL_FILE_PROTOCOL: ${{ vars.TAP_UNIVERSAL_FILE_PROTOCOL }}
+      TAP_UNIVERSAL_FILE_FILEPATH: derek-tap-filetesting/2023
+      TAP_UNIVERSAL_FILE_FILE_REGEX: ^airtravel\.csv$
+      TAP_UNIVERSAL_FILE_PROTOCOL: s3
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}

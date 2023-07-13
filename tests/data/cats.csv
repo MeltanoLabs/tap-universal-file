@@ -1,10 +1,10 @@
 Here are three
-rows that
-should be skipped
+junk rows in
+the file's header
 id,name,agility,size,description
 1,House Cat,4,1,A common pet
 2,Lion,2,4,King of the jungle
 3,Tiger,3,3,Striped all over
 Here are three
-more rows that
-should be skipped
+junk rows in
+the file's footer

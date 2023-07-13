@@ -4,11 +4,13 @@ import io
 import json
 from collections import defaultdict
 from contextlib import redirect_stdout
+import os
 from pathlib import Path
+import pytest
 
 from singer_sdk.testing import get_tap_test_class
 
-from tap_file.tap import TapFile
+from tap_universal_file.tap import TapUniversalFile
 
 # Helper functions
 
@@ -28,11 +30,11 @@ base_file_config = {
 }
 
 
-def execute_tap(config: dict = {}):
-    """Executes a TapFile tap.
+def execute_tap(config: dict = None):
+    """Executes a TapUniversalFile tap.
 
     Args:
-        config: Configuration for the tap. Defaults to {}.
+        config: Configuration for the tap.
 
     Returns:
         A dictionary containing messages about the tap's invocation, including, schema,
@@ -45,7 +47,8 @@ def execute_tap(config: dict = {}):
 
     stdout_buf = io.StringIO()
     with redirect_stdout(stdout_buf):
-        TapFile(config=config).run_sync_dry_run(dry_run_record_limit=None)
+        tap_config = config if config is not None else {}
+        TapUniversalFile(config=tap_config).run_sync_dry_run(dry_run_record_limit=None)
     stdout_buf.seek(0)
 
     for message in [
@@ -76,81 +79,147 @@ def execute_tap(config: dict = {}):
 sample_config = base_file_config.copy()
 sample_config.update({"file_regex": "fruit_records\\.csv"})
 
-TestTapFile = get_tap_test_class(
-    tap_class=TapFile,
+TestTapUniversalFile = get_tap_test_class(
+    tap_class=TapUniversalFile,
     config=sample_config,
 )
 
 # Run custom tests
 
-sdc_config = base_file_config.copy()
-sdc_config.update({"file_regex": "^fruit_records\\.csv$", "additional_info": True})
-delimited_config = base_file_config.copy()
-delimited_config.update(
-    {"file_type": "delimited", "file_regex": "^fruit_records\\.csv$"},
-)
-jsonl_config = base_file_config.copy()
-jsonl_config.update(
-    {
-        "file_type": "jsonl",
-        "file_regex": "^employees\\.jsonl$",
-        "jsonl_sampling_strategy": "first",
-        "jsonl_type_coercion_strategy": "string",
-    },
-)
-avro_config = base_file_config.copy()
-avro_config.update(
-    {
-        "file_type": "avro",
-        "file_regex": "^athletes\\.avro$",
-        "avro_type_coercion_strategy": "convert",
-    },
-)
-s3_config = {"protocol": "s3", "filepath": "tap-file-taptesting/grocery"}
-compression_config = base_file_config.copy()
-compression_config.update(
-    {
-        "file_regex": "fruit_records",
-        "compression": "detect",
-        "delimited_delimiter": ",",
-    },
-)
-header_footer_config = base_file_config.copy()
-header_footer_config.update(
-    {
-        "file_regex": "^cats\\.csv$",
-        "delimited_header_skip": 3,
-        "delimited_footer_skip": 3,
-    },
-)
-
 
 def test_sdc_fields_present():
-    messages = execute_tap(sdc_config)
+    modified_config = base_file_config.copy()
+    modified_config.update(
+        {"file_regex": "^fruit_records\\.csv$", "additional_info": True}
+    )
+    messages = execute_tap(modified_config)
     properties = messages["schema_messages"][0]["schema"]["properties"]
     assert properties["_sdc_line_number"], "_sdc_line_number is not present in schema"
     assert properties["_sdc_file_name"], "_sdc_file_name is not present in schema"
 
 
 def test_delimited_execution():
-    execute_tap(delimited_config)
+    modified_config = base_file_config.copy()
+    modified_config.update(
+        {"file_type": "delimited", "file_regex": "^fruit_records\\.csv$"},
+    )
+    execute_tap(modified_config)
 
 
 def test_jsonl_execution():
-    execute_tap(jsonl_config)
+    modified_config = base_file_config.copy()
+    modified_config.update(
+        {
+            "file_type": "jsonl",
+            "file_regex": "^employees\\.jsonl$",
+            "jsonl_sampling_strategy": "first",
+            "jsonl_type_coercion_strategy": "string",
+        },
+    )
+    execute_tap(modified_config)
 
 
 def test_avro_execution():
-    execute_tap(avro_config)
+    modified_config = base_file_config.copy()
+    modified_config.update(
+        {
+            "file_type": "avro",
+            "file_regex": "^athletes\\.avro$",
+            "avro_type_coercion_strategy": "convert",
+        },
+    )
+    execute_tap(modified_config)
 
 
 def test_s3_execution():
+    s3_config = {"protocol": "s3", "filepath": "tap-file-taptesting/grocery"}
     execute_tap(s3_config)
 
 
 def test_compression_execution():
-    execute_tap(compression_config)
+    modified_config = base_file_config.copy()
+    modified_config.update(
+        {
+            "file_regex": "fruit_records",
+            "compression": "detect",
+            "delimited_delimiter": ",",
+        },
+    )
+    execute_tap(modified_config)
 
 
 def test_header_footer_execution():
-    execute_tap(header_footer_config)
+    modified_config = base_file_config.copy()
+    modified_config.update(
+        {
+            "file_regex": "^cats\\.csv$",
+            "delimited_header_skip": 3,
+            "delimited_footer_skip": 3,
+        },
+    )
+    execute_tap(modified_config)
+
+
+def test_malformed_delimited_fail():
+    modified_config = base_file_config.copy()
+    modified_config.update(
+        {"file_regex": "^cats\\.csv$", "delimited_error_handling": "fail"}
+    )
+    with pytest.raises(RuntimeError, match="^Error processing.*"):
+        execute_tap(modified_config)
+
+
+def test_malformed_delimited_ignore():
+    modified_config = base_file_config.copy()
+    modified_config.update(
+        {"file_regex": "^cats\\.csv$", "delimited_error_handling": "ignore"}
+    )
+    execute_tap(modified_config)
+
+
+def test_malformed_jsonl_fail():
+    modified_config = base_file_config.copy()
+    modified_config.update(
+        {
+            "file_regex": "^malformed_employees\\.jsonl$",
+            "file_type": "jsonl",
+            "jsonl_error_handling": "fail",
+            "jsonl_type_coercion_strategy": "string",
+        }
+    )
+    with pytest.raises(RuntimeError, match="^Error processing.*"):
+        execute_tap(modified_config)
+
+
+def test_malformed_jsonl_ignore():
+    modified_config = base_file_config.copy()
+    modified_config.update(
+        {
+            "file_regex": "^malformed_employees\\.jsonl$",
+            "file_type": "jsonl",
+            "jsonl_error_handling": "ignore",
+            "jsonl_type_coercion_strategy": "string",
+        }
+    )
+    execute_tap(modified_config)
+
+
+def test_incremental_sync():
+    os.utime(data_dir() + "/old_hardware.csv", (1641124800, 1641124800))
+    os.utime(data_dir() + "/new_hardware.csv", (1641211200, 1641211200))
+    modified_config = base_file_config.copy()
+    modified_config.update(
+        {
+            "stream_name": "file",
+            "file_regex": ".*hardware\\.csv$",
+            "file_type": "delimited",
+        }
+    )
+    messages = execute_tap(modified_config)
+    assert len(messages["records"]["file"]) == 10, "Improper number of records returned"
+    start_date = messages["state_messages"][0]["value"]["bookmarks"]["file"][
+        "replication_key_value"
+    ]
+    modified_config.update({"start_date": start_date})
+    messages = execute_tap(modified_config)
+    assert len(messages["records"]["file"]) == 5, "Improper number of records returned"

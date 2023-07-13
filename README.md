@@ -1,8 +1,8 @@
-# tap-file
+# tap-universal-file
 
 **IMPORTANT**: This tap is still under development and should not be used in its current form. <!-- TODO: remove disclaimer when feature-complete. -->
 
-`tap-file` is a Singer tap for File.
+`tap-universal-file` is a Singer tap for File.
 
 Built with the [Meltano Tap SDK](https://sdk.meltano.com) for Singer Taps.
 
@@ -11,7 +11,7 @@ Built with the [Meltano Tap SDK](https://sdk.meltano.com) for Singer Taps.
 An example GitHub installation command:
 
 ```bash
-pipx install git+https://github.com/MeltanoLabs/tap-file.git
+pipx install git+https://github.com/MeltanoLabs/tap-universal-file.git
 ```
 
 ## Configuration
@@ -21,20 +21,23 @@ pipx install git+https://github.com/MeltanoLabs/tap-file.git
 | Setting                     | Required | Default | Description |
 |:----------------------------|:--------:|:-------:|:------------|
 | stream_name                 | False    | file    | The name of the stream that is output by the tap. |
-| protocol                    | True     | None    | The protocol to use to retrieve data. One of `file` or `s3`. |
+| protocol                    | True     | None    | The protocol to use to retrieve data. Must be either `file` or `s3`. |
 | filepath                    | True     | None    | The path to obtain files from. Example: `/foo/bar`. Or, for `protocol==s3`, use `s3-bucket-name` instead. |
 | file_regex                  | False    | None    | A regex pattern to only include certain files. Example: `.*\.csv`. |
-| file_type                   | False    | delimited | Can be any of `delimited`, `jsonl`, or `avro`. Indicates the type of file to sync, where `delimited` is for CSV/TSV files and similar. Note that *all* files will be read as that type, regardless of file extension. To only read from files with a matching file extension, appropriately configure `file_regex`. |
-| compression                 | False    | detect  | The encoding to use to decompress data. One of `zip`, `bz2`, `gzip`, `lzma`, `xz`, `none`, or `detect`. If set to `none` or any encoding, that setting will be applied to *all* files, regardless of file extension. If set to `detect`, encodings will be applied based on file extension. |
-| additional_info             | False    |       1 | If `True`, each row in tap's output will have two additional columns: `_sdc_file_name` and `_sdc_line_number`. If `False`, these columns will not be present. |
-| delimited_delimiter         | False    | detect  | The character used to separate records in a delimited file. Can be any character or the special value `detect`. If a character is provided, all delimited files will use that value. `detect` will use `,` for `.csv` files, `\t` for `.tsv` files, and fail if other file types are present. |
+| file_type                   | False    | delimited | Must be one of `delimited`, `jsonl`, or `avro`. Indicates the type of file to sync, where `delimited` is for CSV/TSV files and similar. Note that *all* files will be read as that type, regardless of file extension. To only read from files with a matching file extension, appropriately configure `file_regex`. |
+| compression                 | False    | detect  | The encoding used to decompress data. Must be one of `none`, `zip`, `bz2`, `gzip`, `lzma`, `xz`, or `detect`. If set to `none` or any encoding, that setting will be applied to *all* files, regardless of file extension. If set to `detect`, encodings will be applied based on file extension. |
+| additional_info             | False    |       1 | If `True`, each row in tap's output will have three additional columns: `_sdc_file_name`, `_sdc_line_number`, and `_sdc_last_modified`. If `False`, these columns will not be present. Incremental replication requires `additional_info==True`. |
+| start_date                  | False    | None    | Used in place of state. Files that were last modified before the `start_date` wwill not be synced. |
+| delimited_error_handling    | False    | fail    | The method with which to handle improperly formatted records in delimited files. Must be either `fail` or `ignore`. `fail` will cause the tap to fail if an improperly formatted record is detected. `ignore` will ignore the fact that it is improperly formatted and process it anyway. |
+| delimited_delimiter         | False    | detect  | The character used to separate records in a delimited file. Can ne any character or the special value `detect`. If a character is provided, all delimited files will use that value. `detect` will use `,` for `.csv` files, `\t` for `.tsv` files, and fail if other file types are present. |
 | delimited_quote_character   | False    | "       | The character used to indicate when a record in a delimited file contains a delimiter character. |
 | delimited_header_skip       | False    |       0 | The number of initial rows to skip at the beginning of each delimited file. |
 | delimited_footer_skip       | False    |       0 | The number of initial rows to skip at the end of each delimited file. |
 | delimited_override_headers  | False    | None    | An optional array of headers used to override the default column name in delimited files, allowing for headerless files to be correctly read. |
-| jsonl_sampling_strategy     | False    | first   | The strategy determining how to read the keys in a JSONL file. Must be one of `first` or `all`. Currently, only `first` is supported, which will assume that the first record in a file is representative of all keys. |
-| jsonl_type_coercion_strategy| False    | any     | The strategy determining how to construct the schema for JSONL files when the types represented are ambiguous. Must be one of `any`, `string`, or `envelope`. `any` will provide a generic schema for all keys, allowing them to be any valid JSON type. `string` will require all keys to be strings and will convert other values accordingly. `envelope` will deliver each JSONL row as a JSON object with no internal schema. |
-| avro_type_coercion_strategy | False    | convert | The strategy determining how to construct the schema for Avro files when conversion between schema types is ambiguous. Must be one of `convert` or `envelope`. `convert` will attempt to convert from Avro Schema to JSON Schema and will fail if a type can't be easily coerced. `envelope` will wrap each record in an object without providing an internal schema for the record. |
+| jsonl_error_handling        | False    | fail    | The method with which to handle improperly formatted records in jsonl files. Must be either `fail` or `ignore`. `fail` will cause the tap to fail if an improperly formatted record is detected. `ignore` will ignore the fact that it is improperly formatted and process it anyway. |
+| jsonl_sampling_strategy     | False    | first   | The strategy determining how to read the keys in a JSONL file. Must be either `first` or `all`. Currently, only `first` is supported, which will assume that the first record in a file is representative of all keys. |
+| jsonl_type_coercion_strategy| False    | any     | The strategy determining how to construct the schema for JSONL files when the types represented are ambiguous.  Must be one of `any`, `string`, or `envelope`. `any` will provide a generic schema for all keys, allowing them to be any valid JSON type. `string` will require all keys to be strings and will convert other values accordingly. `envelope` will deliver each JSONL row as a JSON object with no internal schema. |
+| avro_type_coercion_strategy | False    | convert | The strategy deciding how to convert Avro Schema to JSON Schema when the conversion is ambiguous. Must be either `convert` or `envelope`. `convert` will attempt to convert from Avro Schema to JSON Schema and will fail if a type can't be easily coerced. `envelope` will wrap each record in an object without providing an internalschema for the record. |
 | s3_anonymous_connection     | False    |       0 | Whether to use an anonymous S3 connection, without any credentials. Ignored if `protocol!=s3`. |
 | AWS_ACCESS_KEY_ID           | False    | $AWS_ACCESS_KEY_ID    | The access key to use when authenticating to S3. Ignored if `protocol!=s3` or `s3_anonymous_connection=True`. Defaults to the value of the environment variable of the same name. |
 | AWS_SECRET_ACCESS_KEY       | False    | $AWS_SECRET_ACCESS_KEY    | The access key secret to use when authenticating to S3. Ignored if `protocol!=s3` or `s3_anonymous_connection=True`. Defaults to the value of the environment variable of the same name. |
@@ -50,6 +53,13 @@ pipx install git+https://github.com/MeltanoLabs/tap-file.git
 | batch_config.encoding.compression  | False    | None    | Method with which to compress batch files. Example: `gzip`. |
 | batch_config.storage.root          | False    | None    | Location to store batch files. Examples: `file:///foo/bar`, `file://output`, `s3://bar/foo`. Note that the triple-slash is not a typo: it indicates an absolute filepath. |
 | batch_config.storage.prefix        | False    | None    | Prepended to the names of all batch files. Example: `batch-`.  |
+
+A full list of supported settings and capabilities for this
+tap is available by running:
+
+```bash
+tap-universal-file --about
+```
 
 ### Additional S3 Dependency
 
@@ -85,12 +95,9 @@ config:
 }
 ```
 
-A full list of supported settings and capabilities for this
-tap is available by running:
+### Incremental Replication
 
-```bash
-tap-file --about
-```
+If this tap is provided a state or `start_date`, it assumes that incremental replication is desired, in which case only files most recently modified will be synced. Attempting to override this behavior in `meltano.yml` can cause unintended behavior due this tap's use of state during the discovery process. Further note that this tap does not support incremental replication on any column other than `_sdc_last_modified`.
 
 ### Configure using environment variables
 
@@ -141,14 +148,14 @@ aws iam delete-access-key --user-name=YOUR_ACCOUNT_NAME --access-key-id=YOUR_ACC
 
 ## Usage
 
-You can easily run `tap-file` by itself or in a pipeline using [Meltano](https://meltano.com/).
+You can easily run `tap-universal-file` by itself or in a pipeline using [Meltano](https://meltano.com/).
 
 ### Executing the Tap Directly
 
 ```bash
-tap-file --version
-tap-file --help
-tap-file --config CONFIG --discover > ./catalog.json
+tap-universal-file --version
+tap-universal-file --help
+tap-universal-file --config CONFIG --discover > ./catalog.json
 ```
 
 ## Developer Resources
@@ -171,10 +178,10 @@ Create tests within the `tests` subfolder and
 poetry run pytest
 ```
 
-You can also test the `tap-file` CLI interface directly using `poetry run`:
+You can also test the `tap-universal-file` CLI interface directly using `poetry run`:
 
 ```bash
-poetry run tap-file --help
+poetry run tap-universal-file --help
 ```
 
 ### Testing with [Meltano](https://www.meltano.com)
@@ -188,7 +195,7 @@ Next, install Meltano (if you haven't already) and any needed plugins:
 # Install meltano
 pipx install meltano
 # Initialize meltano within this directory
-cd tap-file
+cd tap-universal-file
 meltano install
 ```
 
@@ -196,9 +203,9 @@ Now you can test and orchestrate using Meltano:
 
 ```bash
 # Test invocation:
-meltano invoke tap-file --version
+meltano invoke tap-universal-file --version
 # OR run a test `elt` pipeline:
-meltano elt tap-file target-jsonl
+meltano elt tap-universal-file target-jsonl
 ```
 
 ### SDK Dev Guide

@@ -1,6 +1,0 @@
-id,name,quantity,supplier_name,organic,country_of_origin
-1,pineapple,67,Homespun Pastures,false,Panama
-2,grape,49,Homespun Pastures,false,China
-3,orange,91,Green Grocers,false,Australia
-4,apple,43,Fresh Fruits Inc.,false,Indonesia
-5,grape,10,Green Grocers,true,Sweden

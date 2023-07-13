@@ -4,31 +4,79 @@ from __future__ import annotations
 
 import re
 from functools import cached_property
-from pathlib import Path
 from typing import TYPE_CHECKING, Any, Generator, Iterable
-
-if TYPE_CHECKING:
-    import fsspec
 
 from singer_sdk.streams import Stream
 
-from tap_file.files import FilesystemManager
+from tap_universal_file.files import FilesystemManager
+
+if TYPE_CHECKING:
+    from os import PathLike
+
+    import singer_sdk._singerlib as singer
+    from singer_sdk.tap_base import Tap
 
 
 class FileStream(Stream):
     """Stream class for File streams."""
 
-    @cached_property
-    def filesystem(self) -> fsspec.AbstractFileSystem:
-        """A fsspec filesytem.
+    def __init__(
+        self,
+        tap: Tap,
+        schema: str | PathLike | dict[str, Any] | singer.Schema | None = None,
+        name: str | None = None,
+    ) -> None:
+        """Duplicates superclass functionality but runs replication config before init.
 
         Raises:
-            ValueError: If the supplied protocol is not supported.
+            RuntimeError: If replication config is invalid.
+        """
+        # Define starting_replication_key_value based on state, stream_name, and
+        # start_date. This has to be done before stream initialization below so that
+        # state can be used during the discovery process.
+        self.starting_replication_key_value: str | None = None
+        if tap.state:
+            stream_name = tap.config["stream_name"]
+            if stream_name not in tap.state["bookmarks"]:
+                msg = (
+                    "State was passed so incremental replication is assumed. However, "
+                    f"no state was found for a stream_name of {stream_name}."
+                )
+                raise RuntimeError(msg)
+            self.starting_replication_key_value = tap.state["bookmarks"][stream_name][
+                "replication_key_value"
+            ]
+        else:
+            self.starting_replication_key_value = tap.config.get("start_date", None)
+
+        super().__init__(tap, schema, name)
+
+        # If _sdc_last_modified is not in the stream, incremental replication cannot
+        # be used.
+        if not (
+            self.starting_replication_key_value is None
+            or self.config["additional_info"]
+        ):
+            msg = "Incremental replication requires additional_info to be True."
+            raise RuntimeError(msg)
+
+        # This is set to a constant because the tap only supports _sdc_last_modified as
+        # an incremental replication key, not custom values.
+        self.replication_key = "_sdc_last_modified"
+
+    @property
+    def is_sorted(self) -> bool:
+        """The stream returns records in order."""
+        return True
+
+    @cached_property
+    def fs_manager(self) -> FilesystemManager:
+        """A filesystem manager as a wrapper for all aspects of the filesystem.
 
         Returns:
-            A fileystem object of the appropriate type for the user-supplied protocol.
+            A FilesystemManager object with appropriate protocol and configuration.
         """
-        return FilesystemManager(self.config, self.logger).get_filesystem()
+        return FilesystemManager(self.config, self.logger)
 
     @cached_property
     def schema(self) -> dict:
@@ -41,17 +89,27 @@ class FileStream(Stream):
         properties = self.get_properties()
         additional_info = self.config["additional_info"]
         if additional_info:
-            properties.update({"_sdc_file_name": {"type": ["string"]}})
-            properties.update({"_sdc_line_number": {"type": ["integer"]}})
+            properties.update({"_sdc_file_name": {"type": "string"}})
+            properties.update({"_sdc_line_number": {"type": "integer"}})
+            properties.update(
+                {"_sdc_last_modified": {"type": "string", "format": "date-time"}},
+            )
         return {"properties": properties}
 
-    def add_additional_info(self, row: dict, file_name: str, line_number: int) -> dict:
+    def add_additional_info(
+        self,
+        row: dict,
+        file_name: str,
+        line_number: int,
+        last_modified: str,
+    ) -> dict:
         """Adds _sdc-prefixed additional columns to a row, dependent on config.
 
         Args:
             row: The row to add info to.
             file_name: The name of the file that the row came from.
             line_number: The line number of the row within its file.
+            last_modified: The last_modified date of the row's file.
 
         Returns:
             A dictionary representing a row containing additional information columns.
@@ -60,37 +118,8 @@ class FileStream(Stream):
         if additional_info:
             row.update({"_sdc_file_name": file_name})
             row.update({"_sdc_line_number": line_number})
+            row.update({"_sdc_last_modified": last_modified})
         return row
-
-    def get_files(self) -> Generator[str, None, None]:
-        """Gets file names to be synced.
-
-        Yields:
-            The name of a file to be synced, matching a regex pattern, if one has been
-                configured.
-        """
-        empty = True
-
-        for file in self.filesystem.ls(self.config["filepath"], detail=True):
-            # RegEx is currently checked against basename rather than full path.
-            # Fullpath matching could be added if recursive subdirectory syncing is
-            # implemented.
-            if file["type"] == "directory" or file["size"] == 0:
-                continue
-            if "file_regex" in self.config and not re.match(
-                self.config["file_regex"],
-                Path(file["name"]).name,
-            ):
-                continue
-            empty = False
-            yield file["name"]
-
-        if empty:
-            msg = (
-                "No files found. Choose a different `filepath` or try a more lenient "
-                "`file_regex`."
-            )
-            raise RuntimeError(msg)
 
     def get_rows(self) -> Generator[dict[str | Any, str | Any], None, None]:
         """Gets rows of all files that should be synced.
@@ -116,7 +145,7 @@ class FileStream(Stream):
         msg = "get_properties must be implemented by subclass."
         raise NotImplementedError(msg)
 
-    def get_compression(self, file: str) -> str | None:  # noqa: PLR0911
+    def get_compression(self, file: str) -> str | None:
         """Determines what compression encoding is appropraite for a given file.
 
         Args:
@@ -131,17 +160,18 @@ class FileStream(Stream):
             return None
         if compression != "detect":
             return compression
+        encoding = None
         if re.match(".*\\.zip$", file):
-            return "zip"
-        if re.match(".*\\.bz2$", file):
-            return "bz2"
-        if re.match(".*\\.gz(ip)?$", file):
-            return "gzip"
-        if re.match(".*\\.lzma$", file):
-            return "lzma"
-        if re.match(".*\\.xz$", file):
-            return "xz"
-        return None
+            encoding = "zip"
+        elif re.match(".*\\.bz2$", file):
+            encoding = "bz2"
+        elif re.match(".*\\.gz(ip)?$", file):
+            encoding = "gzip"
+        elif re.match(".*\\.lzma$", file):
+            encoding = "lzma"
+        elif re.match(".*\\.xz$", file):
+            encoding = "xz"
+        return encoding
 
     def get_records(
         self,

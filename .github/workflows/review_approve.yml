@@ -1,17 +1,14 @@
-### A CI workflow template that runs linting and python testing
+### A CI workflow template that runs only after a PR is approved.
 
 name: Test tap-universal-file
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
-  push:
-    branches: [main]
-  workflow_dispatch:
-    inputs: {}
+  pull_request_review:
+    types: [submitted]
 
 jobs:
   pytest:
+    if: github.event.review.state == 'approved'
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -37,6 +34,6 @@ jobs:
     - name: Install dependencies
       run: |
         poetry install --extras=s3
-    - name: Test with pytest (no secrets needed)
+    - name: Test with pytest (requires repo secrets)
       run: |
-        poetry run pytest -k 'not test_s3_execution'
+        poetry run pytest

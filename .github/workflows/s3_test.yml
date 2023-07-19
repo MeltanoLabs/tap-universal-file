@@ -1,4 +1,4 @@
-### A CI workflow template that makes use of repository secrets and therefore runs only on manual dispatch.
+### A CI workflow template that makes use of repository secrets and therefore requires authorization.
 
 name: S3-Test tap-universal-file
 
@@ -40,5 +40,5 @@ jobs:
       run: |
         poetry install --extras=s3
     - name: Test with pytest (requires repo secrets)
-      run: |
+      run: | # Only run S3 tests, i.e. those that weren't already covered by the standard workflow run.
         poetry run pytest -k 'test_s3_execution'

@@ -1,10 +1,10 @@
-### A CI workflow template that runs only after a PR is approved.
+### A CI workflow template that makes use of repository secrets and therefore runs only on manual dispatch.
 
 name: Test tap-universal-file
 
 on:
-  pull_request_review:
-    types: [submitted]
+  workflow_dispatch:
+    inputs: {}
 
 jobs:
   pytest:

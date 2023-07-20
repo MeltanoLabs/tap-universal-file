@@ -97,7 +97,8 @@ class FilesystemManager:
 
         file_dict_list = []
 
-        for file in self.filesystem.ls(self.config["file_path"], detail=True):
+        for file_path in self.filesystem.find(self.config["file_path"]):
+            file = self.filesystem.info(file_path)
             if (
                 file["type"] == "directory"  # Ignore nested folders.
                 or file["size"] == 0  # Ignore empty files.
@@ -105,7 +106,7 @@ class FilesystemManager:
                     "file_regex" in self.config
                     and not re.match(
                         self.config["file_regex"],
-                        Path(file["name"]).name,
+                        file["name"],
                     )
                 )
             ):

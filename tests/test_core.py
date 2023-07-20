@@ -19,14 +19,14 @@ def data_dir() -> str:
     """Gets the directory in tests/data where data is stored.
 
     Returns:
-        A str representing a filepath to tests/data.
+        A str representing a file path to tests/data.
     """
     return str(Path(__file__).parent / Path("./data"))
 
 
 base_file_config = {
     "protocol": "file",
-    "filepath": data_dir(),
+    "file_path": data_dir(),
 }
 
 
@@ -134,7 +134,7 @@ def test_avro_execution():
 def test_s3_execution():
     s3_config = {
         "protocol": "s3",
-        "filepath": "derek-tap-filetesting/2023",
+        "file_path": "derek-tap-filetesting/2023",
         "file_regex": "airtravel\\.csv$",
     }
     execute_tap(s3_config)

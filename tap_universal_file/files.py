@@ -97,7 +97,7 @@ class FilesystemManager:
 
         file_dict_list = []
 
-        for file in self.filesystem.ls(self.config["filepath"], detail=True):
+        for file in self.filesystem.ls(self.config["file_path"], detail=True):
             if (
                 file["type"] == "directory"  # Ignore nested folders.
                 or file["size"] == 0  # Ignore empty files.
@@ -134,7 +134,7 @@ class FilesystemManager:
 
         if none_found:
             msg = (
-                "No files found. Choose a different `filepath` or try a more lenient "
+                "No files found. Choose a different `file_path` or try a more lenient "
                 "`file_regex`."
             )
             raise RuntimeError(msg)

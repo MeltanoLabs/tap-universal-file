@@ -63,7 +63,7 @@ class TapUniversalFile(Tap):
             ),
         ),
         th.Property(
-            "filepath",
+            "file_path",
             th.StringType,
             required=True,
             description=(

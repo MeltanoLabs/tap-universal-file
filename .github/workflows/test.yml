@@ -19,7 +19,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: AKIAZPOBIXUJJ434XT5T
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      TAP_UNIVERSAL_FILE_FILEPATH: derek-tap-filetesting/2023
+      TAP_UNIVERSAL_FILE_FILE_PATH: derek-tap-filetesting/2023
       TAP_UNIVERSAL_FILE_FILE_REGEX: ^airtravel\.csv$
       TAP_UNIVERSAL_FILE_PROTOCOL: s3
     steps:

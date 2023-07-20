@@ -22,7 +22,7 @@ pipx install git+https://github.com/MeltanoLabs/tap-universal-file.git
 |:----------------------------|:--------:|:-------:|:------------|
 | stream_name                 | False    | file    | The name of the stream that is output by the tap. |
 | protocol                    | True     | None    | The protocol to use to retrieve data. Must be either `file` or `s3`. |
-| filepath                    | True     | None    | The path to obtain files from. Example: `/foo/bar`. Or, for `protocol==s3`, use `s3-bucket-name` instead. |
+| file_path                    | True     | None    | The path to obtain files from. Example: `/foo/bar`. Or, for `protocol==s3`, use `s3-bucket-name` instead. |
 | file_regex                  | False    | None    | A regex pattern to only include certain files. Example: `.*\.csv`. |
 | file_type                   | False    | delimited | Must be one of `delimited`, `jsonl`, or `avro`. Indicates the type of file to sync, where `delimited` is for CSV/TSV files and similar. Note that *all* files will be read as that type, regardless of file extension. To only read from files with a matching file extension, appropriately configure `file_regex`. |
 | compression                 | False    | detect  | The encoding used to decompress data. Must be one of `none`, `zip`, `bz2`, `gzip`, `lzma`, `xz`, or `detect`. If set to `none` or any encoding, that setting will be applied to *all* files, regardless of file extension. If set to `detect`, encodings will be applied based on file extension. |
@@ -51,7 +51,7 @@ pipx install git+https://github.com/MeltanoLabs/tap-universal-file.git
 | batch_config.storage   | False    | None    | Object containing information about how batch files should be stored. Has two child entries: `root` and `prefix`. |
 | batch_config.encoding.format       | False    | None    | Format to store batch files in. Example: `jsonl`. |
 | batch_config.encoding.compression  | False    | None    | Method with which to compress batch files. Example: `gzip`. |
-| batch_config.storage.root          | False    | None    | Location to store batch files. Examples: `file:///foo/bar`, `file://output`, `s3://bar/foo`. Note that the triple-slash is not a typo: it indicates an absolute filepath. |
+| batch_config.storage.root          | False    | None    | Location to store batch files. Examples: `file:///foo/bar`, `file://output`, `s3://bar/foo`. Note that the triple-slash is not a typo: it indicates an absolute file path. |
 | batch_config.storage.prefix        | False    | None    | Prepended to the names of all batch files. Example: `batch-`.  |
 
 A full list of supported settings and capabilities for this
@@ -61,11 +61,15 @@ tap is available by running:
 tap-universal-file --about
 ```
 
-### Additional S3 Dependency
+### Using S3
 
-If you use `protocol=s3` and/or if you use batching to send data to S3, you will need to add the additional dependency `s3`. For example, you could update `meltano.yml` to have `pip_url: -e .[s3]`.
+Some additional configuration is needed when using Amazon S3.
 
-### Sample Batching Config
+#### Additional Dependency
+
+If you use `protocol==s3` and/or if you use batching to send data to S3, you will need to add the additional dependency `s3`. For example, you could update `meltano.yml` to have `pip_url: -e .[s3]`.
+
+#### Sample Batching Config
 
 Here is an example `meltano.yml` entry to configure batch files, and then the same sample configuration in JSON.
 ```yml
@@ -95,21 +99,9 @@ config:
 }
 ```
 
-### Incremental Replication
+#### Authentication and Authorization
 
-If this tap is provided a state or `start_date`, it assumes that incremental replication is desired, in which case only files most recently modified will be synced. Attempting to override this behavior in `meltano.yml` can cause unintended behavior due this tap's use of state during the discovery process. Further note that this tap does not support incremental replication on any column other than `_sdc_last_modified`.
-
-### Configure using environment variables
-
-This Singer tap will automatically import any environment variables within the working directory's
-`.env` if the `--config=ENV` is provided, such that config values will be considered if a matching
-environment variable is set either in the terminal context or in the `.env` file.
-
-### Source Authentication and Authorization
-
-#### S3
-
-If you use S3, either for fetching files or for batching, you will need to obtain an access key and secret from AWS IAM. Specifically, `protocol=s3` requires the ListBucket and GetObject permissions, and batching requires the PutObject permission.
+If you use `protocol==s3` and/or if you use batching to send data to S3, you will need to obtain an access key and secret from AWS IAM. Specifically, `protocol==s3` requires the ListBucket and GetObject permissions, and batching requires the PutObject permission.
 
 You can create a policy that grants the requisite permissions with the following JSON:
 
@@ -145,6 +137,24 @@ If you already have two access keys for an account, you will have to delete one 
 ```bash
 aws iam delete-access-key --user-name=YOUR_ACCOUNT_NAME --access-key-id=YOUR_ACCESS_KEY_ID
 ```
+
+#### Subfolders
+
+To sync a subfolder in S3, add it like you would add any other file path. For example to sync all files in `foo` subfolder of the S3 bucket named `bar-bucket`, set `file_path==bar-bucket/foo`.
+
+### Incremental Replication
+
+If this tap is provided a state or `start_date`, it assumes that incremental replication is desired, in which case only files most recently modified will be synced. Attempting to override this behavior in `meltano.yml` can cause unintended behavior due this tap's use of state during the discovery process. Further note that this tap does not support incremental replication on any column other than `_sdc_last_modified`.
+
+### Configure using environment variables
+
+This Singer tap will automatically import any environment variables within the working directory's
+`.env` if the `--config=ENV` is provided, such that config values will be considered if a matching
+environment variable is set either in the terminal context or in the `.env` file.
+
+### Source Authentication and Authorization
+
+To authnticate or authorize using S3, see [S3 Authentication and Authorization](#authentication-and-authorization) above
 
 ## Usage
 

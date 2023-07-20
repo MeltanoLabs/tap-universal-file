@@ -18,7 +18,7 @@ plugins:
     settings:
     - name: stream_name
     - name: protocol
-    - name: filepath
+    - name: file_path
     - name: file_regex
     - name: file_type
     - name: compression

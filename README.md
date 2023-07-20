@@ -61,6 +61,24 @@ tap is available by running:
 tap-universal-file --about
 ```
 
+### Regular Expressions
+
+To allow configuration for which files are synced, this tap supports the use of regular expressions to match file paths. First, the tap will find the directory specified by the `file_path` config option. Then it will compare the provided regular expression to the full file path of each file in that directory.
+
+To demonstrate this, consider the following directory structure and suppose that you want to sync only the file `apple.csv`.
+
+```
+.
+└── top-level/
+    ├── alpha/
+    └── bravo/
+        ├── apple.csv
+        ├── pineapple.csv
+        └── orange.csv
+```
+
+If you set `file_path` to be `/top-level/bravo` and you've set `file_regex` to be `^apple\.csv$`, you won't sync any files. That's because the regular expression you provide is compared against the string `"top-level/bravo/apple.csv"`. Instead, correct values for `file_regex` include `^.*\/apple\.csv$`, `^.*bravo\/apple\.csv$`, or `^top-level\/bravo\/apple\.csv$`. Alternatively, to sync both `apple.csv` and `pineapple.csv`, you could use `^.*\/(pine)?apple\.csv$`.
+
 ### Using S3
 
 Some additional configuration is needed when using Amazon S3.

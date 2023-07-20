@@ -77,7 +77,7 @@ def execute_tap(config: dict = None):
 # Run standard built-in tap tests from the SDK on a simple csv.
 
 sample_config = base_file_config.copy()
-sample_config.update({"file_regex": "fruit_records\\.csv"})
+sample_config.update({"file_regex": "^.*fruit_records\\.csv"})
 
 TestTapUniversalFile = get_tap_test_class(
     tap_class=TapUniversalFile,
@@ -90,7 +90,7 @@ TestTapUniversalFile = get_tap_test_class(
 def test_sdc_fields_present():
     modified_config = base_file_config.copy()
     modified_config.update(
-        {"file_regex": "^fruit_records\\.csv$", "additional_info": True}
+        {"file_regex": "^.*fruit_records\\.csv$", "additional_info": True}
     )
     messages = execute_tap(modified_config)
     properties = messages["schema_messages"][0]["schema"]["properties"]
@@ -101,7 +101,7 @@ def test_sdc_fields_present():
 def test_delimited_execution():
     modified_config = base_file_config.copy()
     modified_config.update(
-        {"file_type": "delimited", "file_regex": "^fruit_records\\.csv$"},
+        {"file_type": "delimited", "file_regex": "^.*fruit_records\\.csv$"},
     )
     execute_tap(modified_config)
 
@@ -111,7 +111,7 @@ def test_jsonl_execution():
     modified_config.update(
         {
             "file_type": "jsonl",
-            "file_regex": "^employees\\.jsonl$",
+            "file_regex": "^.*\\/employees\\.jsonl$",
             "jsonl_sampling_strategy": "first",
             "jsonl_type_coercion_strategy": "string",
         },
@@ -124,7 +124,7 @@ def test_avro_execution():
     modified_config.update(
         {
             "file_type": "avro",
-            "file_regex": "^athletes\\.avro$",
+            "file_regex": "^.*athletes\\.avro$",
             "avro_type_coercion_strategy": "convert",
         },
     )
@@ -135,7 +135,7 @@ def test_s3_execution():
     s3_config = {
         "protocol": "s3",
         "filepath": "derek-tap-filetesting/2023",
-        "file_regex": "airtravel\\.csv$",
+        "file_regex": "^.*airtravel\\.csv$",
     }
     execute_tap(s3_config)
 
@@ -144,7 +144,7 @@ def test_compression_execution():
     modified_config = base_file_config.copy()
     modified_config.update(
         {
-            "file_regex": "fruit_records",
+            "file_regex": "^.*fruit_records",
             "compression": "detect",
             "delimited_delimiter": ",",
         },
@@ -156,7 +156,7 @@ def test_header_footer_execution():
     modified_config = base_file_config.copy()
     modified_config.update(
         {
-            "file_regex": "^cats\\.csv$",
+            "file_regex": "^.*cats\\.csv$",
             "delimited_header_skip": 3,
             "delimited_footer_skip": 3,
         },
@@ -167,7 +167,7 @@ def test_header_footer_execution():
 def test_malformed_delimited_fail():
     modified_config = base_file_config.copy()
     modified_config.update(
-        {"file_regex": "^cats\\.csv$", "delimited_error_handling": "fail"}
+        {"file_regex": "^.*cats\\.csv$", "delimited_error_handling": "fail"}
     )
     with pytest.raises(RuntimeError, match="^Error processing.*"):
         execute_tap(modified_config)
@@ -176,7 +176,7 @@ def test_malformed_delimited_fail():
 def test_malformed_delimited_ignore():
     modified_config = base_file_config.copy()
     modified_config.update(
-        {"file_regex": "^cats\\.csv$", "delimited_error_handling": "ignore"}
+        {"file_regex": "^.*cats\\.csv$", "delimited_error_handling": "ignore"}
     )
     execute_tap(modified_config)
 
@@ -185,7 +185,7 @@ def test_malformed_jsonl_fail():
     modified_config = base_file_config.copy()
     modified_config.update(
         {
-            "file_regex": "^malformed_employees\\.jsonl$",
+            "file_regex": "^.*malformed_employees\\.jsonl$",
             "file_type": "jsonl",
             "jsonl_error_handling": "fail",
             "jsonl_type_coercion_strategy": "string",
@@ -199,7 +199,7 @@ def test_malformed_jsonl_ignore():
     modified_config = base_file_config.copy()
     modified_config.update(
         {
-            "file_regex": "^malformed_employees\\.jsonl$",
+            "file_regex": "^.*malformed_employees\\.jsonl$",
             "file_type": "jsonl",
             "jsonl_error_handling": "ignore",
             "jsonl_type_coercion_strategy": "string",

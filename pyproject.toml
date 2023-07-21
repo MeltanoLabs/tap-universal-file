@@ -23,7 +23,7 @@ s3=["s3fs", "fs-s3fs"]
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.2.1"
-ruff = "^0.0.270"
+ruff = "^0.0.278"
 black = "^23.3.0"
 singer-sdk = { version="^0.28.0", extras = ["testing"] }
 

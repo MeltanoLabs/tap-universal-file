@@ -17,7 +17,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: NoSecretsNeeded
       TAP_UNIVERSAL_FILE_PROTOCOL: file
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:

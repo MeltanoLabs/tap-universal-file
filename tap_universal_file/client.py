@@ -5,10 +5,13 @@ from __future__ import annotations
 import re
 from functools import cached_property
 from typing import TYPE_CHECKING, Any, Generator, Iterable
+from pathlib import Path
 
 from singer_sdk.streams import Stream
 
 from tap_universal_file.files import FilesystemManager
+
+SCHEMAS_DIR = Path(__file__).parent / Path("./schemas")
 
 if TYPE_CHECKING:
     from os import PathLike
@@ -86,15 +89,17 @@ class FileStream(Stream):
             A schema constructed using the get_properties() method of whichever stream
             is currently in use.
         """
-        properties = self.get_properties()
-        additional_info = self.config["additional_info"]
-        if additional_info:
-            properties.update({"_sdc_file_name": {"type": "string"}})
-            properties.update({"_sdc_line_number": {"type": "integer"}})
-            properties.update(
-                {"_sdc_last_modified": {"type": "string", "format": "date-time"}},
-            )
-        return {"properties": properties}
+        if not hasattr(self, "_schema"):
+            properties = self.get_properties()
+            additional_info = self.config["additional_info"]
+            if additional_info:
+                properties.update({"_sdc_file_name": {"type": "string"}})
+                properties.update({"_sdc_line_number": {"type": "integer"}})
+                properties.update(
+                    {"_sdc_last_modified": {"type": "string", "format": "date-time"}},
+                )
+            return {"properties": properties}
+        return self._schema
 
     def add_additional_info(
         self,

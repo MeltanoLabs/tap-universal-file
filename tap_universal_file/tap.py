@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 from typing import TYPE_CHECKING
+from pathlib import Path
 
 from singer_sdk import Stream, Tap
 from singer_sdk import typing as th  # JSON schema typing helpers
@@ -15,6 +16,8 @@ if TYPE_CHECKING:
     from pathlib import PurePath
 
     import click
+
+SCHEMAS_DIR = Path(__file__).parent / Path("./schemas")
 
 from tap_universal_file import streams
 
@@ -291,6 +294,14 @@ class TapUniversalFile(Tap):
                 "It is recommended that you do not modify this setting."
             ),
         ),
+        th.Property(
+            "schema_file",
+            th.StringType,
+            default="",
+            description=(
+                "Schema file to override the discovered schema. It should be Inside the schemas folder"  # noqa: E501
+            ),
+        ),
     ).to_dict()
 
     def discover_streams(self) -> list[streams.FileStream]:
@@ -299,14 +310,20 @@ class TapUniversalFile(Tap):
         Returns:
             A list of discovered streams.
         """
+        args = {}
         name = self.config["stream_name"]
         file_type = self.config["file_type"]
+        args["name"] = name
+        if self.config["schema_file"]:
+            schema_file = f"{SCHEMAS_DIR}/{self.config['schema_file']}"
+            args["schema"] = schema_file
+
         if file_type == "delimited":
-            return [streams.DelimitedStream(self, name=name)]
+            return [streams.DelimitedStream(self, **args)]
         if file_type == "jsonl":
-            return [streams.JSONLStream(self, name=name)]
+            return [streams.JSONLStream(self, **args)]
         if file_type == "avro":
-            return [streams.AvroStream(self, name=name)]
+            return [streams.AvroStream(self, **args)]
         if file_type in {"csv", "tsv", "txt"}:
             msg = f"'{file_type}' is not a valid file_type. Did you mean 'delimited'?"
             raise ValueError(msg)

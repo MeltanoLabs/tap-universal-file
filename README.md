@@ -25,6 +25,7 @@ pipx install git+https://github.com/MeltanoLabs/tap-universal-file.git
 | file_path                    | True     | None    | The path to obtain files from. Example: `/foo/bar`. Or, for `protocol==s3`, use `s3-bucket-name` instead. |
 | file_regex                  | False    | None    | A regex pattern to only include certain files. Example: `.*\.csv`. |
 | file_type                   | False    | delimited | Must be one of `delimited`, `jsonl`, or `avro`. Indicates the type of file to sync, where `delimited` is for CSV/TSV files and similar. Note that *all* files will be read as that type, regardless of file extension. To only read from files with a matching file extension, appropriately configure `file_regex`. |
+| schema                      | False    | None    | The declarative schema to use for the stream. It can be the schema itself or a path to a json file containing the schema, see [example](https://github.com/meltano/hub/blob/c4b541bbdc36b1b6efffa1eb6022367d8de43e3a/schemas/plugin_definitions/hub_metadata.schema.json). If not provided, the schema will be inferred. |
 | compression                 | False    | detect  | The encoding used to decompress data. Must be one of `none`, `zip`, `bz2`, `gzip`, `lzma`, `xz`, or `detect`. If set to `none` or any encoding, that setting will be applied to *all* files, regardless of file extension. If set to `detect`, encodings will be applied based on file extension. |
 | additional_info             | False    |       1 | If `True`, each row in tap's output will have three additional columns: `_sdc_file_name`, `_sdc_line_number`, and `_sdc_last_modified`. If `False`, these columns will not be present. Incremental replication requires `additional_info==True`. |
 | start_date                  | False    | None    | Used in place of state. Files that were last modified before the `start_date` wwill not be synced. |
@@ -60,6 +61,7 @@ tap is available by running:
 ```bash
 tap-universal-file --about
 ```
+
 
 ### Regular Expressions
 

@@ -67,7 +67,7 @@ class DelimitedStream(FileStream):
     def _get_readers(
         self,
     ) -> Generator[tuple[ModifiedDictReader, str, str], None, None]:
-        """Gets reader objects and associated meta data.
+        """Gets reader objects and associated metadata.
 
         Raises:
             RuntimeError: If improper configuration is supplied.
@@ -339,7 +339,7 @@ class AvroStream(FileStream):
         """Retrive all rows from all Avro files.
 
         Yields:
-            A dictionary containing information about a row in a Avro file.
+            A dictionary containing information about a row in an Avro file.
         """
         for reader, file_name, last_modified in self._get_readers():
             self.logger.info("Starting sync of %s.", file_name)
@@ -461,7 +461,7 @@ class AvroStream(FileStream):
     def _get_readers(
         self,
     ) -> Generator[tuple[avro.datafile.DataFileReader, str, str], None, None]:
-        """Gets reader objects and associated meta data.
+        """Gets reader objects and associated metadata.
 
         Yields:
             A tuple of (avro.datafile.DataFileReader, file_name, last_modified).

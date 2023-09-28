@@ -91,6 +91,16 @@ class TapUniversalFile(Tap):
             ),
         ),
         th.Property(
+            "schema",
+            th.StringType,
+            description=(
+                "The declarative schema to use for the stream. It can be the schema "
+                "itself or a path to a json file containing the schema. If not "
+                "provided, the schema will be inferred from the data following "
+                "the coercion strategy."
+            ),
+        ),
+        th.Property(
             "compression",
             th.StringType,
             allowed_values=(
@@ -301,12 +311,13 @@ class TapUniversalFile(Tap):
         """
         name = self.config["stream_name"]
         file_type = self.config["file_type"]
+        schema = self.config.get("schema", None)
         if file_type == "delimited":
-            return [streams.DelimitedStream(self, name=name)]
+            return [streams.DelimitedStream(self, name=name, schema=schema)]
         if file_type == "jsonl":
-            return [streams.JSONLStream(self, name=name)]
+            return [streams.JSONLStream(self, name=name, schema=schema)]
         if file_type == "avro":
-            return [streams.AvroStream(self, name=name)]
+            return [streams.AvroStream(self, name=name, schema=schema)]
         if file_type in {"csv", "tsv", "txt"}:
             msg = f"'{file_type}' is not a valid file_type. Did you mean 'delimited'?"
             raise ValueError(msg)

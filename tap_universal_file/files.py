@@ -49,7 +49,7 @@ class FilesystemManager:
             return fsspec.filesystem("file")
 
         if caching_strategy == "once":
-            # Creaing a filecache without specifying cache_storage location will cause
+            # Creating a filecache without specifying cache_storage location will cause
             # the cache to be discarded after the filesystem is closed.
             # Docs: https://filesystem-spec.readthedocs.io/en/latest/features.html#caching-files-locally
             return fsspec.filesystem(
@@ -65,7 +65,7 @@ class FilesystemManager:
                 cache_storage=tempfile.gettempdir(),
             )
         if caching_strategy == "none":
-            # When caching is not used, the protocol's arguemnts have to be
+            # When caching is not used, the protocol's arguments have to be
             # star-unpacked because fsspec.filesystem accepts them directly instead of
             # as a dictionary.
             return fsspec.filesystem(
@@ -181,7 +181,7 @@ class FilesystemManager:
                 implementation and when unpacked (**) for a direct implementation.
 
         Returns:
-            A dictionary containing fsspec arguements.
+            A dictionary containing fsspec arguments.
         """
         if self.protocol == "s3":
             if self.config["s3_anonymous_connection"]:

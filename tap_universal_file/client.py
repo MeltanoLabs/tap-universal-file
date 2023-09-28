@@ -86,6 +86,11 @@ class FileStream(Stream):
             A schema constructed using the get_properties() method of whichever stream
             is currently in use.
         """
+        if hasattr(self, "_schema"):
+            self.logger.debug(f"Using schema from config: {self._schema}")
+            return self._schema
+
+        self.logger.debug(f"No schema found in config, creating schema...")
         properties = self.get_properties()
         additional_info = self.config["additional_info"]
         if additional_info:
@@ -146,7 +151,7 @@ class FileStream(Stream):
         raise NotImplementedError(msg)
 
     def get_compression(self, file: str) -> str | None:
-        """Determines what compression encoding is appropraite for a given file.
+        """Determines what compression encoding is appropriate for a given file.
 
         Args:
             file: The file to determine the encoding of.

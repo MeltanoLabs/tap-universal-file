@@ -2,15 +2,18 @@
 # flake8: noqa
 import io
 import json
+import os
+import shutil
+import tempfile
 from collections import defaultdict
 from contextlib import redirect_stdout
-import os
 from pathlib import Path
-import pytest
 
+import pytest
 from singer_sdk.testing import get_tap_test_class
 
 from tap_universal_file.tap import TapUniversalFile
+
 
 # Helper functions
 
@@ -30,11 +33,12 @@ base_file_config = {
 }
 
 
-def execute_tap(config: dict = None):
+def execute_tap(config: dict = None, state: dict = None):
     """Executes a TapUniversalFile tap.
 
     Args:
         config: Configuration for the tap.
+        state: State input for the tap.
 
     Returns:
         A dictionary containing messages about the tap's invocation, including, schema,
@@ -48,7 +52,7 @@ def execute_tap(config: dict = None):
     stdout_buf = io.StringIO()
     with redirect_stdout(stdout_buf):
         tap_config = config if config is not None else {}
-        TapUniversalFile(config=tap_config).run_sync_dry_run(dry_run_record_limit=None)
+        TapUniversalFile(config=tap_config, state=state).run_sync_dry_run(dry_run_record_limit=None)
     stdout_buf.seek(0)
 
     for message in [
@@ -83,6 +87,7 @@ TestTapUniversalFile = get_tap_test_class(
     tap_class=TapUniversalFile,
     config=sample_config,
 )
+
 
 # Run custom tests
 
@@ -208,6 +213,58 @@ def test_malformed_jsonl_ignore():
     execute_tap(modified_config)
 
 
+def test_incremental_sync_using_state():
+    # create tmp dir to isolate test and avoid conflicts with other tests in the future
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        print('created temporary directory', tmp_dir)
+        # copy the source file to the temp directory
+        shutil.copy2(data_dir() + "/old_hardware.csv", tmp_dir)
+        config = {
+            "protocol": "file",
+            "file_path": tmp_dir,
+            "stream_name": "file",
+            "file_regex": ".*hardware\\.csv$",
+            "file_type": "delimited",
+        }
+
+        # run tap for the first time, it should sync all the records from old_hardware.csv
+        messages = execute_tap(config)
+        assert len(messages["records"]["file"]) == 5, "Improper number of records returned"
+
+        # copy new_hardware.csv to the temp directory, simulating new data coming in the source folder
+        shutil.copy2(data_dir() + "/new_hardware.csv", tmp_dir)
+
+        # run the tap again with the same config and state from previous execution, it should sync only the new records
+        messages = execute_tap(config, state=messages["state_messages"][0]["value"])
+        assert len(messages["records"]["file"]) == 6, "Improper number of records returned. It should return " \
+                                                      "only new records"
+
+
+def test_incremental_sync_using_state_with_no_changes():
+    # create tmp dir to isolate test and avoid conflicts with other tests in the future
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        print('created temporary directory', tmp_dir)
+        # copy the source file to the temp directory
+        shutil.copy2(data_dir() + "/old_hardware.csv", tmp_dir)
+        config = {
+            "protocol": "file",
+            "file_path": tmp_dir,
+            "stream_name": "file",
+            "file_regex": ".*hardware\\.csv$",
+            "file_type": "delimited",
+        }
+
+        # run tap for the first time, it should sync all the records from old_hardware.csv
+        messages = execute_tap(config)
+        assert len(messages["records"]["file"]) == 5, "Improper number of records returned"
+
+        # run the tap again with the same config and state from previous execution, it should not sync any records
+        # since there were no changes in the source folder
+        messages = execute_tap(config, state=messages["state_messages"][0]["value"])
+        assert len(messages["records"]["file"]) == 0, "Improper number of records returned. It should return " \
+                                                      "0 records because there were no changes in the source folder."
+
+
 def test_incremental_sync():
     os.utime(data_dir() + "/old_hardware.csv", (1641124800, 1641124800))
     os.utime(data_dir() + "/new_hardware.csv", (1641211200, 1641211200))
@@ -220,10 +277,11 @@ def test_incremental_sync():
         }
     )
     messages = execute_tap(modified_config)
-    assert len(messages["records"]["file"]) == 10, "Improper number of records returned"
+    assert len(messages["records"]["file"]) == 11, "Improper number of records returned"
     start_date = messages["state_messages"][0]["value"]["bookmarks"]["file"][
         "replication_key_value"
     ]
     modified_config.update({"start_date": start_date})
     messages = execute_tap(modified_config)
-    assert len(messages["records"]["file"]) == 5, "Improper number of records returned"
+    assert len(messages["records"]["file"]) == 0, "Improper number of records returned. It should return " \
+                                                  "0 records because there no new data were added."

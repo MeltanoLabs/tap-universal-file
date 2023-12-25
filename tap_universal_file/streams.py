@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import csv
-from itertools import zip_longest
 import json
 import re
 from typing import Any, Generator
@@ -12,9 +11,7 @@ import avro
 import avro.datafile
 import avro.io
 import avro.schema
-import pyarrow
-import pyarrow.parquet
-import pyarrow.types
+import pyarrow as pa
 
 from tap_universal_file.client import FileStream
 
@@ -148,11 +145,11 @@ class DelimitedStream(FileStream):
             self,
             f: Any,  # noqa: ANN401
             file_name: str,
-            fieldnames: Any | None = None,
-            restkey: Any | None = None,
-            restval: Any | None = None,
+            fieldnames: Any | None = None,  # noqa: ANN401
+            restkey: Any | None = None,  # noqa: ANN401
+            restval: Any | None = None,  # noqa: ANN401
             dialect: str = "excel",
-            config: dict = None,
+            config: dict | None = None,
             *args: Any,
             **kwds: Any,
         ) -> None:
@@ -385,8 +382,7 @@ class AvroStream(FileStream):
         strategy = self.config["avro_type_coercion_strategy"]
         if strategy == "convert":
             for reader, _, _ in self._get_readers():
-                for field in json.loads(reader.schema)["fields"]:
-                    yield field
+                yield from json.loads(reader.schema)["fields"]
             return
         if strategy == "envelope":
             yield "record"
@@ -427,7 +423,7 @@ class AvroStream(FileStream):
         Returns:
             A JSON schema representation of field_type.
         """
-        if type(field_type) != str:
+        if isinstance(field_type, str):
             msg = f"The field type '{field_type}' has not been implemented."
             raise NotImplementedError(msg)
         if field_type in {"null", "boolean", "string"}:
@@ -533,7 +529,13 @@ class ParquetStream(FileStream):
         strategy = self.config["parquet_type_coercion_strategy"]
         if strategy == "convert":
             for reader, _, _ in self._get_readers():
-                yield from ({"name": name, "type": type} for name, type in zip(reader.schema.names, reader.schema.types))
+                yield from (
+                    {"name": name, "type": reader_type}
+                    for name, reader_type in zip(
+                        reader.schema.names,
+                        reader.schema.types,
+                    )
+                )
             return
         if strategy == "envelope":
             yield "record"
@@ -556,17 +558,20 @@ class ParquetStream(FileStream):
         """
         strategy = self.config["parquet_type_coercion_strategy"]
         if strategy == "convert":
-            field_type, format = self._type_convert(field["type"])
+            field_type, field_format = self._type_convert(field["type"])
             type_dict = {"type": [field_type]}
-            if format is not None:
-                type_dict.update({"format": format})
+            if field_format is not None:
+                type_dict.update({"format": field_format})
             return {field["name"]: type_dict}
         if strategy == "envelope":
             return {field: {"type": ["null", "object"]}}
         msg = f"The coercion strategy '{strategy}' is not valid."
         raise ValueError(msg)
 
-    def _type_convert(self, field_type) -> tuple[str,str | None]:
+    def _type_convert(  # noqa: C901 PLR0912
+        self,
+        field_type: pa.DataType,
+    ) -> tuple[str, str | None]:
         """Attempt to coerce a Parquet schema type to a JSON schema type.
 
         Args:
@@ -578,32 +583,41 @@ class ParquetStream(FileStream):
         Returns:
             A JSON schema representation of field_type.
         """
-        if pyarrow.types.is_null(field_type):
-            return ("null", None)
-        if pyarrow.types.is_boolean(field_type):
-            return ("boolean", None)
-        if pyarrow.types.is_integer(field_type):
-            return ("integer", None)
-        if pyarrow.types.is_floating(field_type):
-            return ("number", None)
-        if pyarrow.types.is_time(field_type):
-            return ("string", "time")
-        if pyarrow.types.is_date(field_type):
-            return ("string", "date")
-        if pyarrow.types.is_timestamp(field_type):
-            return ("string", "date-time")
-        if pyarrow.types.is_duration(field_type):
-            return ("string", "duration")
-        if pyarrow.types.is_binary(field_type) or pyarrow.types.is_string(field_type) or pyarrow.types.is_large_binary(field_type) or pyarrow.types.is_large_string(field_type) or pyarrow.types.is_decimal(field_type):
-            return ("string", None)
-        if pyarrow.types.is_list(field_type) or pyarrow.types.is_large_list(field_type):
-            return ("array", None)
-        if pyarrow.types.is_map(field_type) or pyarrow.types.is_struct(field_type):
-            return ("object", None)
-        if pyarrow.types.is_dictionary(field_type):
-            return self._type_convert(field_type.value_type)
-        msg = f"The field type '{field_type}' has not been implemented."
-        raise NotImplementedError(msg)
+        type_tuple = None
+        if pa.types.is_null(field_type):
+            type_tuple = ("null", None)
+        if pa.types.is_boolean(field_type):
+            type_tuple = ("boolean", None)
+        if pa.types.is_integer(field_type):
+            type_tuple = ("integer", None)
+        if pa.types.is_floating(field_type):
+            type_tuple = ("number", None)
+        if pa.types.is_time(field_type):
+            type_tuple = ("string", "time")
+        if pa.types.is_date(field_type):
+            type_tuple = ("string", "date")
+        if pa.types.is_timestamp(field_type):
+            type_tuple = ("string", "date-time")
+        if pa.types.is_duration(field_type):
+            type_tuple = ("string", "duration")
+        if (
+            pa.types.is_binary(field_type)
+            or pa.types.is_string(field_type)
+            or pa.types.is_large_binary(field_type)
+            or pa.types.is_large_string(field_type)
+            or pa.types.is_decimal(field_type)
+        ):
+            type_tuple = ("string", None)
+        if pa.types.is_list(field_type) or pa.types.is_large_list(field_type):
+            type_tuple = ("array", None)
+        if pa.types.is_map(field_type) or pa.types.is_struct(field_type):
+            type_tuple = ("object", None)
+        if pa.types.is_dictionary(field_type):
+            type_tuple = self._type_convert(field_type.value_type)
+        if type_tuple is None:
+            msg = f"The field type '{field_type}' has not been implemented."
+            raise NotImplementedError(msg)
+        return type_tuple
 
     def _pre_process(self, row: dict[str, Any]) -> dict[str, Any]:
         """Processes a row based on the current coercion strategy.
@@ -628,20 +642,23 @@ class ParquetStream(FileStream):
 
     def _get_readers(
         self,
-    ) -> Generator[tuple[pyarrow.Table, str, str], None, None]:
+    ) -> Generator[tuple[pa.Table, str, str], None, None]:
         """Gets reader objects and associated meta data.
 
         Yields:
             A tuple of (pyarrow.Table, file_name, last_modified).
         """
         partitioned = self.config["parquet_partitioned"]
-        for file in self.fs_manager.get_files(self.starting_replication_key_value, exact_file_path_only=partitioned):
+        for file in self.fs_manager.get_files(
+            self.starting_replication_key_value,
+            exact_file_path_only=partitioned,
+        ):
             if partitioned:
                 yield self._get_readers_partitioned(file)
             else:
                 yield self._get_readers_nonpartitioned(file)
-    
-    def _get_readers_partitioned(self, file: dict) -> tuple[pyarrow.Table, str, str]:
+
+    def _get_readers_partitioned(self, file: dict) -> tuple[pa.Table, str, str]:
         file_name = file["name"]
         config_filters = self.config.get("parquet_filters", None)
 
@@ -651,12 +668,16 @@ class ParquetStream(FileStream):
             filters = [[self._convert_filter(j) for j in i] for i in config_filters]
 
         return (
-            pyarrow.parquet.read_table(source=file_name, filesystem=self.fs_manager.filesystem, filters=filters),
+            pa.parquet.read_table(
+                source=file_name,
+                filesystem=self.fs_manager.filesystem,
+                filters=filters,
+            ),
             file_name,
             file["last_modified"],
         )
 
-    def _get_readers_nonpartitioned(self, file: dict) -> tuple[pyarrow.Table, str, str]:
+    def _get_readers_nonpartitioned(self, file: dict) -> tuple[pa.Table, str, str]:
         file_name = file["name"]
         with self.fs_manager.filesystem.open(
             path=file_name,
@@ -664,16 +685,27 @@ class ParquetStream(FileStream):
             compression=self.get_compression(file=file_name),
         ) as f:
             return (
-                pyarrow.parquet.read_table(source=f),
+                pa.parquet.read_table(source=f),
                 file_name,
                 file["last_modified"],
             )
 
-    def _convert_filter(self, filter: list) -> tuple:
-        if len(filter) != 3:
+    def _convert_filter(self, filter_list: list) -> tuple:
+        """Converts a list representing a boolean condition into a tuple.
+
+        Args:
+            filter_list: A list exactly three elements long.
+
+        Raises:
+            ValueError: If the list is not exactly three elements long.
+
+        Returns:
+            A tuple instantiated from the list.
+        """
+        if len(filter_list) != 3:  # noqa: PLR2004
             msg = (
                 "`parquet_filters` config is incorrect. Innermost lists must have "
                 "exactly three entries."
             )
             raise ValueError(msg)
-        return tuple(filter)
+        return tuple(filter_list)

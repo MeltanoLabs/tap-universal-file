@@ -6,7 +6,6 @@ import datetime
 import re
 import tempfile
 from functools import cached_property
-from pathlib import Path
 from typing import TYPE_CHECKING, Any, Generator
 
 if TYPE_CHECKING:
@@ -78,7 +77,7 @@ class FilesystemManager:
     def get_files(
         self,
         starting_replication_key_value: str | None = None,
-        exact_file_path_only: bool = False
+        exact_file_path_only: bool = False,  # noqa: FBT001 FBT002
     ) -> Generator[dict, None, None]:
         """Gets file names to be synced.
 
@@ -105,12 +104,10 @@ class FilesystemManager:
             file = self.filesystem.info(file_path)
             if (
                 (  # Ignore nested folders.
-                    file["type"] == "directory"
-                    and not exact_file_path_only
+                    file["type"] == "directory" and not exact_file_path_only
                 )
                 or (  # Ignore empty files.
-                    file["size"] == 0
-                    and not exact_file_path_only
+                    file["size"] == 0 and not exact_file_path_only
                 )
                 or (  # Ignore files not matching the configured file_regex
                     "file_regex" in self.config
@@ -156,7 +153,11 @@ class FilesystemManager:
             )
             self.logger.warning(msg)
 
-    def _find(self, file_path: str, exact_file_path_only: bool) -> Generator[str, None, None]:
+    def _find(
+        self,
+        file_path: str,
+        exact_file_path_only: bool,  # noqa: FBT001
+    ) -> Generator[str, None, None]:
         """Find all files that could potentially be valid.
 
         Args:
@@ -170,7 +171,6 @@ class FilesystemManager:
             yield file_path
         else:
             yield from self.filesystem.find(file_path)
-
 
     def _get_last_modified(self, file: dict) -> datetime.datetime | None:
         """Finds the last modified date from a file dictionary.

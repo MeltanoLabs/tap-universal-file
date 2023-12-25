@@ -252,14 +252,22 @@ class TapUniversalFile(Tap):
             th.BooleanType,
             default=False,
             description=(
-                "Whether to read from `file_path` as a partitioned data set or a series "
-                f"of independent files each with their own (potentially conflicting) "
-                "schemas."
+                "Whether to read from `file_path` as a partitioned data set or a "
+                "series of independent files each with their own (potentially "
+                "conflicting) schemas."
             ),
         ),
         th.Property(
             "parquet_filters",
-            th.ArrayType(th.ArrayType(th.ArrayType(th.CustomType({"type": ["string", "integer", "number", "array"]})))),
+            th.ArrayType(
+                th.ArrayType(
+                    th.ArrayType(
+                        th.CustomType(
+                            {"type": ["string", "integer", "number", "array"]},
+                        ),
+                    ),
+                ),
+            ),
             description=(
                 "A list of lists of lists of strings used to select a subset of "
                 "partitions to be loaded when `parquet_partitioned` is true. Ignored "

@@ -158,7 +158,9 @@ def test_parquet_partitioned_execution():
     messages = execute_tap(modified_config)
 
     # Check that parquet_filters works correctly and only a subset is synced.
-    assert len(messages["records"]["file"]) == 549, "Improper number of records returned"
+    assert (
+        len(messages["records"]["file"]) == 549
+    ), "Improper number of records returned"
 
 
 def test_s3_execution():

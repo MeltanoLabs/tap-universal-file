@@ -78,11 +78,15 @@ class FilesystemManager:
     def get_files(
         self,
         starting_replication_key_value: str | None = None,
+        exact_file_path_only: bool = False
     ) -> Generator[dict, None, None]:
         """Gets file names to be synced.
 
         Args:
-            starting_replication_key_value: _description_. Defaults to None.
+            starting_replication_key_value: Only sync files that were last modified
+                after this date.
+            exact_file_path_only: Only return the file/directory specified exactly by
+                `file_path` config option, ignoring files below that path.
 
         Raises:
             RuntimeError: If no files match the configured regex pattern or replication
@@ -97,11 +101,17 @@ class FilesystemManager:
 
         file_dict_list = []
 
-        for file_path in self.filesystem.find(self.config["file_path"]):
+        for file_path in self._find(self.config["file_path"], exact_file_path_only):
             file = self.filesystem.info(file_path)
             if (
-                file["type"] == "directory"  # Ignore nested folders.
-                or file["size"] == 0  # Ignore empty files.
+                (  # Ignore nested folders.
+                    file["type"] == "directory"
+                    and not exact_file_path_only
+                )
+                or (  # Ignore empty files.
+                    file["size"] == 0
+                    and not exact_file_path_only
+                )
                 or (  # Ignore files not matching the configured file_regex
                     "file_regex" in self.config
                     and not re.match(
@@ -145,6 +155,22 @@ class FilesystemManager:
                 "since state was last updated."
             )
             self.logger.warning(msg)
+
+    def _find(self, file_path: str, exact_file_path_only: bool) -> Generator[str, None, None]:
+        """Find all files that could potentially be valid.
+
+        Args:
+            file_path: A top-level file path to analyze.
+            exact_file_path_only: Whether to ignore nested files/directories.
+
+        Yields:
+            A string representing a potentially valid file.
+        """
+        if exact_file_path_only:
+            yield file_path
+        else:
+            yield from self.filesystem.find(file_path)
+
 
     def _get_last_modified(self, file: dict) -> datetime.datetime | None:
         """Finds the last modified date from a file dictionary.

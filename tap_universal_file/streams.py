@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import csv
+from itertools import zip_longest
 import json
 import re
 from typing import Any, Generator
@@ -11,6 +12,9 @@ import avro
 import avro.datafile
 import avro.io
 import avro.schema
+import pyarrow
+import pyarrow.parquet
+import pyarrow.types
 
 from tap_universal_file.client import FileStream
 
@@ -478,3 +482,198 @@ class AvroStream(FileStream):
                     file_name,
                     file["last_modified"],
                 )
+
+
+class ParquetStream(FileStream):
+    """Stream for reading Parquet files."""
+
+    def get_rows(self) -> Generator[dict[str, Any], None, None]:
+        """Retrive all rows from all Parquet files.
+
+        Yields:
+            A dictionary containing information about a row in a Parquet file.
+        """
+        for reader, file_name, last_modified in self._get_readers():
+            self.logger.info("Starting sync of %s.", file_name)
+            line_number = 0
+            for row in reader.to_pylist():
+                line_number += 1
+                yield self.add_additional_info(
+                    row=self._pre_process(row),
+                    file_name=file_name,
+                    line_number=line_number,
+                    last_modified=last_modified,
+                )
+            self.logger.info(
+                "Completed sync of %s records from %s.",
+                line_number,
+                file_name,
+            )
+
+    def get_properties(self) -> dict:
+        """Get a list of properties for an Avro file, to be used in creating a schema.
+
+        Returns:
+            A list of properties representing an Avro file.
+        """
+        properties = {}
+        for field in self._get_fields():
+            properties.update(self._get_property(field))
+        return properties
+
+    def _get_fields(self) -> Generator[dict | str, None, None]:
+        """Gets all fields in an avro file from schema and configured coercion strategy.
+
+        Raises:
+            ValueError: If the provided coercion strategy is invalid.
+
+        Yields:
+            A dictionary or string representing a field.
+        """
+        strategy = self.config["parquet_type_coercion_strategy"]
+        if strategy == "convert":
+            for reader, _, _ in self._get_readers():
+                yield from ({"name": name, "type": type} for name, type in zip(reader.schema.names, reader.schema.types))
+            return
+        if strategy == "envelope":
+            yield "record"
+            return
+        msg = f"The coercion strategy '{strategy}' is not valid."
+        raise ValueError(msg)
+
+    def _get_property(self, field: dict | str) -> dict[str, dict[str, list[str]]]:
+        """Converts a field into a JSON schema fragment based on coercion strategy.
+
+        Args:
+            field: The name of the field to get a property from.
+
+        Raises:
+            ValueError: If the coercion strategy provided is invalid.
+
+
+        Returns:
+            A dictionary containing a representation of the field as a property.
+        """
+        strategy = self.config["parquet_type_coercion_strategy"]
+        if strategy == "convert":
+            field_type, format = self._type_convert(field["type"])
+            type_dict = {"type": [field_type]}
+            if format is not None:
+                type_dict.update({"format": format})
+            return {field["name"]: type_dict}
+        if strategy == "envelope":
+            return {field: {"type": ["null", "object"]}}
+        msg = f"The coercion strategy '{strategy}' is not valid."
+        raise ValueError(msg)
+
+    def _type_convert(self, field_type) -> tuple[str,str | None]:
+        """Attempt to coerce a Parquet schema type to a JSON schema type.
+
+        Args:
+            field_type: The field to be converted.
+
+        Raises:
+            NotImplementedError: If the field type passed in is not implemented.
+
+        Returns:
+            A JSON schema representation of field_type.
+        """
+        if pyarrow.types.is_null(field_type):
+            return ("null", None)
+        if pyarrow.types.is_boolean(field_type):
+            return ("boolean", None)
+        if pyarrow.types.is_integer(field_type):
+            return ("integer", None)
+        if pyarrow.types.is_floating(field_type):
+            return ("number", None)
+        if pyarrow.types.is_time(field_type):
+            return ("string", "time")
+        if pyarrow.types.is_date(field_type):
+            return ("string", "date")
+        if pyarrow.types.is_timestamp(field_type):
+            return ("string", "date-time")
+        if pyarrow.types.is_duration(field_type):
+            return ("string", "duration")
+        if pyarrow.types.is_binary(field_type) or pyarrow.types.is_string(field_type) or pyarrow.types.is_large_binary(field_type) or pyarrow.types.is_large_string(field_type) or pyarrow.types.is_decimal(field_type):
+            return ("string", None)
+        if pyarrow.types.is_list(field_type) or pyarrow.types.is_large_list(field_type):
+            return ("array", None)
+        if pyarrow.types.is_map(field_type) or pyarrow.types.is_struct(field_type):
+            return ("object", None)
+        if pyarrow.types.is_dictionary(field_type):
+            return self._type_convert(field_type.value_type)
+        msg = f"The field type '{field_type}' has not been implemented."
+        raise NotImplementedError(msg)
+
+    def _pre_process(self, row: dict[str, Any]) -> dict[str, Any]:
+        """Processes a row based on the current coercion strategy.
+
+        Args:
+            row: The row to be pre-processed.
+
+        Raises:
+            ValueError: If the coercion strategy provided is invalid.
+
+        Returns:
+            A dictionary representing a row, converted or enveloped accordingly based on
+            the coercion strategy that was provided.
+        """
+        strategy = self.config["parquet_type_coercion_strategy"]
+        if strategy == "convert":
+            return row
+        if strategy == "envelope":
+            return {"record": row}
+        msg = f"The coercion strategy '{strategy}' is not valid."
+        raise ValueError(msg)
+
+    def _get_readers(
+        self,
+    ) -> Generator[tuple[pyarrow.Table, str, str], None, None]:
+        """Gets reader objects and associated meta data.
+
+        Yields:
+            A tuple of (pyarrow.Table, file_name, last_modified).
+        """
+        partitioned = self.config["parquet_partitioned"]
+        for file in self.fs_manager.get_files(self.starting_replication_key_value, exact_file_path_only=partitioned):
+            if partitioned:
+                yield self._get_readers_partitioned(file)
+            else:
+                yield self._get_readers_nonpartitioned(file)
+    
+    def _get_readers_partitioned(self, file: dict) -> tuple[pyarrow.Table, str, str]:
+        file_name = file["name"]
+        config_filters = self.config.get("parquet_filters", None)
+
+        # Inefficient, but it only runs once during discovery and once more during
+        # execution.
+        if config_filters is not None:
+            filters = [[self._convert_filter(j) for j in i] for i in config_filters]
+
+        return (
+            pyarrow.parquet.read_table(source=file_name, filesystem=self.fs_manager.filesystem, filters=filters),
+            file_name,
+            file["last_modified"],
+        )
+
+    def _get_readers_nonpartitioned(self, file: dict) -> tuple[pyarrow.Table, str, str]:
+        file_name = file["name"]
+        with self.fs_manager.filesystem.open(
+            path=file_name,
+            mode="rb",
+            compression=self.get_compression(file=file_name),
+        ) as f:
+            return (
+                pyarrow.parquet.read_table(source=f),
+                file_name,
+                file["last_modified"],
+            )
+
+    def _convert_filter(self, filter: list) -> tuple:
+        if len(filter) != 3:
+            msg = (
+                "`parquet_filters` config is incorrect. Innermost lists must have "
+                "exactly three entries."
+            )
+            raise ValueError(msg)
+        return tuple(filter)

@@ -131,6 +131,36 @@ def test_avro_execution():
     execute_tap(modified_config)
 
 
+def test_parquet_execution():
+    modified_config = base_file_config.copy()
+    modified_config.update(
+        {
+            "file_type": "parquet",
+            "file_regex": "^.*mtcars\\.parquet$",
+            "parquet_partitioned": False,
+            "parquet_type_coercion_strategy": "convert",
+        },
+    )
+    execute_tap(modified_config)
+
+
+def test_parquet_partitioned_execution():
+    modified_config = base_file_config.copy()
+    modified_config.update(
+        {
+            "file_type": "parquet",
+            "file_path": data_dir() + "/heart_partition",
+            "parquet_partitioned": True,
+            "parquet_filters": [[["partition", ">", 5]]],
+            "parquet_type_coercion_strategy": "convert",
+        },
+    )
+    messages = execute_tap(modified_config)
+
+    # Check that parquet_filters works correctly and only a subset is synced.
+    assert len(messages["records"]["file"]) == 549, "Improper number of records returned"
+
+
 def test_s3_execution():
     s3_config = {
         "protocol": "s3",

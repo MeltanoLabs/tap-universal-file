@@ -83,8 +83,8 @@ class TapUniversalFile(Tap):
             th.RegexType,
             default="delimited",
             description=(
-                "Must be one of `delimited`, `jsonl`, or `avro`. Indicates the type "
-                "of file to sync, where `delimited` is for CSV/TSV files and "
+                "Must be one of `delimited`, `jsonl`, `avro`, or `parquet`. Indicates "
+                "the type of file to sync, where `delimited` is for CSV/TSV files and "
                 "similar. Note that *all* files will be read as that type, "
                 "regardless of file extension. To only read from files with a "
                 "matching file extension, appropriately configure `file_regex`."
@@ -151,7 +151,7 @@ class TapUniversalFile(Tap):
             default="detect",
             description=(
                 "The character used to separate records in a delimited file. Can "
-                "ne any character or the special value `detect`. If a character is "
+                "be any character or the special value `detect`. If a character is "
                 "provided, all delimited files will use that value. `detect` will "
                 "use `,` for `.csv` files, `\\t` for `.tsv` files, and fail if "
                 "other file types are present."
@@ -248,6 +248,40 @@ class TapUniversalFile(Tap):
             ),
         ),
         th.Property(
+            "parquet_partitioned",
+            th.BooleanType,
+            default=False,
+            description=(
+                "Whether to read from `file_path` as a partitioned data set or a series "
+                f"of independent files each with their own (potentially conflicting) "
+                "schemas."
+            ),
+        ),
+        th.Property(
+            "parquet_filters",
+            th.ArrayType(th.ArrayType(th.ArrayType(th.CustomType({"type": ["string", "integer", "number", "array"]})))),
+            description=(
+                "A list of lists of lists of strings used to select a subset of "
+                "partitions to be loaded when `parquet_partitioned` is true. Ignored "
+                "if `parquet_partitioned` is false. For an explanation of syntax, see "
+                "[Parquet Partitioning](#parquet-partitioning) for details."
+            ),
+        ),
+        th.Property(
+            "parquet_type_coercion_strategy",
+            th.StringType,
+            allowed_values=(allowed_values := ["convert", "envelope"]),
+            default="convert",
+            description=(
+                "The strategy deciding how to convert Parquet Schema to JSON Schema "
+                f"when the conversion is ambiguous. {one_of(allowed_values)}. "
+                "`convert` will attempt to convert from Parquet Schema to JSON Schema "
+                "and will fail if a type can't be easily coerced. `envelope` will "
+                "wrap each record in an object without providing an internal"
+                "schema for the record."
+            ),
+        ),
+        th.Property(
             "s3_anonymous_connection",
             th.BooleanType,
             default=False,
@@ -307,6 +341,8 @@ class TapUniversalFile(Tap):
             return [streams.JSONLStream(self, name=name)]
         if file_type == "avro":
             return [streams.AvroStream(self, name=name)]
+        if file_type == "parquet":
+            return [streams.ParquetStream(self, name=name)]
         if file_type in {"csv", "tsv", "txt"}:
             msg = f"'{file_type}' is not a valid file_type. Did you mean 'delimited'?"
             raise ValueError(msg)

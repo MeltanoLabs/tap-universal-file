@@ -39,6 +39,8 @@ plugins:
     - name: jsonl_sampling_strategy
     - name: jsonl_type_coercion_strategy
     - name: avro_type_coercion_strategy
+    - name: parquet_partitioned
+    - name: parquet_filters
     - name: parquet_type_coercion_strategy
     - name: s3_anonymous_connection
     - name: AWS_ACCESS_KEY_ID
@@ -46,15 +48,6 @@ plugins:
     - name: AWS_SECRET_ACCESS_KEY
       kind: password
     - name: caching_strategy
-    config:
-      stream_name: heart
-      protocol: file
-      file_path: /git/tap-universal-file/data
-      file_type: parquet
-      compression: detect
-      additional_info: true
-      parquet_type_coercion_strategy: convert
-      parquet_partitioned: false
   loaders:
   - name: target-jsonl
     variant: andyh1203

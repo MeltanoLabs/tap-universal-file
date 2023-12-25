@@ -12,6 +12,7 @@ import avro.datafile
 import avro.io
 import avro.schema
 import pyarrow as pa
+import pyarrow.parquet as pq
 
 from tap_universal_file.client import FileStream
 
@@ -423,7 +424,7 @@ class AvroStream(FileStream):
         Returns:
             A JSON schema representation of field_type.
         """
-        if isinstance(field_type, str):
+        if not isinstance(field_type, str):
             msg = f"The field type '{field_type}' has not been implemented."
             raise NotImplementedError(msg)
         if field_type in {"null", "boolean", "string"}:
@@ -668,7 +669,7 @@ class ParquetStream(FileStream):
             filters = [[self._convert_filter(j) for j in i] for i in config_filters]
 
         return (
-            pa.parquet.read_table(
+            pq.read_table(
                 source=file_name,
                 filesystem=self.fs_manager.filesystem,
                 filters=filters,
@@ -685,7 +686,7 @@ class ParquetStream(FileStream):
             compression=self.get_compression(file=file_name),
         ) as f:
             return (
-                pa.parquet.read_table(source=f),
+                pq.read_table(source=f),
                 file_name,
                 file["last_modified"],
             )

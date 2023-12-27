@@ -36,8 +36,6 @@ pipx install git+https://github.com/MeltanoLabs/tap-universal-file.git
 | jsonl_sampling_strategy     | False    | first   | The strategy determining how to read the keys in a JSONL file. Must be either `first` or `all`. Currently, only `first` is supported, which will assume that the first record in a file is representative of all keys. |
 | jsonl_type_coercion_strategy| False    | any     | The strategy determining how to construct the schema for JSONL files when the types represented are ambiguous.  Must be one of `any`, `string`, or `envelope`. `any` will provide a generic schema for all keys, allowing them to be any valid JSON type. `string` will require all keys to be strings and will convert other values accordingly. `envelope` will deliver each JSONL row as a JSON object with no internal schema. |
 | avro_type_coercion_strategy | False    | convert | The strategy deciding how to convert Avro Schema to JSON Schema when the conversion is ambiguous. Must be either `convert` or `envelope`. `convert` will attempt to convert from Avro Schema to JSON Schema and will fail if a type can't be easily coerced. `envelope` will wrap each record in an object without providing an internalschema for the record. |
-| parquet_partitioned           | False    |   False | Whether to read from `file_path` as a partitioned data set or a series of independent files each with their own (potentially conflicting) schemas. |
-| parquet_filters               | False    | None    | A list of lists of lists of strings used to select a subset of partitions to be loaded when `parquet_partitioned` is true. Ignored if `parquet_partitioned` is false. For an explanation of syntax, see [Parquet Partitioning](#parquet-partitioning) for details. |
 | parquet_type_coercion_strategy| False    | convert | The strategy deciding how to convert Parquet Schema to JSON Schema when the conversion is ambiguous. Must be either `convert` or `envelope`. `convert` will attempt to convert from Parquet Schema to JSON Schema and will fail if a type can't be easily coerced. `envelope` will wrap each record in an object without providing an internalschema for the record. |
 | s3_anonymous_connection     | False    |    False | Whether to use an anonymous S3 connection, without any credentials. Ignored if `protocol!=s3`. |
 | AWS_ACCESS_KEY_ID           | False    | $AWS_ACCESS_KEY_ID    | The access key to use when authenticating to S3. Ignored if `protocol!=s3` or `s3_anonymous_connection=True`. Defaults to the value of the environment variable of the same name. |
@@ -160,23 +158,6 @@ aws iam delete-access-key --user-name=YOUR_ACCOUNT_NAME --access-key-id=YOUR_ACC
 #### Subfolders
 
 To sync a subfolder in S3, add it like you would add any other file path. For example to sync all files in `foo` subfolder of the S3 bucket named `bar-bucket`, set `file_path==bar-bucket/foo`.
-
-### Parquet Partitioning
-
-This tap supports reading from partitioned parquet files if the `parquet_partitioned` config option is true. When enabled, this also allows for only a subset of partitions to be loaded when configured through the `parquet_filters` config option. This option takes in a list of lists of lists in disjunctive normal form, allowing for arbitrary combinations of boolean logic. Each innermost list must be exactly three entries long and contain a variable, operator, and value in that order. 
-
-Each innermost list represents a single boolean condition. Each list of lists combines innermost lists using implied AND, and the top-level list combines each of those lists using implied OR. Only partitions that match the full combination of conditions will be loaded, saving time and resources by ignoring unneeded data.
-
-Example:
-```
-[[["x", "=", 0], ["y", "in", ["a","b"]]], [["z", "<=", 3.14]]]
-(x == 0 AND (y == "a" OR y == "b")) OR z <= 3.14
-```
-
-For more information review [the documentation](https://arrow.apache.org/docs/python/generated/pyarrow.parquet.read_table.html) for the `filters` argument of `read_table()` in Apache Arrow. `parquet_filters` config is passed directly to this argument after converting the innermost lists to tuples.
-
-> [!WARNING]  
-> Incremental replication may behave in unexpected ways when using parquet partitioning. To discuss, see #81.
 
 ### Incremental Replication
 

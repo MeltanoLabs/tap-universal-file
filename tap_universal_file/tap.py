@@ -248,34 +248,6 @@ class TapUniversalFile(Tap):
             ),
         ),
         th.Property(
-            "parquet_partitioned",
-            th.BooleanType,
-            default=False,
-            description=(
-                "Whether to read from `file_path` as a partitioned data set or a "
-                "series of independent files each with their own (potentially "
-                "conflicting) schemas."
-            ),
-        ),
-        th.Property(
-            "parquet_filters",
-            th.ArrayType(
-                th.ArrayType(
-                    th.ArrayType(
-                        th.CustomType(
-                            {"type": ["string", "integer", "number", "array"]},
-                        ),
-                    ),
-                ),
-            ),
-            description=(
-                "A list of lists of lists of strings used to select a subset of "
-                "partitions to be loaded when `parquet_partitioned` is true. Ignored "
-                "if `parquet_partitioned` is false. For an explanation of syntax, see "
-                "[Parquet Partitioning](#parquet-partitioning) for details."
-            ),
-        ),
-        th.Property(
             "parquet_type_coercion_strategy",
             th.StringType,
             allowed_values=(allowed_values := ["convert", "envelope"]),

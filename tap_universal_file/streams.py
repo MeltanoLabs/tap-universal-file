@@ -530,7 +530,9 @@ class ParquetStream(FileStream):
         """
         strategy = self.config["parquet_type_coercion_strategy"]
         if strategy == "convert":
-            for reader, file_name, last_modified in self._get_readers():  # noqa: B007
+            # _get_readers() also returns a file's name and last_modified date, but we
+            # don't care about that here.
+            for reader, _, _ in self._get_readers():
                 for name, reader_type in zip(
                     reader.schema.names,
                     reader.schema.types,
@@ -642,72 +644,21 @@ class ParquetStream(FileStream):
         msg = f"The coercion strategy '{strategy}' is not valid."
         raise ValueError(msg)
 
-    def _get_readers(
-        self,
-    ) -> Generator[tuple[pa.Table, str, str], None, None]:
+    def _get_readers(self) -> Generator[tuple[pa.Table, str, str], None, None]:
         """Gets reader objects and associated meta data.
 
         Yields:
             A tuple of (pyarrow.Table, file_name, last_modified).
         """
-        partitioned = self.config["parquet_partitioned"]
-        for file in self.fs_manager.get_files(
-            self.starting_replication_key_value,
-            exact_file_path_only=partitioned,
-        ):
-            if partitioned:
-                yield self._get_readers_partitioned(file)
-            else:
-                yield self._get_readers_nonpartitioned(file)
-
-    def _get_readers_partitioned(self, file: dict) -> tuple[pa.Table, str, str]:
-        file_name = file["name"]
-        config_filters = self.config.get("parquet_filters", None)
-
-        # Inefficient, but it only runs once during discovery and once more during
-        # execution.
-        if config_filters is not None:
-            filters = [[self._convert_filter(j) for j in i] for i in config_filters]
-
-        return (
-            pq.read_table(
-                source=file_name,
-                filesystem=self.fs_manager.filesystem,
-                filters=filters,
-            ),
-            file_name,
-            file["last_modified"],
-        )
-
-    def _get_readers_nonpartitioned(self, file: dict) -> tuple[pa.Table, str, str]:
-        file_name = file["name"]
-        with self.fs_manager.filesystem.open(
-            path=file_name,
-            mode="rb",
-            compression=self.get_compression(file=file_name),
-        ) as f:
-            return (
-                pq.read_table(source=f),
-                file_name,
-                file["last_modified"],
-            )
-
-    def _convert_filter(self, filter_list: list) -> tuple:
-        """Converts a list representing a boolean condition into a tuple.
-
-        Args:
-            filter_list: A list exactly three elements long.
-
-        Raises:
-            ValueError: If the list is not exactly three elements long.
-
-        Returns:
-            A tuple instantiated from the list.
-        """
-        if len(filter_list) != 3:  # noqa: PLR2004
-            msg = (
-                "`parquet_filters` config is incorrect. Innermost lists must have "
-                "exactly three entries."
-            )
-            raise ValueError(msg)
-        return tuple(filter_list)
+        for file in self.fs_manager.get_files(self.starting_replication_key_value):
+            file_name = file["name"]
+            with self.fs_manager.filesystem.open(
+                path=file_name,
+                mode="rb",
+                compression=self.get_compression(file=file_name),
+            ) as f:
+                yield (
+                    pq.read_table(source=f),
+                    file_name,
+                    file["last_modified"],
+                )

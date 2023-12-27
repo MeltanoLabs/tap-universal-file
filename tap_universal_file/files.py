@@ -77,7 +77,6 @@ class FilesystemManager:
     def get_files(
         self,
         starting_replication_key_value: str | None = None,
-        exact_file_path_only: bool = False,  # noqa: FBT001 FBT002
     ) -> Generator[dict, None, None]:
         """Gets file names to be synced.
 
@@ -100,15 +99,11 @@ class FilesystemManager:
 
         file_dict_list = []
 
-        for file_path in self._find(self.config["file_path"], exact_file_path_only):
+        for file_path in self.filesystem.find(self.config["file_path"]):
             file = self.filesystem.info(file_path)
             if (
-                (  # Ignore nested folders.
-                    file["type"] == "directory" and not exact_file_path_only
-                )
-                or (  # Ignore empty files.
-                    file["size"] == 0 and not exact_file_path_only
-                )
+                file["type"] == "directory"  # Ignore nested folders.
+                or file["size"] == 0  # Ignore empty files.
                 or (  # Ignore files not matching the configured file_regex
                     "file_regex" in self.config
                     and not re.match(
@@ -152,25 +147,6 @@ class FilesystemManager:
                 "since state was last updated."
             )
             self.logger.warning(msg)
-
-    def _find(
-        self,
-        file_path: str,
-        exact_file_path_only: bool,  # noqa: FBT001
-    ) -> Generator[str, None, None]:
-        """Find all files that could potentially be valid.
-
-        Args:
-            file_path: A top-level file path to analyze.
-            exact_file_path_only: Whether to ignore nested files/directories.
-
-        Yields:
-            A string representing a potentially valid file.
-        """
-        if exact_file_path_only:
-            yield file_path
-        else:
-            yield from self.filesystem.find(file_path)
 
     def _get_last_modified(self, file: dict) -> datetime.datetime | None:
         """Finds the last modified date from a file dictionary.

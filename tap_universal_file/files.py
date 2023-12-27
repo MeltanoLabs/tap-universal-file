@@ -83,8 +83,6 @@ class FilesystemManager:
         Args:
             starting_replication_key_value: Only sync files that were last modified
                 after this date.
-            exact_file_path_only: Only return the file/directory specified exactly by
-                `file_path` config option, ignoring files below that path.
 
         Raises:
             RuntimeError: If no files match the configured regex pattern or replication

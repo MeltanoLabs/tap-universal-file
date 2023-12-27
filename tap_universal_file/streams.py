@@ -529,7 +529,7 @@ class ParquetStream(FileStream):
         """
         strategy = self.config["parquet_type_coercion_strategy"]
         if strategy == "convert":
-            for reader, file_name, last_modified in self._get_readers():
+            for reader, file_name, last_modified in self._get_readers():  # noqa: B007
                 for name, reader_type in zip(
                     reader.schema.names,
                     reader.schema.types,
@@ -567,7 +567,7 @@ class ParquetStream(FileStream):
         msg = f"The coercion strategy '{strategy}' is not valid."
         raise ValueError(msg)
 
-    def _type_convert(  # noqa: C901 PLR0912
+    def _type_convert(  # noqa: C901
         self,
         field_type: pa.DataType,
     ) -> tuple[str, str | None]:

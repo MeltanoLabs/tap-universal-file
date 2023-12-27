@@ -13,6 +13,7 @@ import avro.io
 import avro.schema
 import pyarrow as pa
 import pyarrow.parquet as pq
+import decimal
 
 from tap_universal_file.client import FileStream
 
@@ -632,6 +633,9 @@ class ParquetStream(FileStream):
         """
         strategy = self.config["parquet_type_coercion_strategy"]
         if strategy == "convert":
+            for k in row:
+                if isinstance(row[k], decimal.Decimal):
+                    row[k] = str(row[k])
             return row
         if strategy == "envelope":
             return {"record": row}

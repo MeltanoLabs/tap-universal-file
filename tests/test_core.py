@@ -131,14 +131,27 @@ def test_avro_execution():
     execute_tap(modified_config)
 
 
-def test_parquet_execution():
+def test_parquet_envelope_execution():
     modified_config = base_file_config.copy()
     modified_config.update(
         {
             "file_type": "parquet",
-            "file_regex": "^.*mtcars\\.parquet$",
+            "file_regex": "^.*racing\\.parquet$",
             "parquet_partitioned": False,
             "parquet_type_coercion_strategy": "convert",
+        },
+    )
+    execute_tap(modified_config)
+
+
+def test_parquet_envelope_execution():
+    modified_config = base_file_config.copy()
+    modified_config.update(
+        {
+            "file_type": "parquet",
+            "file_regex": "^.*racing\\.parquet$",
+            "parquet_partitioned": False,
+            "parquet_type_coercion_strategy": "envelope",
         },
     )
     execute_tap(modified_config)

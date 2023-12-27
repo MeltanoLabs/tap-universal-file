@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import csv
+import decimal
 import json
 import re
 from typing import Any, Generator
@@ -13,7 +14,6 @@ import avro.io
 import avro.schema
 import pyarrow as pa
 import pyarrow.parquet as pq
-import decimal
 
 from tap_universal_file.client import FileStream
 

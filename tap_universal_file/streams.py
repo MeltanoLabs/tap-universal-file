@@ -508,10 +508,10 @@ class ParquetStream(FileStream):
             )
 
     def get_properties(self) -> dict:
-        """Get a list of properties for an Avro file, to be used in creating a schema.
+        """Get a list of properties for a Parquet file, to be used in creating a schema.
 
         Returns:
-            A list of properties representing an Avro file.
+            A list of properties representing a Parquet file.
         """
         properties = {}
         for field in self._get_fields():
@@ -519,7 +519,7 @@ class ParquetStream(FileStream):
         return properties
 
     def _get_fields(self) -> Generator[dict | str, None, None]:
-        """Gets all fields in an avro file from schema and configured coercion strategy.
+        """Gets all fields in a Parquet file from schema and coercion strategy.
 
         Raises:
             ValueError: If the provided coercion strategy is invalid.
@@ -529,14 +529,12 @@ class ParquetStream(FileStream):
         """
         strategy = self.config["parquet_type_coercion_strategy"]
         if strategy == "convert":
-            for reader, _, _ in self._get_readers():
-                yield from (
-                    {"name": name, "type": reader_type}
-                    for name, reader_type in zip(
-                        reader.schema.names,
-                        reader.schema.types,
-                    )
-                )
+            for reader, file_name, last_modified in self._get_readers():
+                for name, reader_type in zip(
+                    reader.schema.names,
+                    reader.schema.types,
+                ):
+                    yield {"name": name, "type": reader_type}
             return
         if strategy == "envelope":
             yield "record"
@@ -599,14 +597,13 @@ class ParquetStream(FileStream):
             type_tuple = ("string", "date")
         if pa.types.is_timestamp(field_type):
             type_tuple = ("string", "date-time")
-        if pa.types.is_duration(field_type):
-            type_tuple = ("string", "duration")
         if (
             pa.types.is_binary(field_type)
             or pa.types.is_string(field_type)
             or pa.types.is_large_binary(field_type)
             or pa.types.is_large_string(field_type)
             or pa.types.is_decimal(field_type)
+            or pa.types.is_duration(field_type)
         ):
             type_tuple = ("string", None)
         if pa.types.is_list(field_type) or pa.types.is_large_list(field_type):

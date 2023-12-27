@@ -387,6 +387,7 @@ class AvroStream(FileStream):
                 yield from json.loads(reader.schema)["fields"]
             return
         if strategy == "envelope":
+            # An eveloped record only has a single top-level field, named "record".
             yield "record"
             return
         msg = f"The coercion strategy '{strategy}' is not valid."
@@ -540,6 +541,7 @@ class ParquetStream(FileStream):
                     yield {"name": name, "type": reader_type}
             return
         if strategy == "envelope":
+            # An eveloped record only has a single top-level field, named "record".
             yield "record"
             return
         msg = f"The coercion strategy '{strategy}' is not valid."

@@ -1,8 +1,6 @@
 # tap-universal-file
 
-**IMPORTANT**: This tap is still under development and should not be used in its current form. <!-- TODO: remove disclaimer when feature-complete. -->
-
-`tap-universal-file` is a Singer tap for File.
+`tap-universal-file` is a Singer tap for files.
 
 Built with the [Meltano Tap SDK](https://sdk.meltano.com) for Singer Taps.
 
@@ -31,14 +29,15 @@ pipx install git+https://github.com/MeltanoLabs/tap-universal-file.git
 | delimited_error_handling    | False    | fail    | The method with which to handle improperly formatted records in delimited files. Must be either `fail` or `ignore`. `fail` will cause the tap to fail if an improperly formatted record is detected. `ignore` will ignore the fact that it is improperly formatted and process it anyway. |
 | delimited_delimiter         | False    | detect  | The character used to separate records in a delimited file. Can ne any character or the special value `detect`. If a character is provided, all delimited files will use that value. `detect` will use `,` for `.csv` files, `\t` for `.tsv` files, and fail if other file types are present. |
 | delimited_quote_character   | False    | "       | The character used to indicate when a record in a delimited file contains a delimiter character. |
-| delimited_header_skip       | False    |       0 | The number of initial rows to skip at the beginning of each delimited file. |
-| delimited_footer_skip       | False    |       0 | The number of initial rows to skip at the end of each delimited file. |
+| delimited_header_skip       | False    |   False | The number of initial rows to skip at the beginning of each delimited file. |
+| delimited_footer_skip       | False    |   False | The number of initial rows to skip at the end of each delimited file. |
 | delimited_override_headers  | False    | None    | An optional array of headers used to override the default column name in delimited files, allowing for headerless files to be correctly read. |
 | jsonl_error_handling        | False    | fail    | The method with which to handle improperly formatted records in jsonl files. Must be either `fail` or `ignore`. `fail` will cause the tap to fail if an improperly formatted record is detected. `ignore` will ignore the fact that it is improperly formatted and process it anyway. |
 | jsonl_sampling_strategy     | False    | first   | The strategy determining how to read the keys in a JSONL file. Must be either `first` or `all`. Currently, only `first` is supported, which will assume that the first record in a file is representative of all keys. |
 | jsonl_type_coercion_strategy| False    | any     | The strategy determining how to construct the schema for JSONL files when the types represented are ambiguous.  Must be one of `any`, `string`, or `envelope`. `any` will provide a generic schema for all keys, allowing them to be any valid JSON type. `string` will require all keys to be strings and will convert other values accordingly. `envelope` will deliver each JSONL row as a JSON object with no internal schema. |
 | avro_type_coercion_strategy | False    | convert | The strategy deciding how to convert Avro Schema to JSON Schema when the conversion is ambiguous. Must be either `convert` or `envelope`. `convert` will attempt to convert from Avro Schema to JSON Schema and will fail if a type can't be easily coerced. `envelope` will wrap each record in an object without providing an internalschema for the record. |
-| s3_anonymous_connection     | False    |       0 | Whether to use an anonymous S3 connection, without any credentials. Ignored if `protocol!=s3`. |
+| parquet_type_coercion_strategy| False    | convert | The strategy deciding how to convert Parquet Schema to JSON Schema when the conversion is ambiguous. Must be either `convert` or `envelope`. `convert` will attempt to convert from Parquet Schema to JSON Schema and will fail if a type can't be easily coerced. `envelope` will wrap each record in an object without providing an internalschema for the record. |
+| s3_anonymous_connection     | False    |    False | Whether to use an anonymous S3 connection, without any credentials. Ignored if `protocol!=s3`. |
 | AWS_ACCESS_KEY_ID           | False    | $AWS_ACCESS_KEY_ID    | The access key to use when authenticating to S3. Ignored if `protocol!=s3` or `s3_anonymous_connection=True`. Defaults to the value of the environment variable of the same name. |
 | AWS_SECRET_ACCESS_KEY       | False    | $AWS_SECRET_ACCESS_KEY    | The access key secret to use when authenticating to S3. Ignored if `protocol!=s3` or `s3_anonymous_connection=True`. Defaults to the value of the environment variable of the same name. |
 | caching_strategy            | False    | once    | *DEVELOPERS ONLY* The caching method to use when `protocol!=file`. One of `none`, `once`, or `persistent`. `none` does not use caching at all. `once` (the default) will cache all files for the duration of the tap's invocation, then discard them upon completion. `peristent` will allow caches to persist between invocations of the tap, storing them in your OS's temp directory. It is recommended that you do not modify this setting. |

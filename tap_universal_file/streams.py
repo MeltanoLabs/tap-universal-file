@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import csv
+import decimal
 import json
 import re
 from typing import Any, Generator
@@ -11,6 +12,8 @@ import avro
 import avro.datafile
 import avro.io
 import avro.schema
+import pyarrow as pa
+import pyarrow.parquet as pq
 
 from tap_universal_file.client import FileStream
 
@@ -144,11 +147,11 @@ class DelimitedStream(FileStream):
             self,
             f: Any,  # noqa: ANN401
             file_name: str,
-            fieldnames: Any | None = None,
-            restkey: Any | None = None,
-            restval: Any | None = None,
+            fieldnames: Any | None = None,  # noqa: ANN401
+            restkey: Any | None = None,  # noqa: ANN401
+            restval: Any | None = None,  # noqa: ANN401
             dialect: str = "excel",
-            config: dict = None,
+            config: dict | None = None,
             *args: Any,
             **kwds: Any,
         ) -> None:
@@ -381,10 +384,10 @@ class AvroStream(FileStream):
         strategy = self.config["avro_type_coercion_strategy"]
         if strategy == "convert":
             for reader, _, _ in self._get_readers():
-                for field in json.loads(reader.schema)["fields"]:
-                    yield field
+                yield from json.loads(reader.schema)["fields"]
             return
         if strategy == "envelope":
+            # An eveloped record only has a single top-level field, named "record".
             yield "record"
             return
         msg = f"The coercion strategy '{strategy}' is not valid."
@@ -423,7 +426,7 @@ class AvroStream(FileStream):
         Returns:
             A JSON schema representation of field_type.
         """
-        if type(field_type) != str:
+        if not isinstance(field_type, str):
             msg = f"The field type '{field_type}' has not been implemented."
             raise NotImplementedError(msg)
         if field_type in {"null", "boolean", "string"}:
@@ -475,6 +478,189 @@ class AvroStream(FileStream):
             ) as f:
                 yield (
                     avro.datafile.DataFileReader(f, avro.io.DatumReader()),
+                    file_name,
+                    file["last_modified"],
+                )
+
+
+class ParquetStream(FileStream):
+    """Stream for reading Parquet files."""
+
+    def get_rows(self) -> Generator[dict[str, Any], None, None]:
+        """Retrive all rows from all Parquet files.
+
+        Yields:
+            A dictionary containing information about a row in a Parquet file.
+        """
+        for reader, file_name, last_modified in self._get_readers():
+            self.logger.info("Starting sync of %s.", file_name)
+            line_number = 0
+            for row in reader.to_pylist():
+                line_number += 1
+                yield self.add_additional_info(
+                    row=self._pre_process(row),
+                    file_name=file_name,
+                    line_number=line_number,
+                    last_modified=last_modified,
+                )
+            self.logger.info(
+                "Completed sync of %s records from %s.",
+                line_number,
+                file_name,
+            )
+
+    def get_properties(self) -> dict:
+        """Get a list of properties for a Parquet file, to be used in creating a schema.
+
+        Returns:
+            A list of properties representing a Parquet file.
+        """
+        properties = {}
+        for field in self._get_fields():
+            properties.update(self._get_property(field))
+        return properties
+
+    def _get_fields(self) -> Generator[dict | str, None, None]:
+        """Gets all fields in a Parquet file from schema and coercion strategy.
+
+        Raises:
+            ValueError: If the provided coercion strategy is invalid.
+
+        Yields:
+            A dictionary or string representing a field.
+        """
+        strategy = self.config["parquet_type_coercion_strategy"]
+        if strategy == "convert":
+            # _get_readers() also returns a file's name and last_modified date, but we
+            # don't care about that here.
+            for reader, _, _ in self._get_readers():
+                for name, reader_type in zip(
+                    reader.schema.names,
+                    reader.schema.types,
+                ):
+                    yield {"name": name, "type": reader_type}
+            return
+        if strategy == "envelope":
+            # An eveloped record only has a single top-level field, named "record".
+            yield "record"
+            return
+        msg = f"The coercion strategy '{strategy}' is not valid."
+        raise ValueError(msg)
+
+    def _get_property(self, field: dict | str) -> dict[str, dict[str, list[str]]]:
+        """Converts a field into a JSON schema fragment based on coercion strategy.
+
+        Args:
+            field: The name of the field to get a property from.
+
+        Raises:
+            ValueError: If the coercion strategy provided is invalid.
+
+
+        Returns:
+            A dictionary containing a representation of the field as a property.
+        """
+        strategy = self.config["parquet_type_coercion_strategy"]
+        if strategy == "convert":
+            field_type, field_format = self._type_convert(field["type"])
+            type_dict = {"type": [field_type]}
+            if field_format is not None:
+                type_dict.update({"format": field_format})
+            return {field["name"]: type_dict}
+        if strategy == "envelope":
+            return {field: {"type": ["null", "object"]}}
+        msg = f"The coercion strategy '{strategy}' is not valid."
+        raise ValueError(msg)
+
+    def _type_convert(  # noqa: C901
+        self,
+        field_type: pa.DataType,
+    ) -> tuple[str, str | None]:
+        """Attempt to coerce a Parquet schema type to a JSON schema type.
+
+        Args:
+            field_type: The field to be converted.
+
+        Raises:
+            NotImplementedError: If the field type passed in is not implemented.
+
+        Returns:
+            A JSON schema representation of field_type.
+        """
+        type_tuple = None
+        if pa.types.is_null(field_type):
+            type_tuple = ("null", None)
+        if pa.types.is_boolean(field_type):
+            type_tuple = ("boolean", None)
+        if pa.types.is_integer(field_type):
+            type_tuple = ("integer", None)
+        if pa.types.is_floating(field_type):
+            type_tuple = ("number", None)
+        if pa.types.is_time(field_type):
+            type_tuple = ("string", "time")
+        if pa.types.is_date(field_type):
+            type_tuple = ("string", "date")
+        if pa.types.is_timestamp(field_type):
+            type_tuple = ("string", "date-time")
+        if (
+            pa.types.is_binary(field_type)
+            or pa.types.is_string(field_type)
+            or pa.types.is_large_binary(field_type)
+            or pa.types.is_large_string(field_type)
+            or pa.types.is_decimal(field_type)
+            or pa.types.is_duration(field_type)
+        ):
+            type_tuple = ("string", None)
+        if pa.types.is_list(field_type) or pa.types.is_large_list(field_type):
+            type_tuple = ("array", None)
+        if pa.types.is_map(field_type) or pa.types.is_struct(field_type):
+            type_tuple = ("object", None)
+        if pa.types.is_dictionary(field_type):
+            type_tuple = self._type_convert(field_type.value_type)
+        if type_tuple is None:
+            msg = f"The field type '{field_type}' has not been implemented."
+            raise NotImplementedError(msg)
+        return type_tuple
+
+    def _pre_process(self, row: dict[str, Any]) -> dict[str, Any]:
+        """Processes a row based on the current coercion strategy.
+
+        Args:
+            row: The row to be pre-processed.
+
+        Raises:
+            ValueError: If the coercion strategy provided is invalid.
+
+        Returns:
+            A dictionary representing a row, converted or enveloped accordingly based on
+            the coercion strategy that was provided.
+        """
+        strategy = self.config["parquet_type_coercion_strategy"]
+        if strategy == "convert":
+            for k in row:
+                if isinstance(row[k], decimal.Decimal):
+                    row[k] = str(row[k])
+            return row
+        if strategy == "envelope":
+            return {"record": row}
+        msg = f"The coercion strategy '{strategy}' is not valid."
+        raise ValueError(msg)
+
+    def _get_readers(self) -> Generator[tuple[pa.Table, str, str], None, None]:
+        """Gets reader objects and associated meta data.
+
+        Yields:
+            A tuple of (pyarrow.Table, file_name, last_modified).
+        """
+        for file in self.fs_manager.get_files(self.starting_replication_key_value):
+            file_name = file["name"]
+            with self.fs_manager.filesystem.open(
+                path=file_name,
+                mode="rb",
+                compression=self.get_compression(file=file_name),
+            ) as f:
+                yield (
+                    pq.read_table(source=f),
                     file_name,
                     file["last_modified"],
                 )

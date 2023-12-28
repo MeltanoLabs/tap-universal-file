@@ -131,6 +131,30 @@ def test_avro_execution():
     execute_tap(modified_config)
 
 
+def test_parquet_convert_execution():
+    modified_config = base_file_config.copy()
+    modified_config.update(
+        {
+            "file_type": "parquet",
+            "file_regex": "^.*racing\\.parquet$",
+            "parquet_type_coercion_strategy": "convert",
+        },
+    )
+    execute_tap(modified_config)
+
+
+def test_parquet_envelope_execution():
+    modified_config = base_file_config.copy()
+    modified_config.update(
+        {
+            "file_type": "parquet",
+            "file_regex": "^.*racing\\.parquet$",
+            "parquet_type_coercion_strategy": "envelope",
+        },
+    )
+    execute_tap(modified_config)
+
+
 def test_s3_execution():
     s3_config = {
         "protocol": "s3",

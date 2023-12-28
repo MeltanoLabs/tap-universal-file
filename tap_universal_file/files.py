@@ -6,7 +6,6 @@ import datetime
 import re
 import tempfile
 from functools import cached_property
-from pathlib import Path
 from typing import TYPE_CHECKING, Any, Generator
 
 if TYPE_CHECKING:
@@ -82,7 +81,8 @@ class FilesystemManager:
         """Gets file names to be synced.
 
         Args:
-            starting_replication_key_value: _description_. Defaults to None.
+            starting_replication_key_value: Only sync files that were last modified
+                after this date.
 
         Raises:
             RuntimeError: If no files match the configured regex pattern or replication

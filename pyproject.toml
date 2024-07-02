@@ -12,24 +12,24 @@ license = "Apache-2.0"
 
 [tool.poetry.dependencies]
 python = ">=3.8,<3.12"
-singer-sdk = { version="^0.28.0" }
-fsspec = "^2023.5.0"
-s3fs = { version = "^2023.5.0", optional = true}
-fs-s3fs = { version = "^1.1.1", optional = true}
-avro = "^1.1.11"
-pyarrow = "^14.0.2"
+singer-sdk = { version="~=0.38.0" }
+fsspec = "~=2024.6.1"
+s3fs = { version = "~=2024.6.1", optional = true}
+fs-s3fs = { version = "~=1.1.1", optional = true}
+avro = "~=1.11.3"
+pyarrow = "~=16.1.0"
 
 [tool.poetry.extras]
 s3=["s3fs", "fs-s3fs"]
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.2.1"
-ruff = "^0.0.287"
-black = "^23.3.0"
-singer-sdk = { version="^0.28.0", extras = ["testing"] }
+pytest = ">=8"
+ruff = ">=0.5.0"
+black = ">=24.4.2"
+singer-sdk = { version="~=0.38.0", extras = ["testing"] }
 
 [tool.mypy]
-python_version = "3.9"
+python_version = "3.12"
 warn_unused_configs = true
 
 [tool.ruff]
@@ -40,7 +40,7 @@ ignore = [
 ]
 select = ["ALL"]
 src = ["tap_universal_file"]
-target-version = "py37"
+target-version = "py38"
 
 
 [tool.ruff.flake8-annotations]

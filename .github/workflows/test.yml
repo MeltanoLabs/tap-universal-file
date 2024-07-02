@@ -10,8 +10,13 @@ jobs:
   pytest:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11"]
+        python-version:
+        - "3.8"
+        - "3.9"
+        - "3.10"
+        - "3.11"
     env:
       AWS_ACCESS_KEY_ID: NoSecretsNeeded
       AWS_SECRET_ACCESS_KEY: NoSecretsNeeded
@@ -28,6 +33,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install poetry
+        pip install setuptools
     - name: Install dependencies
       run: |
         poetry install --extras=s3

@@ -1,1 +1,2 @@
-poetry==1.6.1
+poetry==1.8.3
+setuptools==70.2.0

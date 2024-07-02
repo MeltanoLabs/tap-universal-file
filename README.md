@@ -1,6 +1,6 @@
 # tap-universal-file
 
-`tap-universal-file` is a Singer tap for files.
+`tap-universal-file` is a Singer tap for files
 
 Built with the [Meltano Tap SDK](https://sdk.meltano.com) for Singer Taps.
 

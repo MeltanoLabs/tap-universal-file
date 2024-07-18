@@ -20,10 +20,10 @@ if TYPE_CHECKING:
 
 def patched_is_boolean_type(property_schema: dict) -> bool | None:
     """Return true if the JSON Schema type is a boolean or None if detection fails.
-    
+
     Without this patch, is_boolean_type() will return true for schemas that contain
     non-boolean types, which causes values to be coerced to booleans.
-    
+
     For example, without this patch, a field with a value of `"abc"` and a jsonschema
     type of `["boolean", "string"]` would cause this function to return `True`. Then the
     SDK's _conform_primitive_property() would coerce `"abc"` to boolean, resulting in
@@ -43,14 +43,14 @@ def patched_is_boolean_type(property_schema: dict) -> bool | None:
             "boolean" in schema_type
             and (
                 len(schema_type) == 1
-                or ("null" in schema_type and len(schema_type) == 2)
+                or ("null" in schema_type and len(schema_type) == 2)  # noqa: PLR2004
             )
         ):
             return True
     return False
 
 
-singer_sdk.helpers._typing.is_boolean_type = patched_is_boolean_type
+singer_sdk.helpers._typing.is_boolean_type = patched_is_boolean_type  # noqa: SLF001
 
 
 class FileStream(Stream):

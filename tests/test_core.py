@@ -98,6 +98,17 @@ def test_sdc_fields_present():
     assert properties["_sdc_file_name"], "_sdc_file_name is not present in schema"
 
 
+def test_sdc_fields_not_present():
+    modified_config = base_file_config.copy()
+    modified_config.update(
+        {"file_regex": "^.*fruit_records\\.csv$", "additional_info": False}
+    )
+    messages = execute_tap(modified_config)
+    properties = messages["schema_messages"][0]["schema"]["properties"]
+    assert "_sdc_line_number" not in properties, "_sdc_line_number is present in schema"
+    assert "_sdc_file_name" not in properties, "_sdc_file_name is present in schema"
+
+
 def test_delimited_execution():
     modified_config = base_file_config.copy()
     modified_config.update(
@@ -117,6 +128,89 @@ def test_jsonl_execution():
         },
     )
     execute_tap(modified_config)
+
+
+def test_jsonl_execution_coercion_any():
+    modified_config = base_file_config.copy()
+    modified_config.update(
+        {
+            "file_type": "jsonl",
+            "file_regex": "^.*\\/birds\\.jsonl$",
+            "jsonl_sampling_strategy": "first",
+            "jsonl_type_coercion_strategy": "any",
+            "stream_name": "birds",
+            "additional_info": False,
+        },
+    )
+    messages = execute_tap(modified_config)
+    record = messages["records"]["birds"][0]
+    properties = messages["schema_messages"][0]["schema"]["properties"]
+    expected_properties = {
+        "id": {
+            "type": [
+                "null",
+                "boolean",
+                "integer",
+                "number",
+                "string",
+                "array",
+                "object",
+            ],
+        },
+        "description": {
+            "type": [
+                "null",
+                "boolean",
+                "integer",
+                "number",
+                "string",
+                "array",
+                "object",
+            ],
+        },
+        "verified": {
+            "type": [
+                "null",
+                "boolean",
+                "integer",
+                "number",
+                "string",
+                "array",
+                "object",
+            ],
+        },
+        "views": {
+            "type": [
+                "null",
+                "boolean",
+                "integer",
+                "number",
+                "string",
+                "array",
+                "object",
+            ],
+        },
+        "created_at": {
+            "type": [
+                "null",
+                "boolean",
+                "integer",
+                "number",
+                "string",
+                "array",
+                "object",
+            ],
+        },
+    }
+    expected_record = {
+        "id": 1,
+        "description": "Red-headed woodpecker",
+        "verified": True,
+        "views": 27,
+        "created_at": "2021-09-22T01:01:05Z",
+    }
+    assert properties == expected_properties
+    assert record == expected_record
 
 
 def test_avro_execution():

@@ -17,6 +17,9 @@ jobs:
         - "3.9"
         - "3.10"
         - "3.11"
+        - "3.12"
+        - "3.13"
+        - "3.14"
     env:
       AWS_ACCESS_KEY_ID: NoSecretsNeeded
       AWS_SECRET_ACCESS_KEY: NoSecretsNeeded

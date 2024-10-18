@@ -94,6 +94,7 @@ class TapUniversalFile(Tap):
             "fail_when_no_files_found",
             th.BooleanType,
             default=True,
+            required=True,
             description="Fail when no files are found",
         ),
         th.Property(

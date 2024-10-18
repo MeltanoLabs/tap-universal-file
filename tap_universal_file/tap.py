@@ -91,6 +91,12 @@ class TapUniversalFile(Tap):
             ),
         ),
         th.Property(
+            "fail_when_no_files_found",
+            th.BooleanType,
+            default=True,
+            description="Fail when no files are found",
+        ),
+        th.Property(
             "compression",
             th.StringType,
             allowed_values=(

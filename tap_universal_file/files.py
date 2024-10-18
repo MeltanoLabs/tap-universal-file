@@ -133,7 +133,7 @@ class FilesystemManager:
                 yield file_dict
                 continue
 
-        if none_found:
+        if self.config["fail_when_no_files_found"] and none_found:
             msg = (
                 "No files found. Choose a different `file_path` or try a more lenient "
                 "`file_regex`."
